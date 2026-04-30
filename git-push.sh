@@ -18,6 +18,6 @@ MSG="${1:-Auto-sync $(date '+%Y-%m-%d %H:%M')}"
 git commit -m "$MSG"
 
 # Push
-GIT_TERMINAL_PROMPT=0 git push origin master 2>&1
+GIT_TERMINAL_PROMPT=0 timeout 300 git push origin master 2>&1
 
 echo "Push complete: $MSG"
