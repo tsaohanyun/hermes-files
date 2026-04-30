@@ -1,9 +1,8 @@
 # Hermes Files 同步脚本 (PowerShell版)
 # 使用方法: 右键点击脚本 -> "使用 PowerShell 运行"
 
-param(
-    [string]$RepoPath = "E:\hermes-files"
-)
+# 设置仓库路径
+$RepoPath = "E:\hermes-files"
 
 # 设置控制台编码为UTF-8
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
