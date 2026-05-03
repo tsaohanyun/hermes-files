@@ -142,7 +142,7 @@ a:hover { color: var(--brand-red); }
 .user-dropdown-divider { border-top: 1px solid var(--border-light); margin: 4px 0; }
 .sidebar { top: 60px; height: calc(100vh - 60px); }
 
-/* ========== 15. 主内容区 ========== */
+/* ========== 6. 主内容区 ========== */
 .main-content {
   margin-left: var(--sidebar-width);
   margin-top: 60px;
@@ -150,7 +150,7 @@ a:hover { color: var(--brand-red); }
   min-height: calc(100vh - 60px);
 }
 
-/* ========== 15. 面包屑 ========== */
+/* ========== 7. 面包屑 ========== */
 .breadcrumb {
   padding: 12px 0; font-size: 0.14rem;
   color: var(--brand-red);
@@ -160,7 +160,7 @@ a:hover { color: var(--brand-red); }
 .breadcrumb .sep { color: var(--text-tertiary); margin: 0 6px; }
 .breadcrumb .current { color: var(--text-primary); font-weight: 500; }
 
-/* ========== 15. 标签页 ========== */
+/* ========== 8. 标签页 ========== */
 .tabs {
   display: flex; border-bottom: 1px solid var(--border-light);
   margin-bottom: 16px;
@@ -183,7 +183,7 @@ a:hover { color: var(--brand-red); }
   margin-left: 6px; line-height: 1.4;
 }
 
-/* ========== 15. 搜索栏 ========== */
+/* ========== 9. 搜索栏 ========== */
 .search-bar {
   display: flex; justify-content: space-between; align-items: flex-end;
   padding: 16px; background: #fff;
@@ -193,7 +193,7 @@ a:hover { color: var(--brand-red); }
 .search-fields { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; }
 .search-actions { display: flex; gap: 8px; flex-shrink: 0; }
 
-/* ========== 15. 表单 ========== */
+/* ========== 10. 表单 ========== */
 .form-item { display: flex; flex-direction: column; }
 .form-label {
   font-size: 0.12rem; color: var(--text-secondary);
@@ -211,7 +211,7 @@ a:hover { color: var(--brand-red); }
 .form-select { cursor: pointer; min-width: 120px; }
 .form-input::placeholder { color: var(--text-tertiary); }
 
-/* ========== 15. 按钮 ========== */
+/* ========== 11. 按钮 ========== */
 .btn {
   display: inline-flex; align-items: center; justify-content: center;
   height: var(--btn-height); padding: var(--btn-padding);
@@ -227,7 +227,7 @@ a:hover { color: var(--brand-red); }
 .btn-text { background: none; color: var(--icon-active); border: none; padding: 0 4px; }
 .btn-text:hover { color: var(--brand-red); }
 
-/* ========== 15. 表格 ========== */
+/* ========== 12. 表格 ========== */
 .table-wrapper {
   background: #fff; border: 1px solid var(--border-light);
   border-radius: var(--radius); overflow: hidden;
@@ -265,7 +265,29 @@ a:hover { color: var(--brand-red); }
 .data-table .col-order:hover { color: var(--brand-red); text-decoration: underline; }
 .data-table .col-actions { display: flex; gap: 8px; }
 
-/* ========== 15. 状态标签 ========== */
+/* 表格复选框 */
+.data-table .col-checkbox { width: 36px; min-width: 36px; text-align: center; padding: 10px 4px; }
+.data-table input[type="checkbox"] {
+  width: 16px; height: 16px; cursor: pointer;
+  accent-color: var(--brand-red);
+}
+/* 斑马纹 + 选中行 */
+.data-table tbody tr:nth-child(even) { background: #f5f5f5; }
+.data-table tbody tr:nth-child(even):hover { background: #f5f7fa; }
+.data-table tbody tr.row-selected { background: rgba(172,42,72,0.06); }
+.data-table tbody tr.row-selected:nth-child(even) { background: rgba(172,42,72,0.08); }
+
+/* 批量操作栏 */
+.batch-actions {
+  display: none; align-items: center; gap: 10px;
+  padding: 8px 16px; background: #fff7f8;
+  border-bottom: 1px solid var(--border-light);
+}
+.batch-actions.show { display: flex; }
+.batch-actions .batch-count { font-size: 0.13rem; color: var(--brand-red); font-weight: 600; }
+.batch-actions .batch-hint { font-size: 0.12rem; color: var(--text-tertiary); }
+
+/* ========== 13. 状态标签 ========== */
 .tag {
   display: inline-block; padding: 2px 10px; font-size: 0.12rem;
   border-radius: var(--radius); line-height: 1.6; white-space: nowrap;
@@ -276,7 +298,7 @@ a:hover { color: var(--brand-red); }
 .tag-paused  { background: #fff3e0; color: #e65100; }    /* 已暂停 — 橙 */
 .tag-cancel  { background: #ffebee; color: #c62828; }    /* 已取消 — 红 */
 
-/* ========== 15. 分页 ========== */
+/* ========== 14. 分页 ========== */
 .pagination {
   display: flex; justify-content: space-between; align-items: center;
   padding: 12px 16px; font-size: 0.13rem; color: var(--text-secondary);
