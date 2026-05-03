@@ -491,6 +491,8 @@ a:hover { color: var(--brand-red); }
         </div>
         <div class="table-toolbar-right">
           <button class="btn btn-primary">+ 新增订单</button>
+          <button class="btn btn-primary" onclick="batchDispatch()" id="btnBatchDispatch" disabled style="opacity:0.5;cursor:not-allowed">批量下发</button>
+          <button class="btn btn-outline" onclick="batchDelete()" id="btnBatchDelete" disabled style="opacity:0.5;cursor:not-allowed;color:var(--brand-red);border-color:var(--brand-red)">批量删除</button>
           <button class="btn btn-outline">导出Excel</button>
         </div>
       </div>
@@ -734,6 +736,7 @@ a:hover { color: var(--brand-red); }
       <table class="data-table">
         <thead>
           <tr>
+            <th class="col-checkbox"><input type="checkbox" id="selectAllProgress" onclick="toggleSelectAllProgress()"></th>
             <th style="width:50px">序号</th>
             <th style="width:170px">订单编号</th>
             <th style="width:160px">产品名称</th>
@@ -806,6 +809,7 @@ a:hover { color: var(--brand-red); }
       <table class="data-table">
         <thead>
           <tr>
+            <th class="col-checkbox"><input type="checkbox" id="selectAllAbnormal" onclick="toggleSelectAllAbnormal()"></th>
             <th style="width:50px">序号</th>
             <th style="width:120px">异常编号</th>
             <th style="width:170px">关联订单</th>
@@ -850,6 +854,8 @@ function switchTabContent(tabId) {
   document.querySelector(`.tab-item[data-tab="${tabId}"]`).classList.add('active');
   document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
   document.getElementById(`tab-${tabId}`).classList.add('active');
+  // 切换Tab时更新选中状态
+  updateSelection();
 }
 function toggleUserDropdown() {
   document.getElementById('userDropdown').classList.toggle('show');
@@ -861,32 +867,73 @@ document.addEventListener('click', function(e) {
 });
 
 // ===== 复选框批量操作 =====
+function getActiveTabContent() {
+  return document.querySelector('.tab-content.active');
+}
+function getSelectAllForTab(tabEl) {
+  return tabEl.querySelector('thead input[type="checkbox"]');
+}
 function toggleSelectAll() {
-  var selectAll = document.getElementById('selectAll');
-  var checkboxes = document.querySelectorAll('.row-checkbox');
+  var activeTab = getActiveTabContent();
+  var selectAll = getSelectAllForTab(activeTab);
+  var checkboxes = activeTab.querySelectorAll('.row-checkbox');
+  checkboxes.forEach(function(cb) { cb.checked = selectAll.checked; });
+  updateSelection();
+}
+function toggleSelectAllProgress() {
+  var activeTab = getActiveTabContent();
+  var selectAll = getSelectAllForTab(activeTab);
+  var checkboxes = activeTab.querySelectorAll('.row-checkbox');
+  checkboxes.forEach(function(cb) { cb.checked = selectAll.checked; });
+  updateSelection();
+}
+function toggleSelectAllAbnormal() {
+  var activeTab = getActiveTabContent();
+  var selectAll = getSelectAllForTab(activeTab);
+  var checkboxes = activeTab.querySelectorAll('.row-checkbox');
   checkboxes.forEach(function(cb) { cb.checked = selectAll.checked; });
   updateSelection();
 }
 function updateSelection() {
-  var checkboxes = document.querySelectorAll('.row-checkbox');
-  var checked = document.querySelectorAll('.row-checkbox:checked');
-  var selectAll = document.getElementById('selectAll');
+  var activeTab = getActiveTabContent();
+  if (!activeTab) return;
+  var checkboxes = activeTab.querySelectorAll('.row-checkbox');
+  var checked = activeTab.querySelectorAll('.row-checkbox:checked');
+  var selectAll = getSelectAllForTab(activeTab);
   var batchActions = document.getElementById('batchActions');
   var batchCount = document.getElementById('batchCount');
+  var btnDispatch = document.getElementById('btnBatchDispatch');
+  var btnDelete = document.getElementById('btnBatchDelete');
   
   var count = checked.length;
-  selectAll.checked = count === checkboxes.length && count > 0;
-  selectAll.indeterminate = count > 0 && count < checkboxes.length;
+  if (selectAll) {
+    selectAll.checked = count === checkboxes.length && count > 0;
+    selectAll.indeterminate = count > 0 && count < checkboxes.length;
+  }
   
   if (count > 0) {
     batchActions.classList.add('show');
     batchCount.textContent = '已选 ' + count + ' 项';
+    // 启用工具栏批量按钮
+    btnDispatch.disabled = false;
+    btnDispatch.style.opacity = '1';
+    btnDispatch.style.cursor = 'pointer';
+    btnDelete.disabled = false;
+    btnDelete.style.opacity = '1';
+    btnDelete.style.cursor = 'pointer';
   } else {
     batchActions.classList.remove('show');
+    // 禁用工具栏批量按钮
+    btnDispatch.disabled = true;
+    btnDispatch.style.opacity = '0.5';
+    btnDispatch.style.cursor = 'not-allowed';
+    btnDelete.disabled = true;
+    btnDelete.style.opacity = '0.5';
+    btnDelete.style.cursor = 'not-allowed';
   }
   
-  // 高亮选中行
-  document.querySelectorAll('.data-table tbody tr').forEach(function(tr) {
+  // 高亮选中行（仅当前Tab）
+  activeTab.querySelectorAll('.data-table tbody tr').forEach(function(tr) {
     tr.classList.remove('row-selected');
   });
   checked.forEach(function(cb) {
@@ -894,18 +941,24 @@ function updateSelection() {
   });
 }
 function clearSelection() {
-  document.querySelectorAll('.row-checkbox').forEach(function(cb) { cb.checked = false; });
-  document.getElementById('selectAll').checked = false;
-  document.getElementById('selectAll').indeterminate = false;
+  var activeTab = getActiveTabContent();
+  activeTab.querySelectorAll('.row-checkbox').forEach(function(cb) { cb.checked = false; });
+  var selectAll = getSelectAllForTab(activeTab);
+  if (selectAll) {
+    selectAll.checked = false;
+    selectAll.indeterminate = false;
+  }
   updateSelection();
 }
 function batchDispatch() {
-  var checked = document.querySelectorAll('.row-checkbox:checked');
+  var activeTab = getActiveTabContent();
+  var checked = activeTab.querySelectorAll('.row-checkbox:checked');
   if (checked.length === 0) return;
   var ids = [];
   checked.forEach(function(cb) {
     var tr = cb.closest('tr');
-    ids.push(tr.querySelector('.col-order').textContent.trim());
+    var orderEl = tr.querySelector('.col-order');
+    ids.push(orderEl ? orderEl.textContent.trim() : '未知');
   });
   if (confirm('确认下发以下 ' + checked.length + ' 个订单？\n\n' + ids.join('\n'))) {
     alert('已下发 ' + checked.length + ' 个订单');
@@ -913,7 +966,8 @@ function batchDispatch() {
   }
 }
 function batchDelete() {
-  var checked = document.querySelectorAll('.row-checkbox:checked');
+  var activeTab = getActiveTabContent();
+  var checked = activeTab.querySelectorAll('.row-checkbox:checked');
   if (checked.length === 0) return;
   if (confirm('确认删除选中的 ' + checked.length + ' 个订单？此操作不可恢复！')) {
     alert('已删除 ' + checked.length + ' 个订单');
