@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DIM - 生产订单管理</title>
+<style>
+/* ========== 1. 根字号 ========== */
+html { font-size: 100px; }
+
+/* ========== 2. CSS 变量 ========== */
+:root {
+  --brand-red: #AC2A48;
+  --brand-red-dark: #8B1E38;
+  --brand-red-hover: #c43856;
+  --brand-red-btn: #8B1E38;
+  --btn-primary: #677177;
+  --btn-primary-hover: #495053;
+  --btn-primary-active: #565D62;
+  --icon-active: #0878CB;
+  --table-selected: #53aefc;
+  --table-header-bg: #f2f3f5;
+  --table-viewed-bg: #EDF1F7;
+  --text-primary: #434343;
+  --text-secondary: #666666;
+  --text-tertiary: #848E94;
+  --border-color: #C0C4CC;
+  --border-light: #E8E8E8;
+  --bg-white: #FFFFFF;
+  --bg-light: #F2F2F2;
+  --sidebar-width: 220px;
+  --radius: 2px;
+  --radius-dialog: 5px;
+  --btn-padding: 0 16px;
+  --btn-height: 32px;
+  --font-size-base: 14px;
+}
+
+/* ========== 3. Reset ========== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Microsoft YaHei', 'PingFang SC', sans-serif;
+  font-size: 0.14rem;
+  line-height: 1.5;
+  color: var(--text-primary);
+  background: var(--bg-light);
+}
+a { text-decoration: none; color: var(--icon-active); }
+a:hover { color: var(--brand-red); }
+
+/* ========== 4. 侧边栏 ========== */
+.sidebar {
+  position: fixed; left: 0; top: 0;
+  width: var(--sidebar-width); height: 100vh;
+  background: var(--brand-red);
+  overflow-y: auto; z-index: 100;
+}
+.sidebar-logo {
+  padding: 20px 16px;
+  color: #fff; font-size: 0.18rem; font-weight: 700;
+  border-bottom: 1px solid rgba(255,255,255,0.15);
+  letter-spacing: 0.02rem;
+}
+.sidebar-nav { padding: 8px 0; }
+.sidebar-nav-item {
+  display: flex; align-items: center;
+  padding: 12px 20px; color: rgba(255,255,255,0.85);
+  font-size: 0.14rem; cursor: pointer; transition: background 0.2s;
+  user-select: none;
+}
+.sidebar-nav-item:hover { background: rgba(255,255,255,0.1); }
+.sidebar-nav-item.active { background: var(--brand-red-dark); color: #fff; }
+.nav-icon {
+  width: 20px; height: 20px; margin-right: 10px;
+  flex-shrink: 0;
+}
+
+/* ========== 5. 主内容区 ========== */
+.main-content {
+  margin-left: var(--sidebar-width);
+  padding: 16px 20px;
+  min-height: 100vh;
+}
+
+/* ========== 6. 面包屑 ========== */
+.breadcrumb {
+  padding: 12px 0; font-size: 0.14rem;
+  color: var(--brand-red);
+}
+.breadcrumb a { color: var(--brand-red); }
+.breadcrumb a:hover { text-decoration: underline; }
+.breadcrumb .sep { color: var(--text-tertiary); margin: 0 6px; }
+.breadcrumb .current { color: var(--text-primary); font-weight: 500; }
+
+/* ========== 7. 标签页 ========== */
+.tabs {
+  display: flex; border-bottom: 1px solid var(--border-light);
+  margin-bottom: 16px;
+}
+.tab-item {
+  padding: 10px 20px; font-size: 0.14rem;
+  color: var(--text-secondary); cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+  user-select: none;
+}
+.tab-item:hover { color: var(--icon-active); }
+.tab-item.active {
+  color: var(--brand-red); border-bottom-color: var(--brand-red);
+  font-weight: 600;
+}
+.tab-badge {
+  display: inline-block; background: var(--brand-red); color: #fff;
+  font-size: 0.11rem; padding: 1px 6px; border-radius: 10px;
+  margin-left: 6px; line-height: 1.4;
+}
+
+/* ========== 8. 搜索栏 ========== */
+.search-bar {
+  display: flex; justify-content: space-between; align-items: flex-end;
+  padding: 16px; background: #fff;
+  border: 1px solid var(--border-light); border-radius: var(--radius);
+  margin-bottom: 16px;
+}
+.search-fields { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; }
+.search-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+/* ========== 9. 表单 ========== */
+.form-item { display: flex; flex-direction: column; }
+.form-label {
+  font-size: 0.12rem; color: var(--text-secondary);
+  margin-bottom: 4px; white-space: nowrap;
+}
+.form-input, .form-select {
+  height: var(--btn-height); padding: 0 12px;
+  font-size: 0.14rem; border: 1px solid var(--border-color);
+  border-radius: var(--radius); background: #fff; color: var(--text-primary);
+}
+.form-input:focus, .form-select:focus {
+  border-color: var(--icon-active); outline: none;
+  box-shadow: 0 0 0 2px rgba(8,120,203,0.1);
+}
+.form-select { cursor: pointer; min-width: 120px; }
+.form-input::placeholder { color: var(--text-tertiary); }
+
+/* ========== 10. 按钮 ========== */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  height: var(--btn-height); padding: var(--btn-padding);
+  border-radius: var(--radius); font-size: 0.14rem; cursor: pointer;
+  border: none; white-space: nowrap;
+}
+.btn-default { background: var(--btn-primary); color: #fff; }
+.btn-default:hover { background: var(--btn-primary-hover); }
+.btn-outline { background: #fff; color: var(--btn-primary); border: 1px solid var(--btn-primary); }
+.btn-outline:hover { background: #f5f7fa; }
+.btn-primary { background: var(--brand-red); color: #fff; }
+.btn-primary:hover { background: var(--brand-red-hover); }
+.btn-text { background: none; color: var(--icon-active); border: none; padding: 0 4px; }
+.btn-text:hover { color: var(--brand-red); }
+
+/* ========== 11. 表格 ========== */
+.table-wrapper {
+  background: #fff; border: 1px solid var(--border-light);
+  border-radius: var(--radius); overflow: hidden;
+}
+.table-toolbar {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 16px; border-bottom: 1px solid var(--border-light);
+  background: #fafbfc;
+}
+.table-toolbar-left { display: flex; gap: 8px; align-items: center; }
+.table-toolbar-right { display: flex; gap: 8px; align-items: center; }
+.toolbar-title { font-size: 0.15rem; font-weight: 600; color: var(--text-primary); }
+.toolbar-count { font-size: 0.12rem; color: var(--text-tertiary); }
+.data-table {
+  width: 100%; border-collapse: collapse;
+  font-size: 0.14rem;
+}
+.data-table thead th {
+  background: var(--table-header-bg); padding: 10px 12px;
+  text-align: left; font-weight: 600; color: var(--text-primary);
+  border-bottom: 2px solid var(--border-light); white-space: nowrap;
+  font-size: 0.13rem;
+}
+.data-table thead th.col-center { text-align: center; }
+.data-table thead th.col-right { text-align: right; }
+.data-table tbody td {
+  padding: 10px 12px; border-bottom: 1px solid var(--border-light);
+  color: var(--text-primary); font-size: 0.13rem;
+}
+.data-table tbody td.col-center { text-align: center; }
+.data-table tbody td.col-right { text-align: right; }
+.data-table tbody tr:hover { background: #f5f7fa; }
+.data-table tbody tr.row-viewed { background: var(--table-viewed-bg); }
+.data-table .col-order { color: var(--icon-active); cursor: pointer; }
+.data-table .col-order:hover { color: var(--brand-red); text-decoration: underline; }
+.data-table .col-actions { display: flex; gap: 8px; }
+
+/* ========== 12. 状态标签 ========== */
+.tag {
+  display: inline-block; padding: 2px 10px; font-size: 0.12rem;
+  border-radius: var(--radius); line-height: 1.6; white-space: nowrap;
+}
+.tag-pending { background: #e3f2fd; color: #1565c0; }    /* 待下达 — 蓝 */
+.tag-active  { background: #e8f5e9; color: #2e7d32; }    /* 生产中 — 绿 */
+.tag-done    { background: #f3e5f5; color: #7b1fa2; }    /* 已完成 — 紫 */
+.tag-paused  { background: #fff3e0; color: #e65100; }    /* 已暂停 — 橙 */
+.tag-cancel  { background: #ffebee; color: #c62828; }    /* 已取消 — 红 */
+
+/* ========== 13. 分页 ========== */
+.pagination {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 16px; font-size: 0.13rem; color: var(--text-secondary);
+  border-top: 1px solid var(--border-light);
+}
+.pagination-left { display: flex; align-items: center; gap: 4px; }
+.pagination-right { display: flex; align-items: center; gap: 4px; }
+.page-btn {
+  min-width: 32px; height: 32px; display: flex; align-items: center;
+  justify-content: center; border: 1px solid var(--border-color);
+  border-radius: var(--radius); background: #fff; cursor: pointer;
+  font-size: 0.13rem; padding: 0 6px;
+}
+.page-btn.active { background: var(--brand-red); color: #fff; border-color: var(--brand-red); }
+.page-btn:hover:not(.active) { border-color: var(--brand-red); color: var(--brand-red); }
+.page-btn.disabled { color: var(--text-tertiary); cursor: not-allowed; pointer-events: none; }
+.page-size { margin: 0 8px; }
+.page-size select {
+  height: 32px; padding: 0 8px; border: 1px solid var(--border-color);
+  border-radius: var(--radius); font-size: 0.13rem; cursor: pointer;
+}
+
+/* ========== 14. Tab内容切换 ========== */
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+.tab-placeholder {
+  text-align: center; padding: 80px 20px; color: var(--text-tertiary);
+  font-size: 0.14rem;
+}
+.tab-placeholder .icon { font-size: 0.48rem; margin-bottom: 16px; display: block; }
+</style>
+</head>
+<body>
+
+<!-- ========== 侧边栏 ========== -->
+<aside class="sidebar">
+  <div class="sidebar-logo">DIM 制造执行系统</div>
+  <nav class="sidebar-nav">
+    <div class="sidebar-nav-item active" onclick="switchTab('orders')">
+      <svg class="nav-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <circle cx="9.8" cy="9.8" r="8.8" fill="white" opacity="0.95"/>
+        <rect x="5.5" y="4" width="9" height="12" rx="1.5" stroke="#AC2A48" stroke-width="1.3" fill="none"/>
+        <line x1="5.5" y1="8" x2="14.5" y2="8" stroke="#AC2A48" stroke-width="1"/>
+        <line x1="5.5" y1="12" x2="11" y2="12" stroke="#AC2A48" stroke-width="1"/>
+      </svg>
+      生产管理
+    </div>
+    <div class="sidebar-nav-item">
+      <svg class="nav-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <circle cx="9.8" cy="9.8" r="8.8" fill="white" opacity="0.95"/>
+        <path d="M10 3v14M7 7l3-4 3 4M7 13l3 4 3-4" stroke="#AC2A48" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+      </svg>
+      质量管理
+    </div>
+    <div class="sidebar-nav-item">
+      <svg class="nav-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <circle cx="9.8" cy="9.8" r="8.8" fill="white" opacity="0.95"/>
+        <rect x="4.5" y="5" width="11" height="10" rx="1" stroke="#AC2A48" stroke-width="1.3" fill="none"/>
+        <rect x="6" y="7" width="8" height="6" rx="0.5" fill="#AC2A48" opacity="0.3"/>
+      </svg>
+      物资管理
+    </div>
+    <div class="sidebar-nav-item">
+      <svg class="nav-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <circle cx="9.8" cy="9.8" r="8.8" fill="white" opacity="0.95"/>
+        <circle cx="10" cy="10" r="3" stroke="#AC2A48" stroke-width="1.3" fill="none"/>
+        <path d="M10 5v2M10 13v2M5 10h2M13 10h2" stroke="#AC2A48" stroke-width="1.3" stroke-linecap="round"/>
+      </svg>
+      设备管理
+    </div>
+    <div class="sidebar-nav-item">
+      <svg class="nav-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <circle cx="9.8" cy="9.8" r="8.8" fill="white" opacity="0.95"/>
+        <rect x="4" y="4" width="12" height="12" rx="1" stroke="#AC2A48" stroke-width="1.3" fill="none"/>
+        <line x1="4" y1="8" x2="16" y2="8" stroke="#AC2A48" stroke-width="0.8"/>
+        <line x1="10" y1="8" x2="10" y2="16" stroke="#AC2A48" stroke-width="0.8"/>
+      </svg>
+      计划管理
+    </div>
+  </nav>
+</aside>
+
+<!-- ========== 主内容区 ========== -->
+<main class="main-content">
+
+  <!-- 面包屑 -->
+  <div class="breadcrumb">
+    <a href="#">首页</a><span class="sep">&gt;</span>
+    <a href="#">生产管理</a><span class="sep">&gt;</span>
+    <span class="current">生产订单</span>
+  </div>
+
+  <!-- 标签页 -->
+  <div class="tabs">
+    <div class="tab-item active" data-tab="orders" onclick="switchTabContent('orders')">
+      订单列表
+    </div>
+    <div class="tab-item" data-tab="progress" onclick="switchTabContent('progress')">
+      生产进度<span class="tab-badge">8</span>
+    </div>
+    <div class="tab-item" data-tab="abnormal" onclick="switchTabContent('abnormal')">
+      异常记录<span class="tab-badge">2</span>
+    </div>
+  </div>
+
+  <!-- ===== 订单列表 Tab ===== -->
+  <div class="tab-content active" id="tab-orders">
+
+    <!-- 搜索栏 -->
+    <div class="search-bar">
+      <div class="search-fields">
+        <div class="form-item" style="width:180px">
+          <label class="form-label">订单编号</label>
+          <input class="form-input" placeholder="请输入订单编号">
+        </div>
+        <div class="form-item" style="width:180px">
+          <label class="form-label">产品名称</label>
+          <input class="form-input" placeholder="请输入产品名称">
+        </div>
+        <div class="form-item" style="width:150px">
+          <label class="form-label">生产线</label>
+          <select class="form-select">
+            <option value="">全部</option>
+            <option>一车间 A线</option>
+            <option>一车间 B线</option>
+            <option>二车间 A线</option>
+            <option>二车间 B线</option>
+            <option>三车间 A线</option>
+          </select>
+        </div>
+        <div class="form-item" style="width:130px">
+          <label class="form-label">订单状态</label>
+          <select class="form-select">
+            <option value="">全部</option>
+            <option>待下达</option>
+            <option>生产中</option>
+            <option>已完成</option>
+            <option>已暂停</option>
+            <option>已取消</option>
+          </select>
+        </div>
+        <div class="form-item" style="width:150px">
+          <label class="form-label">开工日期起</label>
+          <input class="form-input" type="date">
+        </div>
+        <div class="form-item" style="width:150px">
+          <label class="form-label">开工日期止</label>
+          <input class="form-input" type="date">
+        </div>
+      </div>
+      <div class="search-actions">
+        <button class="btn btn-default">查询</button>
+        <button class="btn btn-outline">重置</button>
+      </div>
+    </div>
+
+    <!-- 表格 -->
+    <div class="table-wrapper">
+      <div class="table-toolbar">
+        <div class="table-toolbar-left">
+          <span class="toolbar-title">生产订单列表</span>
+          <span class="toolbar-count">（共 156 条记录）</span>
+        </div>
+        <div class="table-toolbar-right">
+          <button class="btn btn-primary">+ 新增订单</button>
+          <button class="btn btn-outline">导出Excel</button>
+        </div>
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="width:50px">序号</th>
+            <th style="width:170px">订单编号</th>
+            <th style="width:180px">产品名称</th>
+            <th class="col-right" style="width:100px">计划数量</th>
+            <th style="width:120px">生产线</th>
+            <th class="col-center" style="width:110px">计划开工日</th>
+            <th class="col-center" style="width:110px">计划完工日</th>
+            <th class="col-center" style="width:90px">状态</th>
+            <th class="col-center" style="width:120px">操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td class="col-order">PO-20260503-001</td>
+            <td>高强度合金钢法兰盘 DN200</td>
+            <td class="col-right">5,000 件</td>
+            <td>一车间 A线</td>
+            <td class="col-center">2026-05-03</td>
+            <td class="col-center">2026-05-12</td>
+            <td class="col-center"><span class="tag tag-active">生产中</span></td>
+            <td class="col-center">
+              <div class="col-actions" style="justify-content:center">
+                <a href="#" class="btn-text">详情</a>
+                <a href="#" class="btn-text">编辑</a>
+                <a href="#" class="btn-text" style="color:var(--brand-red)">暂停</a>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td class="col-order">PO-20260503-002</td>
+            <td>精密轴承滚珠 G10级</td>
+            <td class="col-right">20,000 粒</td>
+            <td>一车间 B线</td>
+            <td class="col-center">2026-05-03</td>
+            <td class="col-center">2026-05-08</td>
+            <td class="col-center"><span class="tag tag-active">生产中</span></td>
+            <td class="col-center">
+              <div class="col-actions" style="justify-content:center">
+                <a href="#" class="btn-text">详情</a>
+                <a href="#" class="btn-text">编辑</a>
+                <a href="#" class="btn-text" style="color:var(--brand-red)">暂停</a>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td class="col-order">PO-20260502-008</td>
+            <td>不锈钢无缝钢管 Φ108×4.5mm</td>
+            <td class="col-right">3,200 米</td>
+            <td>二车间 A线</td>
+            <td class="col-center">2026-05-02</td>
+            <td class="col-center">2026-05-10</td>
+            <td class="col-center"><span class="tag tag-active">生产中</span></td>
+            <td class="col-center">
+              <div class="col-actions" style="justify-content:center">
+                <a href="#" class="btn-text">详情</a>
+                <a href="#" class="btn-text">编辑</a>
+                <a href="#" class="btn-text" style="color:var(--brand-red)">暂停</a>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td class="col-order">PO-20260501-015</td>
+            <td>铝合金散热片型材 6063-T5</td>
+            <td class="col-right">8,500 kg</td>
+            <td>三车间 A线</td>
+            <td class="col-center">2026-05-01</td>
+            <td class="col-center">2026-05-05</td>
+            <td class="col-center"><span class="tag tag-done">已完成</span></td>
+            <td class="col-center">
+              <div class="col-actions" style="justify-content:center">
+                <a href="#" class="btn-text">详情</a>
+                <a href="#" class="btn-text">查看报告</a>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td class="col-order">PO-20260501-016</td>
+            <td>碳钢焊接结构件 Q235B</td>
+            <td class="col-right">12,000 kg</td>
+            <td>二车间 B线</td>
+            <td class="col-center">2026-05-01</td>
+            <td class="col-center">2026-05-15</td>
+            <td class="col-center"><span class="tag tag-paused">已暂停</span></td>
+            <td class="col-center">
+              <div class="col-actions" style="justify-content:center">
+                <a href="#" class="btn-text">详情</a>
+                <a href="#" class="btn-text">恢复</a>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td class="col-order">PO-20260430-022</td>
+            <td>铜合金接线端子 DT-95</td>
+            <td class="col-right">15,000 个</td>
+            <td>一车间 A线</td>
+            <td class="col-center">2026-04-30</td>
+            <td class="col-center">2026-05-06</td>
+            <td class="col-center"><span class="tag tag-done">已完成</span></td>
+            <td class="col-center">
+              <div class="col-actions" style="justify-content:center">
+                <a href="#" class="btn-text">详情</a>
+                <a href="#" class="btn-text">查看报告</a>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>7</td>
+            <td class="col-order">PO-20260429-019</td>
+            <td>液压阀体铸件 HT250</td>
+            <td class="col-right">2,800 件</td>
+            <td>三车间 A线</td>
+            <td class="col-center">2026-05-05</td>
+            <td class="col-center">2026-05-18</td>
+            <td class="col-center"><span class="tag tag-pending">待下达</span></td>
+            <td class="col-center">
+              <div class="col-actions" style="justify-content:center">
+                <a href="#" class="btn-text">详情</a>
+                <a href="#" class="btn-text">下达</a>
+                <a href="#" class="btn-text" style="color:var(--brand-red)">取消</a>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>8</td>
+            <td class="col-order">PO-20260428-018</td>
+            <td>模具钢热处理模板 Cr12MoV</td>
+            <td class="col-right">1,200 kg</td>
+            <td>二车间 A线</td>
+            <td class="col-center">2026-04-28</td>
+            <td class="col-center">2026-05-04</td>
+            <td class="col-center"><span class="tag tag-done">已完成</span></td>
+            <td class="col-center">
+              <div class="col-actions" style="justify-content:center">
+                <a href="#" class="btn-text">详情</a>
+                <a href="#" class="btn-text">查看报告</a>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>9</td>
+            <td class="col-order">PO-20260427-012</td>
+            <td>尼龙工程塑料齿轮 M2.5</td>
+            <td class="col-right">30,000 个</td>
+            <td>一车间 B线</td>
+            <td class="col-center">2026-04-25</td>
+            <td class="col-center">2026-04-30</td>
+            <td class="col-center"><span class="tag tag-cancel">已取消</span></td>
+            <td class="col-center">
+              <div class="col-actions" style="justify-content:center">
+                <a href="#" class="btn-text">详情</a>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>10</td>
+            <td class="col-order">PO-20260426-009</td>
+            <td>弹簧钢压缩弹簧 φ8×50mm</td>
+            <td class="col-right">50,000 件</td>
+            <td>三车间 A线</td>
+            <td class="col-center">2026-05-08</td>
+            <td class="col-center">2026-05-20</td>
+            <td class="col-center"><span class="tag tag-pending">待下达</span></td>
+            <td class="col-center">
+              <div class="col-actions" style="justify-content:center">
+                <a href="#" class="btn-text">详情</a>
+                <a href="#" class="btn-text">下达</a>
+                <a href="#" class="btn-text" style="color:var(--brand-red)">取消</a>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- 分页 -->
+      <div class="pagination">
+        <div class="pagination-left">
+          <span>共 156 条</span>
+          <span class="page-size">
+            <select>
+              <option>10条/页</option>
+              <option>20条/页</option>
+              <option>50条/页</option>
+            </select>
+          </span>
+        </div>
+        <div class="pagination-right">
+          <button class="page-btn disabled">&lt;</button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn">2</button>
+          <button class="page-btn">3</button>
+          <button class="page-btn">4</button>
+          <button class="page-btn">5</button>
+          <button class="page-btn">...</button>
+          <button class="page-btn">16</button>
+          <button class="page-btn">&gt;</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 生产进度 Tab ===== -->
+  <div class="tab-content" id="tab-progress">
+    <div class="table-wrapper">
+      <div class="table-toolbar">
+        <div class="table-toolbar-left">
+          <span class="toolbar-title">生产中订单进度</span>
+          <span class="toolbar-count">（共 8 条记录）</span>
+        </div>
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="width:50px">序号</th>
+            <th style="width:170px">订单编号</th>
+            <th style="width:160px">产品名称</th>
+            <th class="col-right" style="width:90px">计划数量</th>
+            <th class="col-right" style="width:90px">已完成量</th>
+            <th class="col-center" style="width:100px">完成率</th>
+            <th class="col-center" style="width:100px">预计完工</th>
+            <th class="col-center" style="width:80px">状态</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td class="col-order">PO-20260503-001</td>
+            <td>高强度合金钢法兰盘 DN200</td>
+            <td class="col-right">5,000 件</td>
+            <td class="col-right">1,250 件</td>
+            <td class="col-center" style="color:#2e7d32;font-weight:600">25%</td>
+            <td class="col-center">2026-05-12</td>
+            <td class="col-center"><span class="tag tag-active">正常</span></td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td class="col-order">PO-20260503-002</td>
+            <td>精密轴承滚珠 G10级</td>
+            <td class="col-right">20,000 粒</td>
+            <td class="col-right">8,500 粒</td>
+            <td class="col-center" style="color:#2e7d32;font-weight:600">42%</td>
+            <td class="col-center">2026-05-08</td>
+            <td class="col-center"><span class="tag tag-active">正常</span></td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td class="col-order">PO-20260502-008</td>
+            <td>不锈钢无缝钢管 Φ108</td>
+            <td class="col-right">3,200 米</td>
+            <td class="col-right">2,880 米</td>
+            <td class="col-center" style="color:#e65100;font-weight:600">90%</td>
+            <td class="col-center">2026-05-10</td>
+            <td class="col-center"><span class="tag tag-paused">即将完成</span></td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td class="col-order">PO-20260501-016</td>
+            <td>碳钢焊接结构件 Q235B</td>
+            <td class="col-right">12,000 kg</td>
+            <td class="col-right">3,600 kg</td>
+            <td class="col-center" style="color:#c62828;font-weight:600">30%</td>
+            <td class="col-center">2026-05-15</td>
+            <td class="col-center"><span class="tag tag-paused">已暂停</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== 异常记录 Tab ===== -->
+  <div class="tab-content" id="tab-abnormal">
+    <div class="table-wrapper">
+      <div class="table-toolbar">
+        <div class="table-toolbar-left">
+          <span class="toolbar-title">异常记录</span>
+          <span class="toolbar-count">（共 2 条记录）</span>
+        </div>
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="width:50px">序号</th>
+            <th style="width:120px">异常编号</th>
+            <th style="width:170px">关联订单</th>
+            <th style="width:140px">异常类型</th>
+            <th style="width:180px">异常描述</th>
+            <th class="col-center" style="width:100px">发生时间</th>
+            <th class="col-center" style="width:80px">状态</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>EX-20260503-001</td>
+            <td class="col-order">PO-20260503-001</td>
+            <td>设备故障</td>
+            <td>A线冲压机液压系统压力异常，已停机</td>
+            <td class="col-center">2026-05-03 14:30</td>
+            <td class="col-center"><span class="tag tag-paused">处理中</span></td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>EX-20260502-005</td>
+            <td class="col-order">PO-20260502-008</td>
+            <td>质量异常</td>
+            <td>钢管壁厚抽检不合格率 3.2%，超标 0.2%</td>
+            <td class="col-center">2026-05-02 09:15</td>
+            <td class="col-center"><span class="tag tag-cancel">已关闭</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
+
+<!-- ========== 标签页 & 侧边栏切换脚本 ========== -->
+<script>
+function switchTabContent(tabId) {
+  // 更新标签页激活态
+  document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+  document.querySelector(`.tab-item[data-tab="${tabId}"]`).classList.add('active');
+  // 切换内容
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.getElementById(`tab-${tabId}`).classList.add('active');
+}
+</script>
+
+</body>
+</html>
