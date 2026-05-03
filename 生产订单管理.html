@@ -472,9 +472,18 @@ a:hover { color: var(--brand-red); }
           <button class="btn btn-outline">导出Excel</button>
         </div>
       </div>
+      <!-- 批量操作栏 -->
+      <div class="batch-actions" id="batchActions">
+        <span class="batch-count" id="batchCount">已选 0 项</span>
+        <span class="batch-hint">|</span>
+        <button class="btn btn-primary" onclick="batchDispatch()" style="height:28px;font-size:0.12rem;padding:0 12px">批量下发</button>
+        <button class="btn btn-outline" onclick="batchDelete()" style="height:28px;font-size:0.12rem;padding:0 12px;color:var(--brand-red);border-color:var(--brand-red)">批量删除</button>
+        <span class="batch-hint" style="margin-left:auto;cursor:pointer" onclick="clearSelection()">清除选择</span>
+      </div>
       <table class="data-table">
         <thead>
           <tr>
+            <th class="col-checkbox"><input type="checkbox" id="selectAll" onclick="toggleSelectAll()"></th>
             <th style="width:50px">序号</th>
             <th style="width:170px">订单编号</th>
             <th style="width:180px">产品名称</th>
@@ -488,6 +497,7 @@ a:hover { color: var(--brand-red); }
         </thead>
         <tbody>
           <tr>
+            <td class="col-checkbox"><input type="checkbox" class="row-checkbox" onchange="updateSelection()"></td>
             <td>1</td>
             <td class="col-order">PO-20260503-001</td>
             <td>高强度合金钢法兰盘 DN200</td>
@@ -505,6 +515,7 @@ a:hover { color: var(--brand-red); }
             </td>
           </tr>
           <tr>
+            <td class="col-checkbox"><input type="checkbox" class="row-checkbox" onchange="updateSelection()"></td>
             <td>2</td>
             <td class="col-order">PO-20260503-002</td>
             <td>精密轴承滚珠 G10级</td>
@@ -522,6 +533,7 @@ a:hover { color: var(--brand-red); }
             </td>
           </tr>
           <tr>
+            <td class="col-checkbox"><input type="checkbox" class="row-checkbox" onchange="updateSelection()"></td>
             <td>3</td>
             <td class="col-order">PO-20260502-008</td>
             <td>不锈钢无缝钢管 Φ108×4.5mm</td>
@@ -539,6 +551,7 @@ a:hover { color: var(--brand-red); }
             </td>
           </tr>
           <tr>
+            <td class="col-checkbox"><input type="checkbox" class="row-checkbox" onchange="updateSelection()"></td>
             <td>4</td>
             <td class="col-order">PO-20260501-015</td>
             <td>铝合金散热片型材 6063-T5</td>
@@ -555,6 +568,7 @@ a:hover { color: var(--brand-red); }
             </td>
           </tr>
           <tr>
+            <td class="col-checkbox"><input type="checkbox" class="row-checkbox" onchange="updateSelection()"></td>
             <td>5</td>
             <td class="col-order">PO-20260501-016</td>
             <td>碳钢焊接结构件 Q235B</td>
@@ -571,6 +585,7 @@ a:hover { color: var(--brand-red); }
             </td>
           </tr>
           <tr>
+            <td class="col-checkbox"><input type="checkbox" class="row-checkbox" onchange="updateSelection()"></td>
             <td>6</td>
             <td class="col-order">PO-20260430-022</td>
             <td>铜合金接线端子 DT-95</td>
@@ -587,6 +602,7 @@ a:hover { color: var(--brand-red); }
             </td>
           </tr>
           <tr>
+            <td class="col-checkbox"><input type="checkbox" class="row-checkbox" onchange="updateSelection()"></td>
             <td>7</td>
             <td class="col-order">PO-20260429-019</td>
             <td>液压阀体铸件 HT250</td>
@@ -604,6 +620,7 @@ a:hover { color: var(--brand-red); }
             </td>
           </tr>
           <tr>
+            <td class="col-checkbox"><input type="checkbox" class="row-checkbox" onchange="updateSelection()"></td>
             <td>8</td>
             <td class="col-order">PO-20260428-018</td>
             <td>模具钢热处理模板 Cr12MoV</td>
@@ -620,6 +637,7 @@ a:hover { color: var(--brand-red); }
             </td>
           </tr>
           <tr>
+            <td class="col-checkbox"><input type="checkbox" class="row-checkbox" onchange="updateSelection()"></td>
             <td>9</td>
             <td class="col-order">PO-20260427-012</td>
             <td>尼龙工程塑料齿轮 M2.5</td>
@@ -635,6 +653,7 @@ a:hover { color: var(--brand-red); }
             </td>
           </tr>
           <tr>
+            <td class="col-checkbox"><input type="checkbox" class="row-checkbox" onchange="updateSelection()"></td>
             <td>10</td>
             <td class="col-order">PO-20260426-009</td>
             <td>弹簧钢压缩弹簧 φ8×50mm</td>
@@ -705,6 +724,7 @@ a:hover { color: var(--brand-red); }
         </thead>
         <tbody>
           <tr>
+            <td class="col-checkbox"><input type="checkbox" class="row-checkbox" onchange="updateSelection()"></td>
             <td>1</td>
             <td class="col-order">PO-20260503-001</td>
             <td>高强度合金钢法兰盘 DN200</td>
@@ -715,6 +735,7 @@ a:hover { color: var(--brand-red); }
             <td class="col-center"><span class="tag tag-active">正常</span></td>
           </tr>
           <tr>
+            <td class="col-checkbox"><input type="checkbox" class="row-checkbox" onchange="updateSelection()"></td>
             <td>2</td>
             <td class="col-order">PO-20260503-002</td>
             <td>精密轴承滚珠 G10级</td>
@@ -725,6 +746,7 @@ a:hover { color: var(--brand-red); }
             <td class="col-center"><span class="tag tag-active">正常</span></td>
           </tr>
           <tr>
+            <td class="col-checkbox"><input type="checkbox" class="row-checkbox" onchange="updateSelection()"></td>
             <td>3</td>
             <td class="col-order">PO-20260502-008</td>
             <td>不锈钢无缝钢管 Φ108</td>
@@ -735,6 +757,7 @@ a:hover { color: var(--brand-red); }
             <td class="col-center"><span class="tag tag-paused">即将完成</span></td>
           </tr>
           <tr>
+            <td class="col-checkbox"><input type="checkbox" class="row-checkbox" onchange="updateSelection()"></td>
             <td>4</td>
             <td class="col-order">PO-20260501-016</td>
             <td>碳钢焊接结构件 Q235B</td>
@@ -772,6 +795,7 @@ a:hover { color: var(--brand-red); }
         </thead>
         <tbody>
           <tr>
+            <td class="col-checkbox"><input type="checkbox" class="row-checkbox" onchange="updateSelection()"></td>
             <td>1</td>
             <td>EX-20260503-001</td>
             <td class="col-order">PO-20260503-001</td>
@@ -781,6 +805,7 @@ a:hover { color: var(--brand-red); }
             <td class="col-center"><span class="tag tag-paused">处理中</span></td>
           </tr>
           <tr>
+            <td class="col-checkbox"><input type="checkbox" class="row-checkbox" onchange="updateSelection()"></td>
             <td>2</td>
             <td>EX-20260502-005</td>
             <td class="col-order">PO-20260502-008</td>
@@ -812,6 +837,68 @@ document.addEventListener('click', function(e) {
     document.getElementById('userDropdown').classList.remove('show');
   }
 });
+
+// ===== 复选框批量操作 =====
+function toggleSelectAll() {
+  var selectAll = document.getElementById('selectAll');
+  var checkboxes = document.querySelectorAll('.row-checkbox');
+  checkboxes.forEach(function(cb) { cb.checked = selectAll.checked; });
+  updateSelection();
+}
+function updateSelection() {
+  var checkboxes = document.querySelectorAll('.row-checkbox');
+  var checked = document.querySelectorAll('.row-checkbox:checked');
+  var selectAll = document.getElementById('selectAll');
+  var batchActions = document.getElementById('batchActions');
+  var batchCount = document.getElementById('batchCount');
+  
+  var count = checked.length;
+  selectAll.checked = count === checkboxes.length && count > 0;
+  selectAll.indeterminate = count > 0 && count < checkboxes.length;
+  
+  if (count > 0) {
+    batchActions.classList.add('show');
+    batchCount.textContent = '已选 ' + count + ' 项';
+  } else {
+    batchActions.classList.remove('show');
+  }
+  
+  // 高亮选中行
+  document.querySelectorAll('.data-table tbody tr').forEach(function(tr) {
+    tr.classList.remove('row-selected');
+  });
+  checked.forEach(function(cb) {
+    cb.closest('tr').classList.add('row-selected');
+  });
+}
+function clearSelection() {
+  document.querySelectorAll('.row-checkbox').forEach(function(cb) { cb.checked = false; });
+  document.getElementById('selectAll').checked = false;
+  document.getElementById('selectAll').indeterminate = false;
+  updateSelection();
+}
+function batchDispatch() {
+  var checked = document.querySelectorAll('.row-checkbox:checked');
+  if (checked.length === 0) return;
+  var ids = [];
+  checked.forEach(function(cb) {
+    var tr = cb.closest('tr');
+    ids.push(tr.querySelector('.col-order').textContent.trim());
+  });
+  if (confirm('确认下发以下 ' + checked.length + ' 个订单？\n\n' + ids.join('\n'))) {
+    alert('已下发 ' + checked.length + ' 个订单');
+    clearSelection();
+  }
+}
+function batchDelete() {
+  var checked = document.querySelectorAll('.row-checkbox:checked');
+  if (checked.length === 0) return;
+  if (confirm('确认删除选中的 ' + checked.length + ' 个订单？此操作不可恢复！')) {
+    alert('已删除 ' + checked.length + ' 个订单');
+    // 实际项目中应移除对应行
+    clearSelection();
+  }
+}
 </script>
 
 </body>
