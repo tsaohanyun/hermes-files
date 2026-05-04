@@ -50,8 +50,8 @@ a:hover { color: var(--brand-red); }
 
 /* ========== 4. 侧边栏 ========== */
 .sidebar {
-  position: fixed; left: 0; top: 0;
-  width: var(--sidebar-width); height: 100vh;
+  position: fixed; left: 0; top: 60px;
+  width: var(--sidebar-width); height: calc(100vh - 60px);
   background: var(--brand-red);
   overflow-y: auto; z-index: 100;
 }
@@ -140,7 +140,6 @@ a:hover { color: var(--brand-red); }
 .user-dropdown-item:hover { background: #f5f7fa; }
 .user-dropdown-item .dd-icon { font-size: 0.14rem; color: var(--text-tertiary); }
 .user-dropdown-divider { border-top: 1px solid var(--border-light); margin: 4px 0; }
-.sidebar { top: 60px; height: calc(100vh - 60px); }
 
 /* ========== 6. 主内容区 ========== */
 .main-content {
@@ -160,30 +159,7 @@ a:hover { color: var(--brand-red); }
 .breadcrumb .sep { color: var(--text-tertiary); margin: 0 6px; }
 .breadcrumb .current { color: var(--text-primary); font-weight: 500; }
 
-/* ========== 8. 标签页 ========== */
-.tabs {
-  display: flex; border-bottom: 1px solid var(--border-light);
-  margin-bottom: 16px;
-}
-.tab-item {
-  padding: 10px 20px; font-size: 0.14rem;
-  color: var(--text-secondary); cursor: pointer;
-  border-bottom: 2px solid transparent;
-  transition: color 0.2s, border-color 0.2s;
-  user-select: none;
-}
-.tab-item:hover { color: var(--icon-active); }
-.tab-item.active {
-  color: var(--brand-red); border-bottom-color: var(--brand-red);
-  font-weight: 600;
-}
-.tab-badge {
-  display: inline-block; background: var(--brand-red); color: #fff;
-  font-size: 0.11rem; padding: 1px 6px; border-radius: 10px;
-  margin-left: 6px; line-height: 1.4;
-}
-
-/* ========== 9. 搜索栏 ========== */
+/* ========== 8. 搜索栏 ========== */
 .search-bar {
   display: flex; justify-content: space-between; align-items: flex-end;
   padding: 16px; background: #fff;
@@ -193,7 +169,7 @@ a:hover { color: var(--brand-red); }
 .search-fields { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; }
 .search-actions { display: flex; gap: 8px; flex-shrink: 0; }
 
-/* ========== 10. 表单 ========== */
+/* ========== 9. 表单 ========== */
 .form-item { display: flex; flex-direction: column; }
 .form-label {
   font-size: 0.12rem; color: var(--text-secondary);
@@ -211,7 +187,7 @@ a:hover { color: var(--brand-red); }
 .form-select { cursor: pointer; min-width: 120px; }
 .form-input::placeholder { color: var(--text-tertiary); }
 
-/* ========== 11. 按钮 ========== */
+/* ========== 10. 按钮 ========== */
 .btn {
   display: inline-flex; align-items: center; justify-content: center;
   height: var(--btn-height); padding: var(--btn-padding);
@@ -227,7 +203,7 @@ a:hover { color: var(--brand-red); }
 .btn-text { background: none; color: var(--icon-active); border: none; padding: 0 4px; }
 .btn-text:hover { color: var(--brand-red); }
 
-/* ========== 12. 表格 ========== */
+/* ========== 11. 表格 ========== */
 .table-wrapper {
   background: #fff; border: 1px solid var(--border-light);
   border-radius: var(--radius); overflow: hidden;
@@ -277,6 +253,14 @@ a:hover { color: var(--brand-red); }
 .data-table tbody tr.row-selected { background: rgba(172,42,72,0.06); }
 .data-table tbody tr.row-selected:nth-child(even) { background: rgba(172,42,72,0.08); }
 
+/* 主表当前选中行（点击行联动子表） */
+.data-table tbody tr.row-active {
+  background: rgba(172,42,72,0.10) !important;
+}
+.data-table tbody tr.row-active td {
+  border-bottom-color: var(--brand-red);
+}
+
 /* 批量操作栏 */
 .batch-actions {
   display: none; align-items: center; gap: 10px;
@@ -287,7 +271,7 @@ a:hover { color: var(--brand-red); }
 .batch-actions .batch-count { font-size: 0.13rem; color: var(--brand-red); font-weight: 600; }
 .batch-actions .batch-hint { font-size: 0.12rem; color: var(--text-tertiary); }
 
-/* ========== 13. 状态标签 ========== */
+/* ========== 12. 状态标签 ========== */
 .tag {
   font-size: 0.13rem; white-space: nowrap;
 }
@@ -297,7 +281,7 @@ a:hover { color: var(--brand-red); }
 .tag-paused  { color: #e65100; }    /* 已暂停 — 橙 */
 .tag-cancel  { color: #c62828; }    /* 已取消 — 红 */
 
-/* ========== 14. 分页 ========== */
+/* ========== 13. 分页 ========== */
 .pagination {
   display: flex; justify-content: space-between; align-items: center;
   padding: 12px 16px; font-size: 0.13rem; color: var(--text-secondary);
@@ -320,14 +304,54 @@ a:hover { color: var(--brand-red); }
   border-radius: var(--radius); font-size: 0.13rem; cursor: pointer;
 }
 
-/* ========== 15. Tab内容切换 ========== */
-.tab-content { display: none; }
-.tab-content.active { display: block; }
-.tab-placeholder {
-  text-align: center; padding: 80px 20px; color: var(--text-tertiary);
+/* ========== 14. 子表区域 ========== */
+.detail-section {
+  margin-top: 16px;
+  background: #fff;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.detail-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border-light);
+  background: #fafbfc;
+}
+.detail-tab-item {
+  padding: 10px 20px; font-size: 0.14rem;
+  color: var(--text-secondary); cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+  user-select: none;
+}
+.detail-tab-item:hover { color: var(--icon-active); }
+.detail-tab-item.active {
+  color: var(--brand-red); border-bottom-color: var(--brand-red);
+  font-weight: 600;
+}
+.detail-tab-badge {
+  display: inline-block; background: var(--brand-red); color: #fff;
+  font-size: 0.11rem; padding: 1px 6px; border-radius: 10px;
+  margin-left: 6px; line-height: 1.4;
+}
+.detail-content { display: none; }
+.detail-content.active { display: block; }
+.detail-info-bar {
+  padding: 10px 16px;
+  background: #fafbfc;
+  border-bottom: 1px solid var(--border-light);
+  font-size: 0.13rem;
+  color: var(--text-secondary);
+}
+.detail-info-bar .order-id {
+  color: var(--brand-red);
+  font-weight: 600;
+}
+.detail-empty {
+  text-align: center; padding: 60px 20px; color: var(--text-tertiary);
   font-size: 0.14rem;
 }
-.tab-placeholder .icon { font-size: 0.48rem; margin-bottom: 16px; display: block; }
+.detail-empty .icon { font-size: 0.40rem; margin-bottom: 12px; display: block; }
 </style>
 </head>
 <body>
@@ -363,7 +387,7 @@ a:hover { color: var(--brand-red); }
 <aside class="sidebar">
   <div class="sidebar-logo">DIM 制造执行系统</div>
   <nav class="sidebar-nav">
-    <div class="sidebar-nav-item active" onclick="switchTab('orders')">
+    <div class="sidebar-nav-item active">
       <svg class="nav-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
         <circle cx="9.8" cy="9.8" r="8.8" fill="white" opacity="0.95"/>
         <rect x="5.5" y="4" width="9" height="12" rx="1.5" stroke="#AC2A48" stroke-width="1.3" fill="none"/>
@@ -417,21 +441,8 @@ a:hover { color: var(--brand-red); }
     <span class="current">生产订单</span>
   </div>
 
-  <!-- 标签页 -->
-  <div class="tabs">
-    <div class="tab-item active" data-tab="orders" onclick="switchTabContent('orders')">
-      订单列表
-    </div>
-    <div class="tab-item" data-tab="progress" onclick="switchTabContent('progress')">
-      生产进度<span class="tab-badge">8</span>
-    </div>
-    <div class="tab-item" data-tab="abnormal" onclick="switchTabContent('abnormal')">
-      异常记录<span class="tab-badge">2</span>
-    </div>
-  </div>
-
-  <!-- ===== 订单列表 Tab ===== -->
-  <div class="tab-content active" id="tab-orders">
+  <!-- ===== 主表：订单列表 ===== -->
+  <div id="master-section">
 
     <!-- 搜索栏 -->
     <div class="search-bar">
@@ -481,7 +492,7 @@ a:hover { color: var(--brand-red); }
       </div>
     </div>
 
-    <!-- 表格 -->
+    <!-- 主表表格 -->
     <div class="table-wrapper">
       <div class="table-toolbar">
         <div class="table-toolbar-left">
@@ -503,10 +514,10 @@ a:hover { color: var(--brand-red); }
         <button class="btn btn-primary" onclick="batchDispatch()">批量下发</button>
         <span class="batch-hint" style="margin-left:auto;cursor:pointer" onclick="clearSelection()">清除选择</span>
       </div>
-      <table class="data-table">
+      <table class="data-table" id="masterTable">
         <thead>
           <tr>
-            <th class="col-checkbox"><input type="checkbox" id="selectAll" onclick="toggleSelectAll()"></th>
+            <th class="col-checkbox"><input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)"></th>
             <th style="width:50px">序号</th>
             <th style="width:170px">订单编号</th>
             <th style="width:180px">产品名称</th>
@@ -519,8 +530,8 @@ a:hover { color: var(--brand-red); }
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td class="col-checkbox"><input type="checkbox" class="row-checkbox" onchange="updateSelection()"></td>
+          <tr onclick="selectRow(this, 'PO-20260503-001')" data-order="PO-20260503-001" data-product="高强度合金钢法兰盘 DN200" data-status="active" data-line="一车间 A线">
+            <td class="col-checkbox"><input type="checkbox" class="row-checkbox" onchange="updateSelection(event)"></td>
             <td>1</td>
             <td class="col-order">PO-20260503-001</td>
             <td>高强度合金钢法兰盘 DN200</td>
@@ -537,8 +548,8 @@ a:hover { color: var(--brand-red); }
               </div>
             </td>
           </tr>
-          <tr>
-            <td class="col-checkbox"><input type="checkbox" class="row-checkbox" onchange="updateSelection()"></td>
+          <tr onclick="selectRow(this, 'PO-20260503-002')" data-order="PO-20260503-002" data-product="精密轴承滚珠 G10级" data-status="active" data-line="一车间 B线">
+            <td class="col-checkbox"><input type="checkbox" class="row-checkbox" onchange="updateSelection(event)"></td>
             <td>2</td>
             <td class="col-order">PO-20260503-002</td>
             <td>精密轴承滚珠 G10级</td>
@@ -555,8 +566,8 @@ a:hover { color: var(--brand-red); }
               </div>
             </td>
           </tr>
-          <tr>
-            <td class="col-checkbox"><input type="checkbox" class="row-checkbox" onchange="updateSelection()"></td>
+          <tr onclick="selectRow(this, 'PO-20260502-008')" data-order="PO-20260502-008" data-product="不锈钢无缝钢管 Φ108×4.5mm" data-status="active" data-line="二车间 A线">
+            <td class="col-checkbox"><input type="checkbox" class="row-checkbox" onchange="updateSelection(event)"></td>
             <td>3</td>
             <td class="col-order">PO-20260502-008</td>
             <td>不锈钢无缝钢管 Φ108×4.5mm</td>
@@ -573,8 +584,8 @@ a:hover { color: var(--brand-red); }
               </div>
             </td>
           </tr>
-          <tr>
-            <td class="col-checkbox"><input type="checkbox" class="row-checkbox" onchange="updateSelection()"></td>
+          <tr onclick="selectRow(this, 'PO-20260501-015')" data-order="PO-20260501-015" data-product="铝合金散热片型材 6063-T5" data-status="done" data-line="三车间 A线">
+            <td class="col-checkbox"><input type="checkbox" class="row-checkbox" onchange="updateSelection(event)"></td>
             <td>4</td>
             <td class="col-order">PO-20260501-015</td>
             <td>铝合金散热片型材 6063-T5</td>
@@ -590,8 +601,8 @@ a:hover { color: var(--brand-red); }
               </div>
             </td>
           </tr>
-          <tr>
-            <td class="col-checkbox"><input type="checkbox" class="row-checkbox" onchange="updateSelection()"></td>
+          <tr onclick="selectRow(this, 'PO-20260501-016')" data-order="PO-20260501-016" data-product="碳钢焊接结构件 Q235B" data-status="paused" data-line="二车间 B线">
+            <td class="col-checkbox"><input type="checkbox" class="row-checkbox" onchange="updateSelection(event)"></td>
             <td>5</td>
             <td class="col-order">PO-20260501-016</td>
             <td>碳钢焊接结构件 Q235B</td>
@@ -607,8 +618,8 @@ a:hover { color: var(--brand-red); }
               </div>
             </td>
           </tr>
-          <tr>
-            <td class="col-checkbox"><input type="checkbox" class="row-checkbox" onchange="updateSelection()"></td>
+          <tr onclick="selectRow(this, 'PO-20260430-022')" data-order="PO-20260430-022" data-product="铜合金接线端子 DT-95" data-status="done" data-line="一车间 A线">
+            <td class="col-checkbox"><input type="checkbox" class="row-checkbox" onchange="updateSelection(event)"></td>
             <td>6</td>
             <td class="col-order">PO-20260430-022</td>
             <td>铜合金接线端子 DT-95</td>
@@ -624,8 +635,8 @@ a:hover { color: var(--brand-red); }
               </div>
             </td>
           </tr>
-          <tr>
-            <td class="col-checkbox"><input type="checkbox" class="row-checkbox" onchange="updateSelection()"></td>
+          <tr onclick="selectRow(this, 'PO-20260429-019')" data-order="PO-20260429-019" data-product="液压阀体铸件 HT250" data-status="pending" data-line="三车间 A线">
+            <td class="col-checkbox"><input type="checkbox" class="row-checkbox" onchange="updateSelection(event)"></td>
             <td>7</td>
             <td class="col-order">PO-20260429-019</td>
             <td>液压阀体铸件 HT250</td>
@@ -642,8 +653,8 @@ a:hover { color: var(--brand-red); }
               </div>
             </td>
           </tr>
-          <tr>
-            <td class="col-checkbox"><input type="checkbox" class="row-checkbox" onchange="updateSelection()"></td>
+          <tr onclick="selectRow(this, 'PO-20260428-018')" data-order="PO-20260428-018" data-product="模具钢热处理模板 Cr12MoV" data-status="done" data-line="二车间 A线">
+            <td class="col-checkbox"><input type="checkbox" class="row-checkbox" onchange="updateSelection(event)"></td>
             <td>8</td>
             <td class="col-order">PO-20260428-018</td>
             <td>模具钢热处理模板 Cr12MoV</td>
@@ -659,8 +670,8 @@ a:hover { color: var(--brand-red); }
               </div>
             </td>
           </tr>
-          <tr>
-            <td class="col-checkbox"><input type="checkbox" class="row-checkbox" onchange="updateSelection()"></td>
+          <tr onclick="selectRow(this, 'PO-20260427-012')" data-order="PO-20260427-012" data-product="尼龙工程塑料齿轮 M2.5" data-status="cancel" data-line="一车间 B线">
+            <td class="col-checkbox"><input type="checkbox" class="row-checkbox" onchange="updateSelection(event)"></td>
             <td>9</td>
             <td class="col-order">PO-20260427-012</td>
             <td>尼龙工程塑料齿轮 M2.5</td>
@@ -675,8 +686,8 @@ a:hover { color: var(--brand-red); }
               </div>
             </td>
           </tr>
-          <tr>
-            <td class="col-checkbox"><input type="checkbox" class="row-checkbox" onchange="updateSelection()"></td>
+          <tr onclick="selectRow(this, 'PO-20260426-009')" data-order="PO-20260426-009" data-product="弹簧钢压缩弹簧 φ8×50mm" data-status="pending" data-line="三车间 A线">
+            <td class="col-checkbox"><input type="checkbox" class="row-checkbox" onchange="updateSelection(event)"></td>
             <td>10</td>
             <td class="col-order">PO-20260426-009</td>
             <td>弹簧钢压缩弹簧 φ8×50mm</td>
@@ -723,197 +734,297 @@ a:hover { color: var(--brand-red); }
     </div>
   </div>
 
-  <!-- ===== 生产进度 Tab ===== -->
-  <div class="tab-content" id="tab-progress">
-    <div class="table-wrapper">
-      <div class="table-toolbar">
-        <div class="table-toolbar-left">
-          <span class="toolbar-title">生产中订单进度</span>
-          <span class="toolbar-count">（共 8 条记录）</span>
-        </div>
+  <!-- ===== 子表区域 ===== -->
+  <div class="detail-section" id="detailSection">
+    <!-- 子表标签页 -->
+    <div class="detail-tabs">
+      <div class="detail-tab-item active" data-detail="progress" onclick="switchDetailTab('progress')">
+        生产进度<span class="detail-tab-badge" id="badgeProgress">8</span>
       </div>
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th class="col-checkbox"><input type="checkbox" id="selectAllProgress" onclick="toggleSelectAllProgress()"></th>
-            <th style="width:50px">序号</th>
-            <th style="width:170px">订单编号</th>
-            <th style="width:160px">产品名称</th>
-            <th class="col-right" style="width:90px">计划数量</th>
-            <th class="col-right" style="width:90px">已完成量</th>
-            <th class="col-center" style="width:100px">完成率</th>
-            <th class="col-center" style="width:100px">预计完工</th>
-            <th class="col-center" style="width:80px">状态</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="col-checkbox"><input type="checkbox" class="row-checkbox" onchange="updateSelection()"></td>
-            <td>1</td>
-            <td class="col-order">PO-20260503-001</td>
-            <td>高强度合金钢法兰盘 DN200</td>
-            <td class="col-right">5,000 件</td>
-            <td class="col-right">1,250 件</td>
-            <td class="col-center" style="color:#2e7d32;font-weight:600">25%</td>
-            <td class="col-center">2026-05-12</td>
-            <td class="col-center"><span class="tag tag-active">正常</span></td>
-          </tr>
-          <tr>
-            <td class="col-checkbox"><input type="checkbox" class="row-checkbox" onchange="updateSelection()"></td>
-            <td>2</td>
-            <td class="col-order">PO-20260503-002</td>
-            <td>精密轴承滚珠 G10级</td>
-            <td class="col-right">20,000 粒</td>
-            <td class="col-right">8,500 粒</td>
-            <td class="col-center" style="color:#2e7d32;font-weight:600">42%</td>
-            <td class="col-center">2026-05-08</td>
-            <td class="col-center"><span class="tag tag-active">正常</span></td>
-          </tr>
-          <tr>
-            <td class="col-checkbox"><input type="checkbox" class="row-checkbox" onchange="updateSelection()"></td>
-            <td>3</td>
-            <td class="col-order">PO-20260502-008</td>
-            <td>不锈钢无缝钢管 Φ108</td>
-            <td class="col-right">3,200 米</td>
-            <td class="col-right">2,880 米</td>
-            <td class="col-center" style="color:#e65100;font-weight:600">90%</td>
-            <td class="col-center">2026-05-10</td>
-            <td class="col-center"><span class="tag tag-paused">即将完成</span></td>
-          </tr>
-          <tr>
-            <td class="col-checkbox"><input type="checkbox" class="row-checkbox" onchange="updateSelection()"></td>
-            <td>4</td>
-            <td class="col-order">PO-20260501-016</td>
-            <td>碳钢焊接结构件 Q235B</td>
-            <td class="col-right">12,000 kg</td>
-            <td class="col-right">3,600 kg</td>
-            <td class="col-center" style="color:#c62828;font-weight:600">30%</td>
-            <td class="col-center">2026-05-15</td>
-            <td class="col-center"><span class="tag tag-paused">已暂停</span></td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="detail-tab-item" data-detail="abnormal" onclick="switchDetailTab('abnormal')">
+        异常记录<span class="detail-tab-badge" id="badgeAbnormal">2</span>
+      </div>
     </div>
-  </div>
 
-  <!-- ===== 异常记录 Tab ===== -->
-  <div class="tab-content" id="tab-abnormal">
-    <div class="table-wrapper">
-      <div class="table-toolbar">
-        <div class="table-toolbar-left">
-          <span class="toolbar-title">异常记录</span>
-          <span class="toolbar-count">（共 2 条记录）</span>
+    <!-- 子表：生产进度 -->
+    <div class="detail-content active" id="detail-progress">
+      <div class="detail-info-bar" id="progressInfoBar">
+        当前订单：<span class="order-id" id="progressOrderId">请点击上方主表选择订单</span>
+      </div>
+      <div id="progressContent">
+        <div class="detail-empty">
+          <span class="icon">&#128203;</span>
+          请在上方订单列表中点击选择一条订单，查看生产进度
         </div>
       </div>
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th class="col-checkbox"><input type="checkbox" id="selectAllAbnormal" onclick="toggleSelectAllAbnormal()"></th>
-            <th style="width:50px">序号</th>
-            <th style="width:120px">异常编号</th>
-            <th style="width:170px">关联订单</th>
-            <th style="width:140px">异常类型</th>
-            <th style="width:180px">异常描述</th>
-            <th class="col-center" style="width:100px">发生时间</th>
-            <th class="col-center" style="width:80px">状态</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="col-checkbox"><input type="checkbox" class="row-checkbox" onchange="updateSelection()"></td>
-            <td>1</td>
-            <td>EX-20260503-001</td>
-            <td class="col-order">PO-20260503-001</td>
-            <td>设备故障</td>
-            <td>A线冲压机液压系统压力异常，已停机</td>
-            <td class="col-center">2026-05-03 14:30</td>
-            <td class="col-center"><span class="tag tag-paused">处理中</span></td>
-          </tr>
-          <tr>
-            <td class="col-checkbox"><input type="checkbox" class="row-checkbox" onchange="updateSelection()"></td>
-            <td>2</td>
-            <td>EX-20260502-005</td>
-            <td class="col-order">PO-20260502-008</td>
-            <td>质量异常</td>
-            <td>钢管壁厚抽检不合格率 3.2%，超标 0.2%</td>
-            <td class="col-center">2026-05-02 09:15</td>
-            <td class="col-center"><span class="tag tag-cancel">已关闭</span></td>
-          </tr>
-        </tbody>
-      </table>
+    </div>
+
+    <!-- 子表：异常记录 -->
+    <div class="detail-content" id="detail-abnormal">
+      <div class="detail-info-bar" id="abnormalInfoBar">
+        当前订单：<span class="order-id" id="abnormalOrderId">请点击上方主表选择订单</span>
+      </div>
+      <div id="abnormalContent">
+        <div class="detail-empty">
+          <span class="icon">&#9888;</span>
+          请在上方订单列表中点击选择一条订单，查看异常记录
+        </div>
+      </div>
     </div>
   </div>
 
 </main>
 
-<!-- ========== 标签页 & 侧边栏切换脚本 ========== -->
+<!-- ========== 脚本 ========== -->
 <script>
-function switchTabContent(tabId) {
-  document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
-  document.querySelector(`.tab-item[data-tab="${tabId}"]`).classList.add('active');
-  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-  document.getElementById(`tab-${tabId}`).classList.add('active');
-  // 切换Tab时更新选中状态
-  updateSelection();
-}
-function toggleUserDropdown() {
-  document.getElementById('userDropdown').classList.toggle('show');
-}
-document.addEventListener('click', function(e) {
-  if (!e.target.closest('.header-user')) {
-    document.getElementById('userDropdown').classList.remove('show');
+// ===== 订单模拟数据 =====
+var orderData = {
+  'PO-20260503-001': {
+    product: '高强度合金钢法兰盘 DN200',
+    line: '一车间 A线',
+    status: 'active',
+    progress: [
+      { seq: 1, process: '下料', planQty: '5,000 件', doneQty: '5,000 件', rate: '100%', rateClass: 'tag-done', status: '已完成', statusClass: 'tag-done' },
+      { seq: 2, process: '锻造', planQty: '5,000 件', doneQty: '3,750 件', rate: '75%', rateClass: 'tag-active', status: '进行中', statusClass: 'tag-active' },
+      { seq: 3, process: '机加工', planQty: '5,000 件', doneQty: '1,250 件', rate: '25%', rateClass: 'tag-pending', status: '进行中', statusClass: 'tag-active' },
+      { seq: 4, process: '热处理', planQty: '5,000 件', doneQty: '0 件', rate: '0%', rateClass: 'tag-cancel', status: '未开始', statusClass: 'tag-default' },
+      { seq: 5, process: '检验', planQty: '5,000 件', doneQty: '0 件', rate: '0%', rateClass: 'tag-cancel', status: '未开始', statusClass: 'tag-default' }
+    ],
+    abnormal: [
+      { id: 'EX-20260503-001', type: '设备故障', desc: 'A线冲压机液压系统压力异常，已停机', time: '2026-05-03 14:30', status: '处理中', statusClass: 'tag-paused' }
+    ]
+  },
+  'PO-20260503-002': {
+    product: '精密轴承滚珠 G10级',
+    line: '一车间 B线',
+    status: 'active',
+    progress: [
+      { seq: 1, process: '备料', planQty: '20,000 粒', doneQty: '20,000 粒', rate: '100%', rateClass: 'tag-done', status: '已完成', statusClass: 'tag-done' },
+      { seq: 2, process: '冷镦', planQty: '20,000 粒', doneQty: '14,000 粒', rate: '70%', rateClass: 'tag-active', status: '进行中', statusClass: 'tag-active' },
+      { seq: 3, process: '研磨', planQty: '20,000 粒', doneQty: '8,500 粒', rate: '42%', rateClass: 'tag-pending', status: '进行中', statusClass: 'tag-active' },
+      { seq: 4, process: '清洗', planQty: '20,000 粒', doneQty: '0 粒', rate: '0%', rateClass: 'tag-cancel', status: '未开始', statusClass: 'tag-default' },
+      { seq: 5, process: '检验', planQty: '20,000 粒', doneQty: '0 粒', rate: '0%', rateClass: 'tag-cancel', status: '未开始', statusClass: 'tag-default' }
+    ],
+    abnormal: []
+  },
+  'PO-20260502-008': {
+    product: '不锈钢无缝钢管 Φ108×4.5mm',
+    line: '二车间 A线',
+    status: 'active',
+    progress: [
+      { seq: 1, process: '管坯准备', planQty: '3,200 米', doneQty: '3,200 米', rate: '100%', rateClass: 'tag-done', status: '已完成', statusClass: 'tag-done' },
+      { seq: 2, process: '穿孔', planQty: '3,200 米', doneQty: '3,200 米', rate: '100%', rateClass: 'tag-done', status: '已完成', statusClass: 'tag-done' },
+      { seq: 3, process: '冷拔', planQty: '3,200 米', doneQty: '3,040 米', rate: '95%', rateClass: 'tag-active', status: '进行中', statusClass: 'tag-active' },
+      { seq: 4, process: '热处理', planQty: '3,200 米', doneQty: '2,880 米', rate: '90%', rateClass: 'tag-paused', status: '进行中', statusClass: 'tag-active' },
+      { seq: 5, process: '检验', planQty: '3,200 米', doneQty: '2,560 米', rate: '80%', rateClass: 'tag-pending', status: '进行中', statusClass: 'tag-active' }
+    ],
+    abnormal: [
+      { id: 'EX-20260502-005', type: '质量异常', desc: '钢管壁厚抽检不合格率 3.2%，超标 0.2%', time: '2026-05-02 09:15', status: '已关闭', statusClass: 'tag-cancel' }
+    ]
+  },
+  'PO-20260501-015': {
+    product: '铝合金散热片型材 6063-T5',
+    line: '三车间 A线',
+    status: 'done',
+    progress: [
+      { seq: 1, process: '熔铸', planQty: '8,500 kg', doneQty: '8,500 kg', rate: '100%', rateClass: 'tag-done', status: '已完成', statusClass: 'tag-done' },
+      { seq: 2, process: '挤压', planQty: '8,500 kg', doneQty: '8,500 kg', rate: '100%', rateClass: 'tag-done', status: '已完成', statusClass: 'tag-done' },
+      { seq: 3, process: '时效', planQty: '8,500 kg', doneQty: '8,500 kg', rate: '100%', rateClass: 'tag-done', status: '已完成', statusClass: 'tag-done' },
+      { seq: 4, process: '检验', planQty: '8,500 kg', doneQty: '8,500 kg', rate: '100%', rateClass: 'tag-done', status: '已完成', statusClass: 'tag-done' }
+    ],
+    abnormal: []
+  },
+  'PO-20260501-016': {
+    product: '碳钢焊接结构件 Q235B',
+    line: '二车间 B线',
+    status: 'paused',
+    progress: [
+      { seq: 1, process: '下料', planQty: '12,000 kg', doneQty: '12,000 kg', rate: '100%', rateClass: 'tag-done', status: '已完成', statusClass: 'tag-done' },
+      { seq: 2, process: '焊接', planQty: '12,000 kg', doneQty: '3,600 kg', rate: '30%', rateClass: 'tag-cancel', status: '已暂停', statusClass: 'tag-paused' },
+      { seq: 3, process: '矫正', planQty: '12,000 kg', doneQty: '0 kg', rate: '0%', rateClass: 'tag-cancel', status: '未开始', statusClass: 'tag-default' },
+      { seq: 4, process: '检验', planQty: '12,000 kg', doneQty: '0 kg', rate: '0%', rateClass: 'tag-cancel', status: '未开始', statusClass: 'tag-default' }
+    ],
+    abnormal: [
+      { id: 'EX-20260504-001', type: '物料短缺', desc: 'Q235B钢板库存不足，焊接工序暂停', time: '2026-05-04 08:20', status: '处理中', statusClass: 'tag-paused' },
+      { id: 'EX-20260504-002', type: '人员不足', desc: '焊工班组2人请假，产能下降40%', time: '2026-05-04 09:00', status: '处理中', statusClass: 'tag-paused' }
+    ]
+  },
+  'PO-20260430-022': {
+    product: '铜合金接线端子 DT-95',
+    line: '一车间 A线',
+    status: 'done',
+    progress: [
+      { seq: 1, process: '熔炼', planQty: '15,000 个', doneQty: '15,000 个', rate: '100%', rateClass: 'tag-done', status: '已完成', statusClass: 'tag-done' },
+      { seq: 2, process: '压铸', planQty: '15,000 个', doneQty: '15,000 个', rate: '100%', rateClass: 'tag-done', status: '已完成', statusClass: 'tag-done' },
+      { seq: 3, process: '机加工', planQty: '15,000 个', doneQty: '15,000 个', rate: '100%', rateClass: 'tag-done', status: '已完成', statusClass: 'tag-done' },
+      { seq: 4, process: '检验', planQty: '15,000 个', doneQty: '15,000 个', rate: '100%', rateClass: 'tag-done', status: '已完成', statusClass: 'tag-done' }
+    ],
+    abnormal: []
+  },
+  'PO-20260429-019': {
+    product: '液压阀体铸件 HT250',
+    line: '三车间 A线',
+    status: 'pending',
+    progress: [],
+    abnormal: []
+  },
+  'PO-20260428-018': {
+    product: '模具钢热处理模板 Cr12MoV',
+    line: '二车间 A线',
+    status: 'done',
+    progress: [
+      { seq: 1, process: '备料', planQty: '1,200 kg', doneQty: '1,200 kg', rate: '100%', rateClass: 'tag-done', status: '已完成', statusClass: 'tag-done' },
+      { seq: 2, process: '淬火', planQty: '1,200 kg', doneQty: '1,200 kg', rate: '100%', rateClass: 'tag-done', status: '已完成', statusClass: 'tag-done' },
+      { seq: 3, process: '回火', planQty: '1,200 kg', doneQty: '1,200 kg', rate: '100%', rateClass: 'tag-done', status: '已完成', statusClass: 'tag-done' },
+      { seq: 4, process: '精加工', planQty: '1,200 kg', doneQty: '1,200 kg', rate: '100%', rateClass: 'tag-done', status: '已完成', statusClass: 'tag-done' },
+      { seq: 5, process: '检验', planQty: '1,200 kg', doneQty: '1,200 kg', rate: '100%', rateClass: 'tag-done', status: '已完成', statusClass: 'tag-done' }
+    ],
+    abnormal: []
+  },
+  'PO-20260427-012': {
+    product: '尼龙工程塑料齿轮 M2.5',
+    line: '一车间 B线',
+    status: 'cancel',
+    progress: [],
+    abnormal: [
+      { id: 'EX-20260427-001', type: '订单取消', desc: '客户取消订单，生产已终止', time: '2026-04-27 16:00', status: '已关闭', statusClass: 'tag-cancel' }
+    ]
+  },
+  'PO-20260426-009': {
+    product: '弹簧钢压缩弹簧 φ8×50mm',
+    line: '三车间 A线',
+    status: 'pending',
+    progress: [],
+    abnormal: []
   }
-});
+};
+
+var currentOrderId = null;
+
+// ===== 主表行点击（联动子表）=====
+function selectRow(tr, orderId) {
+  // 如果点击的是复选框列或操作列，不触发行选中
+  var target = event.target;
+  if (target.type === 'checkbox' || target.closest('.col-actions')) return;
+
+  // 移除所有行的选中高亮
+  document.querySelectorAll('#masterTable tbody tr').forEach(function(row) {
+    row.classList.remove('row-active');
+  });
+  // 高亮当前行
+  tr.classList.add('row-active');
+  currentOrderId = orderId;
+
+  // 更新子表
+  updateDetail(orderId);
+}
+
+// ===== 更新子表内容 =====
+function updateDetail(orderId) {
+  var data = orderData[orderId];
+  if (!data) return;
+
+  // 更新订单编号显示
+  document.getElementById('progressOrderId').textContent = orderId + ' - ' + data.product;
+  document.getElementById('abnormalOrderId').textContent = orderId + ' - ' + data.product;
+
+  // 更新生产进度
+  var progressHtml = '';
+  if (data.progress.length === 0) {
+    progressHtml = '<div class="detail-empty"><span class="icon">&#128203;</span>该订单暂无生产进度数据</div>';
+    document.getElementById('badgeProgress').textContent = '0';
+  } else {
+    document.getElementById('badgeProgress').textContent = data.progress.length;
+    progressHtml = '<table class="data-table"><thead><tr>' +
+      '<th style="width:60px">序号</th>' +
+      '<th style="width:150px">工序名称</th>' +
+      '<th class="col-right" style="width:120px">计划数量</th>' +
+      '<th class="col-right" style="width:120px">已完成量</th>' +
+      '<th class="col-center" style="width:100px">完成率</th>' +
+      '<th class="col-center" style="width:100px">工序状态</th>' +
+      '</tr></thead><tbody>';
+    data.progress.forEach(function(p) {
+      progressHtml += '<tr>' +
+        '<td class="col-center">' + p.seq + '</td>' +
+        '<td>' + p.process + '</td>' +
+        '<td class="col-right">' + p.planQty + '</td>' +
+        '<td class="col-right">' + p.doneQty + '</td>' +
+        '<td class="col-center" style="font-weight:600">' + p.rate + '</td>' +
+        '<td class="col-center"><span class="tag ' + p.statusClass + '">' + p.status + '</span></td>' +
+        '</tr>';
+    });
+    progressHtml += '</tbody></table>';
+  }
+  document.getElementById('progressContent').innerHTML = progressHtml;
+
+  // 更新异常记录
+  var abnormalHtml = '';
+  if (data.abnormal.length === 0) {
+    abnormalHtml = '<div class="detail-empty"><span class="icon">&#9888;</span>该订单暂无异常记录</div>';
+    document.getElementById('badgeAbnormal').textContent = '0';
+  } else {
+    document.getElementById('badgeAbnormal').textContent = data.abnormal.length;
+    abnormalHtml = '<table class="data-table"><thead><tr>' +
+      '<th style="width:60px">序号</th>' +
+      '<th style="width:140px">异常编号</th>' +
+      '<th style="width:120px">异常类型</th>' +
+      '<th>异常描述</th>' +
+      '<th class="col-center" style="width:140px">发生时间</th>' +
+      '<th class="col-center" style="width:80px">状态</th>' +
+      '</tr></thead><tbody>';
+    data.abnormal.forEach(function(a, i) {
+      abnormalHtml += '<tr>' +
+        '<td class="col-center">' + (i + 1) + '</td>' +
+        '<td>' + a.id + '</td>' +
+        '<td>' + a.type + '</td>' +
+        '<td>' + a.desc + '</td>' +
+        '<td class="col-center">' + a.time + '</td>' +
+        '<td class="col-center"><span class="tag ' + a.statusClass + '">' + a.status + '</span></td>' +
+        '</tr>';
+    });
+    abnormalHtml += '</tbody></table>';
+  }
+  document.getElementById('abnormalContent').innerHTML = abnormalHtml;
+}
+
+// ===== 子表标签页切换 =====
+function switchDetailTab(tabId) {
+  document.querySelectorAll('.detail-tab-item').forEach(function(t) { t.classList.remove('active'); });
+  document.querySelector('.detail-tab-item[data-detail="' + tabId + '"]').classList.add('active');
+  document.querySelectorAll('.detail-content').forEach(function(c) { c.classList.remove('active'); });
+  document.getElementById('detail-' + tabId).classList.add('active');
+}
 
 // ===== 复选框批量操作 =====
-function getActiveTabContent() {
-  return document.querySelector('.tab-content.active');
+function toggleSelectAll(headerCb) {
+  var checkboxes = document.querySelectorAll('#masterTable .row-checkbox');
+  checkboxes.forEach(function(cb) { cb.checked = headerCb.checked; });
+  updateBatchState();
 }
-function getSelectAllForTab(tabEl) {
-  return tabEl.querySelector('thead input[type="checkbox"]');
+
+function updateSelection(e) {
+  if (e) e.stopPropagation();
+  updateBatchState();
 }
-function toggleSelectAll() {
-  var activeTab = getActiveTabContent();
-  var selectAll = getSelectAllForTab(activeTab);
-  var checkboxes = activeTab.querySelectorAll('.row-checkbox');
-  checkboxes.forEach(function(cb) { cb.checked = selectAll.checked; });
-  updateSelection();
-}
-function toggleSelectAllProgress() {
-  var activeTab = getActiveTabContent();
-  var selectAll = getSelectAllForTab(activeTab);
-  var checkboxes = activeTab.querySelectorAll('.row-checkbox');
-  checkboxes.forEach(function(cb) { cb.checked = selectAll.checked; });
-  updateSelection();
-}
-function toggleSelectAllAbnormal() {
-  var activeTab = getActiveTabContent();
-  var selectAll = getSelectAllForTab(activeTab);
-  var checkboxes = activeTab.querySelectorAll('.row-checkbox');
-  checkboxes.forEach(function(cb) { cb.checked = selectAll.checked; });
-  updateSelection();
-}
-function updateSelection() {
-  var activeTab = getActiveTabContent();
-  if (!activeTab) return;
-  var checkboxes = activeTab.querySelectorAll('.row-checkbox');
-  var checked = activeTab.querySelectorAll('.row-checkbox:checked');
-  var selectAll = getSelectAllForTab(activeTab);
+
+function updateBatchState() {
+  var all = document.querySelectorAll('#masterTable .row-checkbox');
+  var checked = document.querySelectorAll('#masterTable .row-checkbox:checked');
+  var selectAll = document.getElementById('selectAll');
   var batchActions = document.getElementById('batchActions');
   var batchCount = document.getElementById('batchCount');
   var btnDispatch = document.getElementById('btnBatchDispatch');
   var btnDelete = document.getElementById('btnBatchDelete');
-  
   var count = checked.length;
-  if (selectAll) {
-    selectAll.checked = count === checkboxes.length && count > 0;
-    selectAll.indeterminate = count > 0 && count < checkboxes.length;
-  }
-  
+
+  // 同步全选框
+  selectAll.checked = count === all.length && count > 0;
+  selectAll.indeterminate = count > 0 && count < all.length;
+
+  // 批量操作栏
   if (count > 0) {
     batchActions.classList.add('show');
     batchCount.textContent = '已选 ' + count + ' 项';
-    // 启用工具栏批量按钮
     btnDispatch.disabled = false;
     btnDispatch.style.opacity = '1';
     btnDispatch.style.cursor = 'pointer';
@@ -922,7 +1033,6 @@ function updateSelection() {
     btnDelete.style.cursor = 'pointer';
   } else {
     batchActions.classList.remove('show');
-    // 禁用工具栏批量按钮
     btnDispatch.disabled = true;
     btnDispatch.style.opacity = '0.5';
     btnDispatch.style.cursor = 'not-allowed';
@@ -930,28 +1040,26 @@ function updateSelection() {
     btnDelete.style.opacity = '0.5';
     btnDelete.style.cursor = 'not-allowed';
   }
-  
-  // 高亮选中行（仅当前Tab）
-  activeTab.querySelectorAll('.data-table tbody tr').forEach(function(tr) {
+
+  // 高亮选中行（复选框选中样式，与行点击的row-active区分）
+  document.querySelectorAll('#masterTable tbody tr').forEach(function(tr) {
     tr.classList.remove('row-selected');
   });
   checked.forEach(function(cb) {
     cb.closest('tr').classList.add('row-selected');
   });
 }
+
 function clearSelection() {
-  var activeTab = getActiveTabContent();
-  activeTab.querySelectorAll('.row-checkbox').forEach(function(cb) { cb.checked = false; });
-  var selectAll = getSelectAllForTab(activeTab);
-  if (selectAll) {
-    selectAll.checked = false;
-    selectAll.indeterminate = false;
-  }
-  updateSelection();
+  document.querySelectorAll('#masterTable .row-checkbox').forEach(function(cb) { cb.checked = false; });
+  var selectAll = document.getElementById('selectAll');
+  selectAll.checked = false;
+  selectAll.indeterminate = false;
+  updateBatchState();
 }
+
 function batchDispatch() {
-  var activeTab = getActiveTabContent();
-  var checked = activeTab.querySelectorAll('.row-checkbox:checked');
+  var checked = document.querySelectorAll('#masterTable .row-checkbox:checked');
   if (checked.length === 0) return;
   var ids = [];
   checked.forEach(function(cb) {
@@ -964,16 +1072,28 @@ function batchDispatch() {
     clearSelection();
   }
 }
+
 function batchDelete() {
-  var activeTab = getActiveTabContent();
-  var checked = activeTab.querySelectorAll('.row-checkbox:checked');
+  var checked = document.querySelectorAll('#masterTable .row-checkbox:checked');
   if (checked.length === 0) return;
   if (confirm('确认删除选中的 ' + checked.length + ' 个订单？此操作不可恢复！')) {
     alert('已删除 ' + checked.length + ' 个订单');
-    // 实际项目中应移除对应行
     clearSelection();
   }
 }
+
+// ===== 用户下拉菜单 =====
+function toggleUserDropdown() {
+  document.getElementById('userDropdown').classList.toggle('show');
+}
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.header-user')) {
+    document.getElementById('userDropdown').classList.remove('show');
+  }
+});
+
+// ===== tag-default 样式补充 =====
+document.head.insertAdjacentHTML('beforeend', '<style>.tag-default{color:#616161;}</style>');
 </script>
 
 </body>
