@@ -209,14 +209,9 @@ a:hover { color: var(--brand-red); }
   border-radius: var(--radius); overflow: hidden;
 }
 .table-toolbar {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 10px 16px; border-bottom: 1px solid var(--border-light);
-  background: #fafbfc;
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 0 12px 10px;
 }
-.table-toolbar-left { display: flex; gap: 8px; align-items: center; }
-.table-toolbar-right { display: flex; gap: 8px; align-items: center; }
-.toolbar-title { font-size: 0.15rem; font-weight: 600; color: var(--text-primary); }
-.toolbar-count { font-size: 0.12rem; color: var(--text-tertiary); }
 .data-table {
   width: 100%; border-collapse: collapse;
   font-size: 0.14rem;
@@ -281,25 +276,13 @@ a:hover { color: var(--brand-red); }
 .tag-paused  { color: #e65100; }    /* 已暂停 — 橙 */
 .tag-cancel  { color: #c62828; }    /* 已取消 — 红 */
 
-/* ========== 13. 分页 ========== */
-.pagination {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 12px 16px; font-size: 0.13rem; color: var(--text-secondary);
-  border-top: 1px solid var(--border-light);
-}
-.pagination-left { display: flex; align-items: center; gap: 4px; }
-.pagination-right { display: flex; align-items: center; gap: 4px; }
-.page-btn {
-  min-width: 32px; height: 32px; display: flex; align-items: center;
-  justify-content: center; border: 1px solid var(--border-color);
-  border-radius: var(--radius); background: #fff; cursor: pointer;
-  font-size: 0.13rem; padding: 0 6px;
-}
-.page-btn.active { background: var(--brand-red); color: #fff; border-color: var(--brand-red); }
-.page-btn:hover:not(.active) { border-color: var(--brand-red); color: var(--brand-red); }
-.page-btn.disabled { color: var(--text-tertiary); cursor: not-allowed; pointer-events: none; }
-.page-size { margin: 0 8px; }
+/* ========== 13. 分页控件（在工具栏右侧） ========== */
 .page-size select {
+  height: 32px; padding: 0 8px; border: 1px solid var(--border-color);
+  border-radius: var(--radius); font-size: 0.13rem; cursor: pointer;
+}
+.page-total { font-size: 0.13rem; color: var(--text-secondary); }
+.page-jump select {
   height: 32px; padding: 0 8px; border: 1px solid var(--border-color);
   border-radius: var(--radius); font-size: 0.13rem; cursor: pointer;
 }
@@ -329,24 +312,8 @@ a:hover { color: var(--brand-red); }
   color: var(--brand-red); border-bottom-color: var(--brand-red);
   font-weight: 600;
 }
-.detail-tab-badge {
-  display: inline-block; background: var(--brand-red); color: #fff;
-  font-size: 0.11rem; padding: 1px 6px; border-radius: 10px;
-  margin-left: 6px; line-height: 1.4;
-}
 .detail-content { display: none; }
 .detail-content.active { display: block; }
-.detail-info-bar {
-  padding: 10px 16px;
-  background: #fafbfc;
-  border-bottom: 1px solid var(--border-light);
-  font-size: 0.13rem;
-  color: var(--text-secondary);
-}
-.detail-info-bar .order-id {
-  color: var(--brand-red);
-  font-weight: 600;
-}
 .detail-empty {
   text-align: center; padding: 60px 20px; color: var(--text-tertiary);
   font-size: 0.14rem;
@@ -495,16 +462,38 @@ a:hover { color: var(--brand-red); }
     <!-- 主表表格 -->
     <div class="table-wrapper">
       <div class="table-toolbar">
-        <div class="table-toolbar-left">
-          <span class="toolbar-title">生产订单列表</span>
-          <span class="toolbar-count">（共 156 条记录）</span>
-        </div>
-        <div class="table-toolbar-right">
           <button class="btn btn-primary">+ 新增订单</button>
           <button class="btn btn-primary" onclick="batchDispatch()" id="btnBatchDispatch" disabled style="opacity:0.5;cursor:not-allowed">批量下发</button>
           <button class="btn btn-outline" onclick="batchDelete()" id="btnBatchDelete" disabled style="opacity:0.5;cursor:not-allowed;color:var(--brand-red);border-color:var(--brand-red)">批量删除</button>
           <button class="btn btn-outline">导出Excel</button>
-        </div>
+          <span class="page-size" style="margin-left:auto">
+            <select>
+              <option>10条/页</option>
+              <option>20条/页</option>
+              <option>50条/页</option>
+            </select>
+          </span>
+          <span class="page-total" style="margin-left:8px;color:var(--text-secondary)">共 156 条</span>
+          <span class="page-jump" style="margin-left:8px">
+            <select style="height:32px;padding:0 8px;border:1px solid var(--border-color);border-radius:var(--radius);font-size:0.13rem;cursor:pointer">
+              <option>1/16</option>
+              <option>2/16</option>
+              <option>3/16</option>
+              <option>4/16</option>
+              <option>5/16</option>
+              <option>6/16</option>
+              <option>7/16</option>
+              <option>8/16</option>
+              <option>9/16</option>
+              <option>10/16</option>
+              <option>11/16</option>
+              <option>12/16</option>
+              <option>13/16</option>
+              <option>14/16</option>
+              <option>15/16</option>
+              <option>16/16</option>
+            </select>
+          </span>
       </div>
       <!-- 批量操作栏 -->
       <div class="batch-actions" id="batchActions">
@@ -707,30 +696,7 @@ a:hover { color: var(--brand-red); }
         </tbody>
       </table>
 
-      <!-- 分页 -->
-      <div class="pagination">
-        <div class="pagination-left">
-          <span>共 156 条</span>
-          <span class="page-size">
-            <select>
-              <option>10条/页</option>
-              <option>20条/页</option>
-              <option>50条/页</option>
-            </select>
-          </span>
-        </div>
-        <div class="pagination-right">
-          <button class="page-btn disabled">&lt;</button>
-          <button class="page-btn active">1</button>
-          <button class="page-btn">2</button>
-          <button class="page-btn">3</button>
-          <button class="page-btn">4</button>
-          <button class="page-btn">5</button>
-          <button class="page-btn">...</button>
-          <button class="page-btn">16</button>
-          <button class="page-btn">&gt;</button>
-        </div>
-      </div>
+      <!-- 无底部分页栏，分页控制在工具栏右侧 -->
     </div>
   </div>
 
@@ -739,18 +705,15 @@ a:hover { color: var(--brand-red); }
     <!-- 子表标签页 -->
     <div class="detail-tabs">
       <div class="detail-tab-item active" data-detail="progress" onclick="switchDetailTab('progress')">
-        生产进度<span class="detail-tab-badge" id="badgeProgress">8</span>
+        生产进度
       </div>
       <div class="detail-tab-item" data-detail="abnormal" onclick="switchDetailTab('abnormal')">
-        异常记录<span class="detail-tab-badge" id="badgeAbnormal">2</span>
+        异常记录
       </div>
     </div>
 
     <!-- 子表：生产进度 -->
     <div class="detail-content active" id="detail-progress">
-      <div class="detail-info-bar" id="progressInfoBar">
-        当前订单：<span class="order-id" id="progressOrderId">请点击上方主表选择订单</span>
-      </div>
       <div id="progressContent">
         <div class="detail-empty">
           <span class="icon">&#128203;</span>
@@ -761,9 +724,6 @@ a:hover { color: var(--brand-red); }
 
     <!-- 子表：异常记录 -->
     <div class="detail-content" id="detail-abnormal">
-      <div class="detail-info-bar" id="abnormalInfoBar">
-        当前订单：<span class="order-id" id="abnormalOrderId">请点击上方主表选择订单</span>
-      </div>
       <div id="abnormalContent">
         <div class="detail-empty">
           <span class="icon">&#9888;</span>
@@ -925,16 +885,12 @@ function updateDetail(orderId) {
   if (!data) return;
 
   // 更新订单编号显示
-  document.getElementById('progressOrderId').textContent = orderId + ' - ' + data.product;
-  document.getElementById('abnormalOrderId').textContent = orderId + ' - ' + data.product;
 
   // 更新生产进度
   var progressHtml = '';
   if (data.progress.length === 0) {
     progressHtml = '<div class="detail-empty"><span class="icon">&#128203;</span>该订单暂无生产进度数据</div>';
-    document.getElementById('badgeProgress').textContent = '0';
   } else {
-    document.getElementById('badgeProgress').textContent = data.progress.length;
     progressHtml = '<table class="data-table"><thead><tr>' +
       '<th style="width:60px">序号</th>' +
       '<th style="width:150px">工序名称</th>' +
@@ -961,9 +917,7 @@ function updateDetail(orderId) {
   var abnormalHtml = '';
   if (data.abnormal.length === 0) {
     abnormalHtml = '<div class="detail-empty"><span class="icon">&#9888;</span>该订单暂无异常记录</div>';
-    document.getElementById('badgeAbnormal').textContent = '0';
   } else {
-    document.getElementById('badgeAbnormal').textContent = data.abnormal.length;
     abnormalHtml = '<table class="data-table"><thead><tr>' +
       '<th style="width:60px">序号</th>' +
       '<th style="width:140px">异常编号</th>' +
