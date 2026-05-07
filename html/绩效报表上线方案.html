@@ -329,7 +329,7 @@
       font-size: var(--body-size);
     }
 
-    /* --- 价值卡片网格（展开版） --- */
+    /* --- 价值卡片网格（展开版 - 均匀分布） --- */
     .value-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -340,7 +340,7 @@
     .value-card {
       background: var(--bg-card);
       border-radius: var(--radius-md);
-      padding: clamp(0.6rem, 2vh, 1.3rem) clamp(0.6rem, 1.2vw, 1.1rem);
+      padding: clamp(0.6rem, 1.8vh, 1.2rem) clamp(0.5rem, 1vw, 1rem);
       box-shadow: var(--shadow-sm);
       border: 1px solid rgba(0,0,0,0.04);
       display: flex;
@@ -349,37 +349,38 @@
     .value-card .card-header {
       display: flex;
       align-items: center;
-      gap: clamp(0.3rem, 0.6vw, 0.6rem);
-      margin-bottom: clamp(0.3rem, 0.8vh, 0.6rem);
+      gap: clamp(0.25rem, 0.5vw, 0.5rem);
+      flex-shrink: 0;
     }
     .value-card .card-header .emoji-icon {
-      font-size: clamp(1.2rem, 2vw, 1.8rem);
+      font-size: clamp(1rem, 1.8vw, 1.6rem);
       flex-shrink: 0;
     }
     .value-card .card-header h3 {
-      font-size: clamp(0.9rem, 1.4vw, 1.15rem);
+      font-size: clamp(0.85rem, 1.3vw, 1.1rem);
       white-space: nowrap;
     }
     .value-card .bullet-list {
       list-style: none;
       padding: 0;
       margin: 0;
+      flex: 1;
       display: flex;
       flex-direction: column;
-      gap: clamp(0.2rem, 0.5vh, 0.4rem);
+      justify-content: space-evenly;
     }
     .value-card .bullet-list li {
       font-size: clamp(0.65rem, 1vw, 0.85rem);
       color: var(--text-secondary);
-      line-height: 1.4;
-      padding-left: clamp(0.6rem, 0.9vw, 0.9rem);
+      line-height: 1.35;
+      padding-left: clamp(0.55rem, 0.8vw, 0.8rem);
       position: relative;
     }
     .value-card .bullet-list li::before {
       content: '';
       position: absolute;
       left: 0;
-      top: clamp(0.45rem, 0.7vw, 0.6rem);
+      top: clamp(0.42rem, 0.65vw, 0.55rem);
       width: 4px;
       height: 4px;
       border-radius: 50%;
@@ -615,6 +616,7 @@
             <li>主数据标准化：统一物料、客户、供应商编码，杜绝一物多码</li>
             <li>交易数据规范化：从业务系统入口校验数据质量，防止脏数据产生</li>
             <li>历史数据清洗：对存量问题数据系统性治理，补齐缺失字段与错误值</li>
+            <li>数据标准统一：建立企业级数据字典，统一字段定义与取值规范，消除口径歧义</li>
           </ul>
         </div>
 
@@ -628,6 +630,7 @@
             <li>减少返工：高质量源数据让报表开发一次通过率大幅提升</li>
             <li>快速定位：数据链路清晰透明，问题排查时间从小时级压缩到分钟级</li>
             <li>自动化验证：建立数据质量看板，异常数据自动预警，防患于未然</li>
+            <li>精力聚焦：源头洁净后，开发资源从"填坑"转向真正的功能迭代</li>
           </ul>
         </div>
 
@@ -641,6 +644,7 @@
             <li>决策提效：数据可信→业务敢用→从"等数据、核数据"到"直接用数据做决策"</li>
             <li>成本节约：减少人工核对、跨部门沟通确认的隐性成本，降低运维压力</li>
             <li>正向循环：信任→使用→反馈→优化，数据价值持续释放，越用越好用</li>
+            <li>协同提效：统一的数据语言消除业务与技术之间的沟通壁垒，减少反复确认</li>
           </ul>
         </div>
       </div>
