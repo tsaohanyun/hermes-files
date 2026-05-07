@@ -254,14 +254,23 @@
     /* --- 验证闭环 --- */
     .feedback-loop {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       gap: clamp(0.4rem, 0.8vw, 0.8rem);
       background: #e3f0ff;
       border-radius: var(--radius-sm);
       padding: clamp(0.4rem, 0.8vh, 0.65rem) clamp(0.6rem, 1.2vw, 1rem);
       margin-top: var(--element-gap);
     }
-    .feedback-loop .icon { font-size: clamp(1.3rem, 2.5vw, 2rem); }
+    .feedback-loop .icon { font-size: clamp(1.3rem, 2.5vw, 2rem); flex-shrink: 0; margin-top: 2px; }
+    .feedback-loop .loop-main { color: #0056b3; font-weight: 600; font-size: var(--body-size); }
+    .feedback-loop .loop-reason {
+      color: #0066cc;
+      font-size: var(--small-size);
+      font-weight: 500;
+      margin-top: 3px;
+      opacity: 0.8;
+      line-height: 1.4;
+    }
     .feedback-loop p { color: #0056b3; font-weight: 600; font-size: var(--body-size); }
 
     /* ===========================================
@@ -604,7 +613,10 @@
 
       <div class="feedback-loop reveal">
         <span class="icon">🔄</span>
-        <p>要求业务投入大面积测试：发现问题 → 15分钟内重算确认 → 快速修复上线</p>
+        <div>
+          <p class="loop-main">要求业务投入大面积测试：发现问题 → 15分钟内重算确认 → 快速修复上线</p>
+          <p class="loop-reason">计算逻辑已验证（300+段·最多5层嵌套），历史数据错误多为手动补充时计算顺序导致，重新执行对应计算即可修复</p>
+        </div>
       </div>
     </div>
   </section>
