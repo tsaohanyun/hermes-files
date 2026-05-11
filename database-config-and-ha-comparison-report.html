@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MySQL vs Oracle 数据库配置与高可用方案对比报告</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fbfbfd;
+    --surface: #ffffff;
+    --border: #e6e6ea;
+    --text-primary: #1d1d1f;
+    --text-secondary: #86868b;
+    --text-tertiary: #aeaeb2;
+    --accent-mysql: #00758f;
+    --accent-mysql-bg: #eef7fa;
+    --accent-oracle: #c74634;
+    --accent-oracle-bg: #fcf2f0;
+    --accent-blue: #0071e3;
+    --accent-blue-bg: #e8f2fd;
+    --accent-green: #34c759;
+    --accent-green-bg: #e8f8ed;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 2px 8px rgba(0,0,0,0.06);
+    --shadow-lg: 0 8px 30px rgba(0,0,0,0.08);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { font-size: 16px; scroll-behavior: smooth; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg); color: var(--text-primary);
+    line-height: 1.6; -webkit-font-smoothing: antialiased;
+    padding-bottom: 80px;
+  }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, #1d1d1f 0%, #2d2d2f 100%);
+    color: #fff; padding: 60px 0 50px;
+    position: relative; overflow: hidden;
+  }
+  .header::before {
+    content: ''; position: absolute; top: -50%; right: -20%;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(0,117,143,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .header::after {
+    content: ''; position: absolute; bottom: -30%; left: -10%;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(199,70,52,0.12) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .header-content { max-width: 1000px; margin: 0 auto; padding: 0 32px; position: relative; z-index: 1; }
+  .header h1 {
+    font-size: 2.5rem; font-weight: 700; letter-spacing: -0.02em;
+    margin-bottom: 12px;
+  }
+  .header .subtitle {
+    font-size: 1.1rem; color: rgba(255,255,255,0.7);
+    font-weight: 400; max-width: 600px;
+  }
+  .header .meta {
+    margin-top: 20px; font-size: 0.85rem; color: rgba(255,255,255,0.4);
+    display: flex; gap: 20px; align-items: center;
+  }
+  .header .badge-row { display: flex; gap: 10px; margin-top: 24px; }
+  .header .badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 14px; border-radius: 20px;
+    font-size: 0.8rem; font-weight: 500;
+  }
+  .badge-mysql { background: rgba(0,117,143,0.2); color: #7fc8d8; }
+  .badge-oracle { background: rgba(199,70,52,0.2); color: #e8968a; }
+
+  /* Container */
+  .container { max-width: 1000px; margin: 0 auto; padding: 0 32px; }
+
+  /* TOC */
+  .toc {
+    background: var(--surface); border-radius: var(--radius-lg);
+    padding: 32px 36px; margin: -30px auto 40px;
+    box-shadow: var(--shadow-lg); position: relative; z-index: 2;
+    max-width: 1000px;
+  }
+  .toc h2 {
+    font-size: 1rem; font-weight: 600; color: var(--text-secondary);
+    text-transform: uppercase; letter-spacing: 0.05em;
+    margin-bottom: 16px;
+  }
+  .toc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 32px; }
+  .toc a {
+    color: var(--accent-blue); text-decoration: none;
+    font-size: 0.9rem; padding: 4px 0; display: block;
+    transition: color 0.2s;
+  }
+  .toc a:hover { color: #0051a8; }
+
+  /* Sections */
+  section { margin: 48px 0; }
+  .section-title {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 24px;
+  }
+  .section-title h2 {
+    font-size: 1.5rem; font-weight: 700; letter-spacing: -0.01em;
+  }
+  .section-title .icon {
+    width: 36px; height: 36px; border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+  }
+
+  /* DB label */
+  .db-label { display: inline-flex; align-items: center; gap: 4px; padding: 2px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.02em; }
+  .db-label.mysql { background: var(--accent-mysql-bg); color: var(--accent-mysql); }
+  .db-label.oracle { background: var(--accent-oracle-bg); color: var(--accent-oracle); }
+  .db-label.both { background: var(--accent-blue-bg); color: var(--accent-blue); }
+
+  /* Cards */
+  .card {
+    background: var(--surface); border-radius: var(--radius-md);
+    padding: 28px 32px; margin-bottom: 16px;
+    box-shadow: var(--shadow-sm); border: 1px solid var(--border);
+    transition: box-shadow 0.2s;
+  }
+  .card:hover { box-shadow: var(--shadow-md); }
+  .card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .card-header h3 { font-size: 1.05rem; font-weight: 600; }
+  .card p, .card li { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.7; }
+  .card ul { padding-left: 20px; }
+  .card ul li { margin-bottom: 4px; }
+
+  /* Comparison table */
+  .comp-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.85rem; }
+  .comp-table thead th {
+    padding: 12px 16px; text-align: left; font-weight: 600;
+    border-bottom: 2px solid var(--border); white-space: nowrap;
+  }
+  .comp-table thead th:first-child { border-radius: var(--radius-sm) 0 0 0; }
+  .comp-table thead th:last-child { border-radius: 0 var(--radius-sm) 0 0; }
+  .comp-table tbody td {
+    padding: 12px 16px; border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .comp-table tbody tr:last-child td { border-bottom: none; }
+  .comp-table tbody tr:hover { background: #f8f8fa; }
+  .comp-table .col-db { width: 10%; }
+  .comp-table .col-name { width: 22%; font-weight: 500; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; }
+  .comp-table .col-desc { width: 38%; }
+  .comp-table .col-val { width: 30%; }
+
+  /* HA Table */
+  .ha-card {
+    background: var(--surface); border-radius: var(--radius-md);
+    padding: 24px 28px; margin-bottom: 16px;
+    box-shadow: var(--shadow-sm); border: 1px solid var(--border);
+    border-left: 4px solid var(--border);
+    transition: box-shadow 0.2s;
+  }
+  .ha-card:hover { box-shadow: var(--shadow-md); }
+  .ha-card.mysql { border-left-color: var(--accent-mysql); }
+  .ha-card.oracle { border-left-color: var(--accent-oracle); }
+  .ha-card.both { border-left-color: var(--accent-blue); }
+  .ha-card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 8px; }
+  .ha-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+  .ha-grid h4 { font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px; }
+  .ha-grid p, .ha-grid li { font-size: 0.85rem; color: var(--text-secondary); }
+  .ha-grid ul { padding-left: 16px; }
+  .ha-grid ul li { margin-bottom: 2px; }
+
+  /* Code */
+  code {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.78rem;
+    background: #f4f4f6; padding: 2px 6px; border-radius: 4px;
+    color: var(--text-primary);
+  }
+  pre {
+    background: #1d1d1f; color: #e4e4e7; border-radius: var(--radius-sm);
+    padding: 16px 20px; overflow-x: auto; margin: 12px 0;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.78rem;
+    line-height: 1.5;
+  }
+  pre code { background: none; color: inherit; padding: 0; }
+
+  /* Comparison side by side */
+  .side-by-side { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .side-card {
+    background: var(--surface); border-radius: var(--radius-md);
+    padding: 24px; box-shadow: var(--shadow-sm); border: 1px solid var(--border);
+  }
+  .side-card h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .side-card ul { padding-left: 16px; }
+  .side-card ul li { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 4px; }
+
+  /* Tags */
+  .tag {
+    display: inline-block; padding: 2px 8px; border-radius: 4px;
+    font-size: 0.72rem; font-weight: 500;
+  }
+  .tag.green { background: var(--accent-green-bg); color: #248a3d; }
+  .tag.blue { background: var(--accent-blue-bg); color: var(--accent-blue); }
+  .tag.orange { background: #fef3e2; color: #b8600c; }
+  .tag.red { background: #fce8e6; color: #c62828; }
+
+  /* Footer */
+  .footer {
+    text-align: center; padding: 40px 0; color: var(--text-tertiary);
+    font-size: 0.8rem; border-top: 1px solid var(--border);
+    margin-top: 60px;
+  }
+
+  @media (max-width: 768px) {
+    .toc-grid { grid-template-columns: 1fr; }
+    .side-by-side { grid-template-columns: 1fr; }
+    .ha-grid { grid-template-columns: 1fr; }
+    .header h1 { font-size: 1.8rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-content">
+    <h1>MySQL vs Oracle 数据库<br>配置与高可用方案对比报告</h1>
+    <p class="subtitle">全面对比两大主流关系型数据库的核心配置项、配置方式及高可用架构方案</p>
+    <div class="badge-row">
+      <span class="badge badge-mysql">🐬 MySQL</span>
+      <span class="badge badge-oracle">🔶 Oracle</span>
+    </div>
+    <div class="meta">
+      <span>报告生成日期：2026-05-11</span>
+      <span>数据来源：MySQL 8.0 官方手册 / Oracle 26ai Database Reference & HAOVW</span>
+    </div>
+  </div>
+</div>
+
+<!-- TOC -->
+<div class="toc">
+  <h2>📋 目录</h2>
+  <div class="toc-grid">
+    <a href="#part1">第一部分 · 配置方式总览</a>
+    <a href="#part2">第二部分 · 核心配置项对比</a>
+    <a href="#part3">第三部分 · 高可用方案对比</a>
+    <a href="#part4">第四部分 · 方案选型建议</a>
+    <a href="#part5">第五部分 · 配置最佳实践速查</a>
+    <a href="#part6">第六部分 · 总结对比</a>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- Part 1: 配置方式总览 -->
+<section id="part1">
+  <div class="section-title">
+    <div class="icon" style="background: var(--accent-blue-bg);">⚙️</div>
+    <h2>第一部分 · 配置方式总览</h2>
+  </div>
+
+  <div class="side-by-side">
+    <div class="side-card">
+      <h3><span class="db-label mysql">MySQL</span> 配置方式</h3>
+      <ul>
+        <li><strong>my.cnf / my.ini</strong> — 配置文件方式，永久生效，需重启</li>
+        <li><strong>SET GLOBAL</strong> — 运行时全局生效，重启后丢失</li>
+        <li><strong>SET PERSIST</strong> — MySQL 8.0+ 持久化到 <code>mysqld-auto.cnf</code>，重启后保留</li>
+        <li><strong>SET SESSION</strong> — 仅当前会话生效</li>
+        <li>配置修改后部分参数需重启实例，部分支持在线动态修改</li>
+      </ul>
+    </div>
+    <div class="side-card">
+      <h3><span class="db-label oracle">Oracle</span> 配置方式</h3>
+      <ul>
+        <li><strong>spfile</strong> — 二进制服务器参数文件（推荐），可通过 <code>ALTER SYSTEM</code> 持久化修改</li>
+        <li><strong>pfile (init.ora)</strong> — 文本参数文件，手动编辑后需重启</li>
+        <li><strong>ALTER SYSTEM SCOPE=BOTH</strong> — 立即生效并写入 spfile</li>
+        <li><strong>ALTER SYSTEM SCOPE=SPFILE</strong> — 写入 spfile，下次重启生效（静态参数）</li>
+        <li><strong>ALTER SYSTEM SCOPE=MEMORY</strong> — 纯内存生效，不持久化</li>
+        <li><strong>ALTER SESSION</strong> — 仅当前会话</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top: 16px;">
+    <div class="card-header">
+      <span class="db-label both">关键差异</span>
+      <h3>配置管理理念对比</h3>
+    </div>
+    <table class="comp-table">
+      <thead>
+        <tr><th>维度</th><th>🐬 MySQL</th><th>🔶 Oracle</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>配置存储</td><td>文本文件 my.cnf + mysqld-auto.cnf</td><td>二进制 spfile + 文本 pfile</td></tr>
+        <tr><td>在线修改</td><td>部分支持（SET GLOBAL/PERSIST）</td><td>大部分支持（ALTER SYSTEM），依赖参数类型</td></tr>
+        <tr><td>持久化机制</td><td>MySQL 8.0+ 才有 SET PERSIST</td><td>ALTER SYSTEM SCOPE=BOTH/SPFILE 原生支持</td></tr>
+        <tr><td>参数分类</td><td>粗略分为 GLOBAL/SESSION 级别</td><td>精细分为 静态/动态/会话级，SCOPE 灵活控制</td></tr>
+        <tr><td>自动内存管理</td><td>InnoDB 缓冲池需手动设置</td><td>ASMM (SGA_TARGET) + AMM (MEMORY_TARGET) 自动调优</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- Part 2: 核心配置项对比 -->
+<section id="part2">
+  <div class="section-title">
+    <div class="icon" style="background: var(--accent-mysql-bg);">🔧</div>
+    <h2>第二部分 · 核心配置项对比</h2>
+  </div>
+
+  <!-- 内存类 -->
+  <div class="card">
+    <div class="card-header">
+      <span class="db-label both">内存</span>
+      <h3>内存与缓冲配置</h3>
+    </div>
+    <table class="comp-table">
+      <thead>
+        <tr><th class="col-db">DB</th><th class="col-name">配置项</th><th class="col-desc">作用说明</th><th class="col-val">建议值</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="db-label mysql">MySQL</span></td>
+          <td>innodb_buffer_pool_size</td>
+          <td>InnoDB 缓冲池大小，缓存数据和索引。MySQL 最关键配置</td>
+          <td>物理内存 60%~80%（专用服务器）</td>
+        </tr>
+        <tr>
+          <td><span class="db-label oracle">Oracle</span></td>
+          <td>SGA_TARGET</td>
+          <td>SGA 总大小目标值，启用自动共享内存管理 (ASMM)</td>
+          <td>物理内存 40%~60%</td>
+        </tr>
+        <tr>
+          <td><span class="db-label oracle">Oracle</span></td>
+          <td>PGA_AGGREGATE_TARGET</td>
+          <td>所有服务器进程的 PGA 内存总量目标</td>
+          <td>OLTP 20%，DSS 50%~70%</td>
+        </tr>
+        <tr>
+          <td><span class="db-label oracle">Oracle</span></td>
+          <td>MEMORY_TARGET</td>
+          <td>Oracle 总内存 (SGA+PGA) 目标，启用自动内存管理 (AMM)</td>
+          <td>物理内存 50%~80%</td>
+        </tr>
+        <tr>
+          <td><span class="db-label mysql">MySQL</span></td>
+          <td>innodb_log_file_size</td>
+          <td>InnoDB redo log 文件大小，影响写入性能和恢复速度</td>
+          <td>1G~4G（MySQL 8.0.30+ 由 innodb_redo_log_capacity 取代）</td>
+        </tr>
+        <tr>
+          <td><span class="db-label oracle">Oracle</span></td>
+          <td>DB_CACHE_SIZE</td>
+          <td>DEFAULT 缓冲池大小（主块大小）</td>
+          <td>由 SGA_TARGET 自动管理</td>
+        </tr>
+        <tr>
+          <td><span class="db-label oracle">Oracle</span></td>
+          <td>SHARED_POOL_SIZE</td>
+          <td>共享池（缓存 SQL、PL/SQL、数据字典）</td>
+          <td>由 SGA_TARGET 自动管理；OLTP 建议较大值</td>
+        </tr>
+        <tr>
+          <td><span class="db-label mysql">MySQL</span></td>
+          <td>innodb_log_buffer_size</td>
+          <td>redo log 缓冲区大小，减少磁盘写入次数</td>
+          <td>默认 16M，高并发 32M~128M</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 连接类 -->
+  <div class="card">
+    <div class="card-header">
+      <span class="db-label both">连接</span>
+      <h3>连接与会话配置</h3>
+    </div>
+    <table class="comp-table">
+      <thead>
+        <tr><th class="col-db">DB</th><th class="col-name">配置项</th><th class="col-desc">作用说明</th><th class="col-val">建议值</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="db-label mysql">MySQL</span></td>
+          <td>max_connections</td>
+          <td>最大并发连接数</td>
+          <td>500~2000（根据并发调整）</td>
+        </tr>
+        <tr>
+          <td><span class="db-label oracle">Oracle</span></td>
+          <td>PROCESSES</td>
+          <td>最大操作系统进程数（含后台进程）</td>
+          <td>500~2000（需 >= SESSIONS）</td>
+        </tr>
+        <tr>
+          <td><span class="db-label oracle">Oracle</span></td>
+          <td>SESSIONS</td>
+          <td>最大会话数</td>
+          <td>PROCESSES × 1.1 + 5</td>
+        </tr>
+        <tr>
+          <td><span class="db-label mysql">MySQL</span></td>
+          <td>thread_cache_size</td>
+          <td>缓存线程数量，减少创建/销毁开销</td>
+          <td>8~64</td>
+        </tr>
+        <tr>
+          <td><span class="db-label oracle">Oracle</span></td>
+          <td>OPEN_CURSORS</td>
+          <td>每个会话最大打开的游标数</td>
+          <td>300~1000</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 日志与事务类 -->
+  <div class="card">
+    <div class="card-header">
+      <span class="db-label both">日志</span>
+      <h3>日志与事务配置</h3>
+    </div>
+    <table class="comp-table">
+      <thead>
+        <tr><th class="col-db">DB</th><th class="col-name">配置项</th><th class="col-desc">作用说明</th><th class="col-val">建议值</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="db-label mysql">MySQL</span></td>
+          <td>innodb_flush_log_at_trx_commit</td>
+          <td>控制 redo log 刷新策略。1=每次提交刷盘（最安全），2=每秒刷盘</td>
+          <td>1（ACID 合规）</td>
+        </tr>
+        <tr>
+          <td><span class="db-label oracle">Oracle</span></td>
+          <td>COMMIT_WRITE / COMMIT_LOGGING</td>
+          <td>控制事务提交时的日志写入行为</td>
+          <td>BATCH（批处理）/ IMMEDIATE（立即）</td>
+        </tr>
+        <tr>
+          <td><span class="db-label mysql">MySQL</span></td>
+          <td>sync_binlog</td>
+          <td>控制 binlog 刷盘频率。1=最安全，0=最高性能</td>
+          <td>1（数据不丢失）</td>
+        </tr>
+        <tr>
+          <td><span class="db-label oracle">Oracle</span></td>
+          <td>LOG_ARCHIVE_DEST_n</td>
+          <td>归档日志目标路径（高可用场景必备）</td>
+          <td>配置到 ASM 磁盘组或 FRA</td>
+        </tr>
+        <tr>
+          <td><span class="db-label mysql">MySQL</span></td>
+          <td>binlog_format</td>
+          <td>二进制日志格式</td>
+          <td>ROW（MySQL 8.0 默认，复制准确性最高）</td>
+        </tr>
+        <tr>
+          <td><span class="db-label oracle">Oracle</span></td>
+          <td>DB_FLASHBACK_RETENTION_TARGET</td>
+          <td>Flashback Database 保留时间目标（分钟）</td>
+          <td>1440（1天）~ 10080（1周）</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 复制类 -->
+  <div class="card">
+    <div class="card-header">
+      <span class="db-label both">复制</span>
+      <h3>复制与高可用相关配置</h3>
+    </div>
+    <table class="comp-table">
+      <thead>
+        <tr><th class="col-db">DB</th><th class="col-name">配置项</th><th class="col-desc">作用说明</th><th class="col-val">建议值</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="db-label mysql">MySQL</span></td>
+          <td>server_id</td>
+          <td>复制拓扑中唯一标识</td>
+          <td>每台服务器不同</td>
+        </tr>
+        <tr>
+          <td><span class="db-label oracle">Oracle</span></td>
+          <td>DB_UNIQUE_NAME</td>
+          <td>Data Guard 环境中数据库全局唯一名称</td>
+          <td>主备库不同</td>
+        </tr>
+        <tr>
+          <td><span class="db-label mysql">MySQL</span></td>
+          <td>gtid_mode</td>
+          <td>启用 GTID 简化复制管理和故障切换</td>
+          <td>ON（推荐）</td>
+        </tr>
+        <tr>
+          <td><span class="db-label oracle">Oracle</span></td>
+          <td>LOG_ARCHIVE_DEST_2</td>
+          <td>配置备库 redo 传输目标</td>
+          <td>SERVICE=standby SYNC/ASYNC</td>
+        </tr>
+        <tr>
+          <td><span class="db-label mysql">MySQL</span></td>
+          <td>slave_parallel_workers</td>
+          <td>从节点并行复制线程数</td>
+          <td>4~8</td>
+        </tr>
+        <tr>
+          <td><span class="db-label oracle">Oracle</span></td>
+          <td>DATA_GUARD_SYNC_LATENCY</td>
+          <td>Data Guard 同步传输等待超时</td>
+          <td>视网络延迟调整</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- Part 3: 高可用方案对比 -->
+<section id="part3">
+  <div class="section-title">
+    <div class="icon" style="background: var(--accent-oracle-bg);">🛡️</div>
+    <h2>第三部分 · 高可用方案对比</h2>
+  </div>
+
+  <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 16px;">🐬 MySQL 高可用方案</h3>
+
+  <div class="ha-card mysql">
+    <h3>1. 主从复制（异步复制）</h3>
+    <p>最基础的复制方案，一个主节点写入，一个或多个从节点异步复制 binlog。部署简单，MySQL 原生支持，对主节点性能影响最小。但存在数据丢失风险，从节点可能有复制延迟，需要手动或借助外部工具进行故障切换。</p>
+    <div class="ha-grid">
+      <div><h4>✅ 优点</h4><ul><li>部署简单，原生支持</li><li>对主节点性能影响最小</li><li>适合读写分离和灾备</li></ul></div>
+      <div><h4>❌ 缺点</h4><ul><li>数据丢失风险</li><li>复制延迟</li><li>需手动或工具切换</li></ul></div>
+      <div style="grid-column: 1 / -1;"><h4>🎯 适用场景</h4><p>对数据一致性要求不严格的读写分离、灾备、报表查询分离</p></div>
+    </div>
+  </div>
+
+  <div class="ha-card mysql">
+    <h3>2. 半同步复制（Semisynchronous Replication）</h3>
+    <p>主节点提交事务时等待至少一个从节点确认收到 binlog 后才返回客户端。通过 <code>rpl_semi_sync_master/slave</code> 插件实现。</p>
+    <div class="ha-grid">
+      <div><h4>✅ 优点</h4><ul><li>显著降低数据丢失风险</li><li>对主节点性能影响可控</li></ul></div>
+      <div><h4>❌ 缺点</h4><ul><li>所有从节点挂掉时会降级</li><li>仍有极小窗口可能丢数据</li></ul></div>
+      <div style="grid-column: 1 / -1;"><h4>🎯 适用场景</h4><p>需要比异步复制更高数据安全性的场景，如金融、交易系统的基础防护</p></div>
+    </div>
+  </div>
+
+  <div class="ha-card mysql">
+    <h3>3. 组复制（Group Replication）</h3>
+    <p>基于 Paxos 协议的组通信系统，支持单主和多主模式。内置冲突检测和处理，自动故障检测和成员管理。</p>
+    <div class="ha-grid">
+      <div><h4>✅ 优点</h4><ul><li>高一致性（Paxos 共识）</li><li>自动故障检测</li><li>无单点故障</li></ul></div>
+      <div><h4>❌ 缺点</h4><ul><li>网络延迟敏感</li><li>组大小推荐 3~7 台</li><li>配置和维护复杂</li></ul></div>
+      <div style="grid-column: 1 / -1;"><h4>🎯 适用场景</h4><p>要求强一致性的生产环境、需要自动故障切换的中小规模集群（3~9 节点）</p></div>
+    </div>
+  </div>
+
+  <div class="ha-card mysql">
+    <h3>4. InnoDB Cluster ⭐ <span class="tag green">官方推荐</span></h3>
+    <p>MySQL 官方一站式高可用解决方案。底层 Group Replication + MySQL Shell (AdminAPI) + MySQL Router，支持自动故障检测和 failover。</p>
+    <div class="ha-grid">
+      <div><h4>✅ 优点</h4><ul><li>官方一体化，集成度高</li><li>自动化部署（AdminAPI）</li><li>Router 透明读写分离</li></ul></div>
+      <div><h4>❌ 缺点</h4><ul><li>所有节点全量数据冗余</li><li>跨地域部署受限</li><li>依赖 MySQL Shell</li></ul></div>
+      <div style="grid-column: 1 / -1;"><h4>🎯 适用场景</h4><p>MySQL 官方首选的 HA 方案，适合 3~5 节点新项目生产集群</p></div>
+    </div>
+  </div>
+
+  <div class="ha-card mysql">
+    <h3>5. ProxySQL + Orchestrator</h3>
+    <p>ProxySQL 提供高性能 SQL 代理（读写分离、查询路由、连接池），Orchestrator 管理复制拓扑和自动故障切换。社区最强大的组合拳。</p>
+    <div class="ha-grid">
+      <div><h4>✅ 优点</h4><ul><li>功能极其丰富（SQL 级路由）</li><li>配置热加载</li><li>拓扑管理可视化 Web UI</li></ul></div>
+      <div><h4>❌ 缺点</h4><ul><li>ProxySQL 本身有单点</li><li>架构复杂度较高</li></ul></div>
+      <div style="grid-column: 1 / -1;"><h4>🎯 适用场景</h4><p>需要精细 SQL 路由控制的大规模集群、多数据中心的复制拓扑管理</p></div>
+    </div>
+  </div>
+
+  <div class="ha-card mysql">
+    <h3>6. NDB Cluster</h3>
+    <p>分布式共享无架构集群，自动分片和复制，99.999% 可用性。但功能受限（不支持外键、全文索引等）。</p>
+    <div class="ha-grid">
+      <div><h4>✅ 优点</h4><ul><li>99.999% 可用性</li><li>自动分片和负载均衡</li><li>毫秒级故障切换</li></ul></div>
+      <div><h4>❌ 缺点</h4><ul><li>部署运维复杂</li><li>功能受限</li><li>内存成本高</li></ul></div>
+      <div style="grid-column: 1 / -1;"><h4>🎯 适用场景</h4><p>电信、金融等需要极致可用性的场景，高吞吐量实时应用</p></div>
+    </div>
+  </div>
+
+  <h3 style="font-size: 1.1rem; font-weight: 600; margin: 32px 0 16px;">🔶 Oracle 高可用方案</h3>
+
+  <div class="ha-card oracle">
+    <h3>1. Oracle MAA 层级框架</h3>
+    <p>Oracle 最高可用架构最佳实践框架，定义 5 个可用性层级：</p>
+    <div class="ha-grid">
+      <div><h4>🥉 Bronze</h4><p>RTO 分钟~小时，RPO 分钟~小时。RMAN 备份恢复 + 实例重启</p></div>
+      <div><h4>🥈 Silver</h4><p>RTO 秒~分钟，RPO 秒~分钟。RAC / RAC One Node</p></div>
+      <div><h4>🥇 Gold</h4><p>RTO 秒级，RPO 秒~零。RAC + Data Guard（物理备库）</p></div>
+      <div><h4>💎 Platinum</h4><p>RTO 零，RPO 零数据丢失。ADG + GoldenGate</p></div>
+    </div>
+  </div>
+
+  <div class="ha-card oracle">
+    <h3>2. Oracle RAC (Real Application Clusters) <span class="tag green">核心方案</span></h3>
+    <p>多个实例共享访问同一数据库（共享存储架构），通过 Oracle Clusterware 管理。支持秒级故障恢复和水平扩展。</p>
+    <div class="ha-grid">
+      <div><h4>✅ 优点</h4><ul><li>秒级故障自动恢复</li><li>水平扩展能力</li><li>应用透明（无需修改代码）</li><li>滚动升级</li></ul></div>
+      <div><h4>❌ 缺点</h4><ul><li>需要共享存储</li><li>需要专用高速 Interconnect</li><li>部署管理复杂</li><li>许可成本高</li></ul></div>
+      <div style="grid-column: 1 / -1;"><h4>🎯 适用场景</h4><p>核心 OLTP 系统（交易、银行、电信），7×24 小时高可用，需水平扩展</p></div>
+    </div>
+  </div>
+
+  <div class="ha-card oracle">
+    <h3>3. Data Guard / Active Data Guard <span class="tag green">核心方案</span></h3>
+    <p>主数据库 + 最多 30 个备库（物理/逻辑/快照）。三种保护模式：最大保护（SYNC）、最大可用性（SYNC+超时降级）、最高性能（ASYNC）。</p>
+    <div class="ha-grid">
+      <div><h4>✅ 优点</h4><ul><li>零数据丢失（最大保护模式）</li><li>快速故障切换</li><li>ADG 支持只读查询卸除</li><li>自动块修复</li></ul></div>
+      <div><h4>❌ 缺点</h4><ul><li>ADG 需额外许可</li><li>SYNC 模式可能增加延迟</li><li>需足够网络带宽</li></ul></div>
+      <div style="grid-column: 1 / -1;"><h4>🎯 适用场景</h4><p>灾难恢复/异地容灾、数据保护、只读查询卸除（ADG）、滚动升级维护</p></div>
+    </div>
+  </div>
+
+  <div class="ha-card oracle">
+    <h3>4. Oracle GoldenGate</h3>
+    <p>逻辑复制解决方案，解析 Redo 日志捕获变更。支持异构平台（Oracle ↔ MySQL/Kafka）、双向复制（Active-Active）、数据过滤和转换。</p>
+    <div class="ha-grid">
+      <div><h4>✅ 优点</h4><ul><li>灵活的逻辑复制</li><li>Active-Active 高可用</li><li>异构数据库支持</li><li>零停机迁移</li></ul></div>
+      <div><h4>❌ 缺点</h4><ul><li>许可成本高</li><li>配置维护复杂</li><li>不支持所有数据类型</li></ul></div>
+      <div style="grid-column: 1 / -1;"><h4>🎯 适用场景</h4><p>异构复制、跨版本零停机迁移、实时数据分发、Active-Active 双向复制</p></div>
+    </div>
+  </div>
+
+  <div class="ha-card oracle">
+    <h3>5. RAC + ADG（MAA Gold 最佳实践）</h3>
+    <p>双保险架构：RAC 处理节点级故障（秒级恢复），ADG 处理站点级灾难（分钟级切换）。加上 ASM 存储管理和 Flashback 逻辑错误恢复，构成完整保护体系。</p>
+    <div class="ha-grid">
+      <div><h4>✅ 优点</h4><ul><li>节点故障 RAC 自动恢复</li><li>站点故障 ADG 切换</li><li>ADG 自动块修复</li><li>支持滚动升级</li></ul></div>
+      <div><h4>❌ 缺点</h4><ul><li>许可成本叠加（RAC + ADG）</li><li>架构复杂</li><li>需要专业 DBA 运维</li></ul></div>
+      <div style="grid-column: 1 / -1;"><h4>🎯 适用场景</h4><p>企业级核心系统，对可用性和数据保护有最高要求的场景</p></div>
+    </div>
+  </div>
+
+  <div class="ha-card oracle">
+    <h3>6. Flashback + RMAN（逻辑错误恢复）</h3>
+    <p>Oracle 闪回技术家族：Flashback Query/Table/Drop/Database/Transaction/Data Archive。RMAN 提供全量/增量/块级备份恢复。配合 Archivelog 形成完整的数据保护闭环。</p>
+    <div class="ha-grid">
+      <div><h4>✅ 优点</h4><ul><li>Flashback 秒级恢复逻辑错误</li><li>RMAN 块级恢复</li><li>Data Recovery Advisor 自动修复</li><li>内置在 Enterprise Edition</li></ul></div>
+      <div><h4>❌ 缺点</h4><ul><li>Flashback 依赖 FRA 空间</li><li>RMAN PITR 恢复时间较长</li><li>不能替代物理 HA</li></ul></div>
+      <div style="grid-column: 1 / -1;"><h4>🎯 适用场景</h4><p>快速恢复逻辑错误、批处理/数据加载错误、减少 RMAN PITR 复杂度</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- Part 4: 方案选型建议 -->
+<section id="part4">
+  <div class="section-title">
+    <div class="icon" style="background: var(--accent-green-bg);">🎯</div>
+    <h2>第四部分 · 方案选型建议</h2>
+  </div>
+
+  <div class="side-by-side">
+    <div class="side-card">
+      <h3><span class="db-label mysql">MySQL 选型建议</span></h3>
+      <ul>
+        <li><strong>简单场景（1~3节点）</strong>：InnoDB Cluster + MySQL Router，官方首选</li>
+        <li><strong>中等规模（3~9节点）</strong>：Group Replication + ProxySQL/MySQL Router</li>
+        <li><strong>大规模集群（数十节点）</strong>：NDB Cluster 或 Vitess 云原生方案</li>
+        <li><strong>传统主从改造</strong>：保留异步复制 + Orchestrator 自动化管理 + ProxySQL 读写分离</li>
+        <li><strong>强一致性 + 多主写入</strong>：Group Replication（多主模式）或 Galera Cluster</li>
+      </ul>
+    </div>
+    <div class="side-card">
+      <h3><span class="db-label oracle">Oracle 选型建议</span></h3>
+      <ul>
+        <li><strong>基本保护</strong>：RMAN + Archivelog + Flashback → RTO 小时级</li>
+        <li><strong>实例级 HA</strong>：RAC / RAC One Node → RTO 秒级</li>
+        <li><strong>同城容灾</strong>：Data Guard SYNC → RPO 零，RTO 分钟级</li>
+        <li><strong>异地容灾</strong>：Data Guard ASYNC → RPO 秒级，RTO 分钟级</li>
+        <li><strong>全栈保护</strong>：RAC + ADG + GoldenGate → RTO 零，RPO 零</li>
+        <li><strong>读写分离</strong>：Active Data Guard → 零数据丢失 + 查询卸除</li>
+        <li><strong>异构复制</strong>：GoldenGate → 支持 Oracle ↔ MySQL/Kafka</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- Part 5: 配置最佳实践速查 -->
+<section id="part5">
+  <div class="section-title">
+    <div class="icon" style="background: var(--accent-blue-bg);">📋</div>
+    <h2>第五部分 · 配置最佳实践速查</h2>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="db-label mysql">MySQL 核心配置速查</span>
+    </div>
+    <pre><code># 内存
+innodb_buffer_pool_size = 内存 × 60%~80%
+innodb_log_file_size = 2G                # MySQL 8.0.30+ 用 innodb_redo_log_capacity
+innodb_flush_log_at_trx_commit = 1       # ACID 合规
+innodb_flush_method = O_DIRECT           # Linux 绕过 OS 缓存
+
+# 连接
+max_connections = 1000
+thread_cache_size = 16
+
+# Binlog
+server_id = 1
+gtid_mode = ON
+enforce_gtid_consistency = ON
+binlog_format = ROW
+sync_binlog = 1
+binlog_expire_logs_seconds = 604800      # 7天
+
+# 复制
+slave_parallel_workers = 4
+slave_parallel_type = LOGICAL_CLOCK
+
+# 字符集
+character_set_server = utf8mb4
+collation_server = utf8mb4_unicode_ci
+
+# 安全
+sql_mode = STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION
+open_files_limit = 65535</code></pre>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="db-label oracle">Oracle 核心配置速查</span>
+    </div>
+    <pre><code>-- 内存（自动管理推荐）
+ALTER SYSTEM SET SGA_TARGET=4G SCOPE=BOTH;
+ALTER SYSTEM SET PGA_AGGREGATE_TARGET=2G SCOPE=BOTH;
+
+-- 进程/会话
+ALTER SYSTEM SET PROCESSES=1000 SCOPE=SPFILE;  -- 需重启
+ALTER SYSTEM SET SESSIONS=1105 SCOPE=SPFILE;   -- 需重启
+
+-- 归档模式（MOUNT状态下执行）
+STARTUP MOUNT;
+ALTER DATABASE ARCHIVELOG;
+ALTER DATABASE OPEN;
+
+-- 快速恢复区
+ALTER SYSTEM SET DB_RECOVERY_FILE_DEST_SIZE=500G SCOPE=BOTH;
+ALTER SYSTEM SET DB_RECOVERY_FILE_DEST='+FRA' SCOPE=BOTH;
+
+-- Flashback Database
+ALTER DATABASE FLASHBACK ON;
+ALTER SYSTEM SET DB_FLASHBACK_RETENTION_TARGET=1440 SCOPE=BOTH;
+
+-- 数据损坏防护
+ALTER SYSTEM SET DB_BLOCK_CHECKING=MEDIUM SCOPE=BOTH;
+ALTER SYSTEM SET DB_BLOCK_CHECKSUM=TYPICAL SCOPE=BOTH;
+
+-- Data Guard 配置
+ALTER SYSTEM SET LOG_ARCHIVE_DEST_2='SERVICE=standby SYNC VALID_FOR=(ONLINE_LOGFILES,PRIMARY_ROLE) DB_UNIQUE_NAME=standby';
+
+-- 控制文件多路复用
+ALTER SYSTEM SET CONTROL_FILES='/u01/oradata/control01.ctl','/u02/oradata/control02.ctl' SCOPE=SPFILE;</code></pre>
+  </div>
+</section>
+
+<!-- Part 6: 总结对比 -->
+<section id="part6">
+  <div class="section-title">
+    <div class="icon" style="background: linear-gradient(135deg, var(--accent-mysql-bg), var(--accent-oracle-bg));">📊</div>
+    <h2>第六部分 · 总结对比</h2>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="db-label both">核心差异一览</span>
+    </div>
+    <table class="comp-table">
+      <thead>
+        <tr><th style="width:18%">对比维度</th><th style="width:41%">🐬 MySQL</th><th style="width:41%">🔶 Oracle</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>内存管理</strong></td>
+          <td>手动设置 innodb_buffer_pool_size（最关键的单一配置）。无自动内存管理。</td>
+          <td>ASMM (SGA_TARGET) + AMM (MEMORY_TARGET) 自动调优。参数体系更丰富。</td>
+        </tr>
+        <tr>
+          <td><strong>配置方式</strong></td>
+          <td>文本配置文件为主，MySQL 8.0+ 支持 SET PERSIST 持久化</td>
+          <td>spfile 原生支持动态持久化，ALTER SYSTEM SCOPE 三模式更灵活</td>
+        </tr>
+        <tr>
+          <td><strong>复制机制</strong></td>
+          <td>基于 binlog 的逻辑复制。异步/半同步/组复制 三级可选。</td>
+          <td>基于 Redo 的物理复制（Data Guard）。SYNC/ASYNC 三种保护模式。</td>
+        </tr>
+        <tr>
+          <td><strong>集群方案</strong></td>
+          <td>InnoDB Cluster（GR+Shell+Router）官方一体化方案</td>
+          <td>RAC 共享存储集群架构，成熟稳定，应用透明</td>
+        </tr>
+        <tr>
+          <td><strong>数据保护</strong></td>
+          <td>半同步 + Group Replication 提供强一致性</td>
+          <td>Data Guard SYNC 零数据丢失 + Flashback 逻辑恢复</td>
+        </tr>
+        <tr>
+          <td><strong>异构复制</strong></td>
+          <td>无原生方案，需借助第三方工具（如 Canal、Debezium）</td>
+          <td>GoldenGate 原生支持异构复制（Oracle ↔ MySQL/Kafka 等）</td>
+        </tr>
+        <tr>
+          <td><strong>许可成本</strong></td>
+          <td>开源免费（GPL），企业版需付费但社区版功能已足够</td>
+          <td>商用许可成本高，RAC/ADG/GoldenGate 需额外许可</td>
+        </tr>
+        <tr>
+          <td><strong>运维复杂度</strong></td>
+          <td>中小规模运维简单，大规模需搭配中间件</td>
+          <td>整体运维复杂度更高，需要专业 DBA</td>
+        </tr>
+        <tr>
+          <td><strong>适用规模</strong></td>
+          <td>中小规模（单机到数十节点），互联网场景广泛</td>
+          <td>中大规模（企业级核心系统），金融/电信/政府主导</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+</div>
+
+<div class="footer">
+  <div class="container">
+    <p>MySQL vs Oracle 数据库配置与高可用方案对比报告 · 2026-05-11</p>
+    <p style="margin-top: 4px;">数据来源：MySQL 8.0 官方参考手册 · Oracle 26ai Database Reference (REFRN) &amp; HAOVW</p>
+  </div>
+</div>
+
+</body>
+</html>
