@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>方法论知识总结报告</title>
+<style>
+:root {
+  --accent: #AC2A48;
+  --accent-light: #f8e8ec;
+  --bg: #ffffff;
+  --card-bg: #f9f9fb;
+  --text: #1d1d1f;
+  --text-secondary: #6e6e73;
+  --border: #e5e5ea;
+  --radius: 12px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', 'Helvetica Neue', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  padding: 40px 20px;
+}
+.container { max-width: 800px; margin: 0 auto; }
+h1 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+}
+.subtitle {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  margin-bottom: 40px;
+}
+.summary-card {
+  background: linear-gradient(135deg, var(--accent-light) 0%, #fff 100%);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px 28px;
+  margin-bottom: 32px;
+}
+.summary-card .big-num {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--accent);
+  display: inline-block;
+  margin-right: 8px;
+}
+.summary-card .stat-row {
+  display: flex;
+  gap: 32px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+.stat-item { font-size: 0.9rem; }
+.stat-item strong { display: block; font-size: 1.2rem; color: var(--accent); }
+.category {
+  margin-bottom: 28px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.category-header {
+  background: var(--card-bg);
+  padding: 14px 20px;
+  font-weight: 600;
+  font-size: 1.05rem;
+  border-bottom: 1px solid var(--border);
+  cursor: default;
+}
+.category-header .count {
+  color: var(--accent);
+  font-weight: 700;
+}
+.category-body { padding: 16px 20px; }
+.method-item {
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f0f0f2;
+}
+.method-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+.method-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--accent);
+}
+.method-source {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-left: 8px;
+}
+.method-desc {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  margin-top: 4px;
+  line-height: 1.5;
+}
+.method-framework {
+  font-size: 0.85rem;
+  margin-top: 4px;
+  padding: 6px 10px;
+  background: var(--accent-light);
+  border-radius: 8px;
+  color: var(--text);
+}
+.footer {
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  text-align: center;
+}
+.tag {
+  display: inline-block;
+  background: var(--accent-light);
+  color: var(--accent);
+  font-size: 0.75rem;
+  padding: 2px 10px;
+  border-radius: 20px;
+  margin: 2px 4px 2px 0;
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>📚 方法论知识总结报告</h1>
+<div class="subtitle">基于 trans-import 文件夹 27 个方法论文件的知识提取与分类汇编</div>
+
+<div class="summary-card">
+  <div class="big-num">15</div>套有效方法论已整理入库
+  <div class="stat-row">
+    <div class="stat-item"><strong>4</strong>大类别</div>
+    <div class="stat-item"><strong>5</strong>篇WIKI页面</div>
+    <div class="stat-item"><strong>27</strong>个源文件</div>
+  </div>
+</div>
+
+<div class="category">
+  <div class="category-header">🏗️ 企业架构与IT规划方法论 <span class="count">(2套)</span></div>
+  <div class="category-body">
+    <div class="method-item">
+      <div class="method-name">企业架构（EA）四视图方法论 <span class="method-source">— 东南融通《企业架构咨询方法论》</span></div>
+      <div class="method-desc">企业信息化顶层设计蓝图方法论。四大视图：<strong>业务架构</strong>（商业内容与流程）、<strong>信息架构</strong>（数据资产与管理）、<strong>应用架构</strong>（系统组合与集成）、<strong>技术架构</strong>（基础设施与标准）。每层按"计划→评价→执行"循环推进。基于TOGAF等行业框架。</div>
+    </div>
+    <div class="method-item">
+      <div class="method-name">IT规划四步法 <span class="method-source">— 《方法论-如何做企业IT规划》</span></div>
+      <div class="method-desc">系统性IT规划的4阶段框架：①确认业务目标与IT驱动力 ②评估IT现状（系统健康度、投资分析）③设计IT目标环境（应用/数据/技术架构）④制定行动计划（差距分析、项目优先级、投资成本分析）。</div>
+      <div class="method-framework">🔥 核心原则：先做顶层设计再做建设，避免"一次性方案"和系统孤岛</div>
+    </div>
+  </div>
+</div>
+
+<div class="category">
+  <div class="category-header">🔄 数字化转型方法论 <span class="count">(2套)</span></div>
+  <div class="category-body">
+    <div class="method-item">
+      <div class="method-name">用友12367框架 <span class="method-source">— 《用友企业数字化转型方法论》</span></div>
+      <div class="method-desc"><strong>1</strong>个终极目标（全面数字化）→ <strong>2</strong>个驱动因素（科技+金融）→ <strong>3</strong>大转型方向（数字化管理/经营/平台）→ <strong>6</strong>大转型步骤（评估→战略→基建→业务→数据→创新）→ <strong>7</strong>大领域路径（营销/供应链/生产/财务/人力/协同/研发）。</div>
+      <div class="method-framework">🔥 7大领域覆盖企业全价值链，适用于大中型企业数字化转型规划</div>
+    </div>
+    <div class="method-item">
+      <div class="method-name">数字化升级三段论 + 智能制造五步法 <span class="method-source">— 谢陵春《企业数字化升级方法论》</span></div>
+      <div class="method-desc">企业数字化成熟度三阶段：<strong>反应型企业</strong>（状态监测、被动管理）→ <strong>预防型企业</strong>（数据集成、主动预防）→ <strong>前瞻型企业</strong>（数字孪生、预测仿真）。配套智能制造规划五步法：评估→流程分析→改善机会→蓝图设计→实施落地。</div>
+    </div>
+  </div>
+</div>
+
+<div class="category">
+  <div class="category-header">⚙️ 实施方法论 <span class="count">(3套)</span></div>
+  <div class="category-body">
+    <div class="method-item">
+      <div class="method-name">IPM五阶段实施方法论 <span class="method-source">— 用友《智能工厂（离散版）实施方法论V2.0》</span></div>
+      <div class="method-desc">面向离散制造智能工厂的完整交付体系。五阶段：<strong>项目启动</strong>（团队组建、计划制定）→ <strong>蓝图设计</strong>（调研分析、三大解决方案）→ <strong>系统构建</strong>（开发/集成测试/仿真模拟）→ <strong>上线运行</strong>（培训/数据准备/切换）→ <strong>持续支持</strong>（验收/交接/优化）。配套72个模板工具。</div>
+      <div class="method-framework">🔥 与ERP实施差异：注重设备互联、数据采集、实时反馈、批次级控制</div>
+    </div>
+    <div class="method-item">
+      <div class="method-name">六步法交付方法论 <span class="method-source">— 《项目方法论分享》（优刻得）</span></div>
+      <div class="method-desc">通用信息化项目六阶段：项目准备→蓝图设计→客户化部署→整体测试→系统上线→项目收尾。含完整过程管控（周报月报、变更控制、问题管理）。</div>
+    </div>
+    <div class="method-item">
+      <div class="method-name">汉得中台实施方法论 <span class="method-source">— 汉得信息《中台实施方法论》</span></div>
+      <div class="method-desc">面向企业中台建设的四阶段模型：准备→规划与设计→实现与交付→发布运营。方法论六大维度：任务、人员、流程、时间、工具、成果。</div>
+    </div>
+  </div>
+</div>
+
+<div class="category">
+  <div class="category-header">💼 咨询与销售方法论 <span class="count">(3套)</span></div>
+  <div class="category-body">
+    <div class="method-item">
+      <div class="method-name">麦肯锡解决问题七步法 <span class="method-source">— 《培训_麦肯锡管理咨询方法论》</span></div>
+      <div class="method-desc">①陈述问题 → ②分解问题（MECE逻辑树）→ ③忽视非本质问题 → ④制定工作计划 → ⑤关键分析 → ⑥综合结果建立论点 → ⑦提出建议。核心工具：逻辑树、MECE原则、假设驱动。</div>
+      <div class="method-framework">🔥 MECE原则：相互独立、完全穷尽，是问题拆解的黄金准则</div>
+    </div>
+    <div class="method-item">
+      <div class="method-name">金蝶售前咨询四阶段 <span class="method-source">— 金蝶《售前咨询方法论体系V1.0》</span></div>
+      <div class="method-desc">①商机接触与评估 → ②需求理解与引导 → ③方案规划及呈现 → ④商务支持及优化。三大支柱：业务框架、服务内容、咨询产品。</div>
+    </div>
+    <div class="method-item">
+      <div class="method-name">MEDDIC销售方法论</div>
+      <div class="method-desc">大客户销售的六大要素：<strong>M</strong>etric（量化案例）→ <strong>E</strong>conomic Buyer（财务决策人）→ <strong>D</strong>ecision Process（决策程序）→ <strong>D</strong>ecision Criteria（决策标准）→ <strong>I</strong>dentify Pain（发现痛点）→ <strong>C</strong>hampion（支持者/内线）。适用于百万美元级软件/硬件销售。</div>
+      <div class="method-framework">🔥 客户潜意识六问：你是谁？谈什么？好处？证明？为什么跟你买？为什么现在买？</div>
+    </div>
+  </div>
+</div>
+
+<div class="category">
+  <div class="category-header">📋 其他方法论（图片/扫描件，内容未提取）</div>
+  <div class="category-body">
+    <div class="method-desc" style="color: var(--text-secondary); font-size: 0.85rem;">
+      <span class="tag">图片型</span> 运营战略系统（TPI）方法论.docx 
+      <span class="tag">扫描件</span> 系统工程方法论.pdf 
+      <span class="tag">扫描件</span> 华为行业数字化转型方法论白皮书2019.pdf 
+      <span class="tag">扫描件</span> 工业互联网平台系列（5份PDF） 
+      <span class="tag">扫描件</span> IT信息系统项目咨询方法论.pdf 
+      <span class="tag">扫描件</span> 100 大中型国有企业数字化转型方法论.pdf 
+      <span class="tag">扫描件</span> 100 193页PPT读懂《数字化转型方法论》.pdf 
+      <span class="tag">旧格式</span> 用友售前咨询方法论.ppt / 方法论-企业IT战略规划.ppt / 方法论-IT规划方法论.ppt 
+      <span class="tag">其他</span> 数字化转型时代的金融知识图谱建设方法论和实践分析.pdf（部分可读）
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  生成于 2026-05-15 | WIKI页面位于 wiki/concepts/ 目录下<br>
+  源文件: /home/agentuser/trans-import/ (共27个文件)
+</div>
+
+</div>
+</body>
+</html>
