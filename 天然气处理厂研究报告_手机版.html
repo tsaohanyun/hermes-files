@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>天然气处理厂 — 综合研究报告</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg-secondary: #f5f5f7;
+    --bg-tertiary: #fbfbfd;
+    --text-primary: #1d1d1f;
+    --text-secondary: #6e6e73;
+    --text-tertiary: #86868b;
+    --accent: #0071e3;
+    --accent-hover: #0077ed;
+    --green: #34c759;
+    --orange: #ff9500;
+    --red: #ff3b30;
+    --purple: #af52de;
+    --teal: #5ac8fa;
+    --border: #d2d2d7;
+    --border-light: #e8e8ed;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+    --radius: 14px;
+    --radius-sm: 10px;
+    --radius-xs: 6px;
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', 'PingFang SC', sans-serif;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+
+  /* ===== Hero ===== */
+  .hero {
+    background: linear-gradient(135deg, #1d1d1f 0%, #2d2d30 50%, #3a3a3c 100%);
+    color: #fff;
+    padding: 56px 20px 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(circle at 30% 40%, rgba(0,113,227,0.15) 0%, transparent 50%),
+                radial-gradient(circle at 70% 60%, rgba(90,200,250,0.1) 0%, transparent 50%);
+  }
+  .hero-content { position: relative; z-index: 1; }
+  .hero-badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.12);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 16px;
+    padding: 5px 12px;
+    font-size: 11px;
+    color: rgba(255,255,255,0.85);
+    margin-bottom: 18px;
+    letter-spacing: 0.5px;
+  }
+  .hero h1 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    margin-bottom: 12px;
+    line-height: 1.2;
+  }
+  .hero p {
+    font-size: 14px;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.5;
+  }
+
+  /* ===== Sticky Nav ===== */
+  .toc-nav {
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border-light);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    padding: 0 12px;
+  }
+  .toc-inner {
+    display: flex;
+    gap: 2px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .toc-inner::-webkit-scrollbar { display: none; }
+  .toc-link {
+    flex-shrink: 0;
+    padding: 12px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .toc-link:active { color: var(--text-primary); }
+  .toc-link.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* ===== Main ===== */
+  .main { padding: 24px 16px 48px; }
+
+  /* ===== Section ===== */
+  .section { margin-bottom: 40px; scroll-margin-top: 52px; }
+  .section-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 6px;
+  }
+  .section-title {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.2px;
+    margin-bottom: 12px;
+    line-height: 1.25;
+  }
+  .section-desc {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 18px;
+  }
+
+  /* ===== Cards ===== */
+  .card-grid { display: grid; gap: 10px; }
+  .card-grid-2 { grid-template-columns: 1fr; }
+  .card-grid-3 { grid-template-columns: 1fr; }
+  .card-grid-4 { grid-template-columns: 1fr 1fr; }
+
+  .card {
+    background: var(--bg);
+    border-radius: var(--radius);
+    padding: 16px;
+    border: 1px solid var(--border-light);
+  }
+  .card-icon {
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+  .card-icon.blue { background: rgba(0,113,227,0.1); }
+  .card-icon.green { background: rgba(52,199,89,0.1); }
+  .card-icon.orange { background: rgba(255,149,0,0.1); }
+  .card-icon.purple { background: rgba(175,82,222,0.1); }
+  .card-icon.teal { background: rgba(90,200,250,0.1); }
+  .card-icon.red { background: rgba(255,59,48,0.1); }
+  .card h3 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    line-height: 1.3;
+  }
+  .card p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  /* ===== Stat Cards ===== */
+  .stat-card {
+    background: var(--bg);
+    border-radius: var(--radius);
+    padding: 16px 12px;
+    border: 1px solid var(--border-light);
+    text-align: center;
+  }
+  .stat-value {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 2px;
+  }
+  .stat-value.blue { color: var(--accent); }
+  .stat-value.green { color: var(--green); }
+  .stat-value.orange { color: var(--orange); }
+  .stat-value.purple { color: var(--purple); }
+  .stat-label {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    font-weight: 500;
+  }
+
+  /* ===== Table ===== */
+  .table-wrap {
+    background: var(--bg);
+    border-radius: var(--radius);
+    border: 1px solid var(--border-light);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .table-wrap table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    min-width: 320px;
+  }
+  .table-wrap th {
+    background: var(--bg-tertiary);
+    font-weight: 600;
+    text-align: left;
+    padding: 10px 12px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border-light);
+    white-space: nowrap;
+  }
+  .table-wrap td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border-light);
+    color: var(--text-primary);
+    line-height: 1.45;
+  }
+  .table-wrap tr:last-child td { border-bottom: none; }
+  .table-wrap tr:nth-child(even) { background: var(--bg-tertiary); }
+
+  /* ===== Flow diagram ===== */
+  .flow-container {
+    background: var(--bg);
+    border-radius: var(--radius);
+    border: 1px solid var(--border-light);
+    padding: 20px 16px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .flow {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 580px;
+    justify-content: center;
+    flex-wrap: nowrap;
+  }
+  .flow-step {
+    flex-shrink: 0;
+    text-align: center;
+    padding: 12px 8px;
+    border-radius: 8px;
+    min-width: 72px;
+  }
+  .flow-step.primary {
+    background: var(--accent);
+    color: #fff;
+  }
+  .flow-step.secondary {
+    background: rgba(0,113,227,0.08);
+    color: var(--accent);
+    border: 1px solid rgba(0,113,227,0.2);
+  }
+  .flow-step.dark {
+    background: var(--text-primary);
+    color: #fff;
+  }
+  .flow-step .step-num {
+    font-size: 9px;
+    opacity: 0.7;
+    margin-bottom: 3px;
+  }
+  .flow-step .step-text {
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .flow-arrow {
+    flex-shrink: 0;
+    color: var(--text-tertiary);
+    font-size: 14px;
+  }
+
+  /* ===== Process Detail ===== */
+  .process-block {
+    background: var(--bg);
+    border-radius: var(--radius);
+    border: 1px solid var(--border-light);
+    padding: 18px;
+    margin-bottom: 12px;
+  }
+  .process-block h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .process-block h3 .num {
+    background: var(--accent);
+    color: #fff;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .process-block p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.55;
+    margin-bottom: 10px;
+  }
+  .tag-list { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
+  .tag {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 16px;
+    font-size: 11px;
+    font-weight: 500;
+  }
+  .tag.blue { background: rgba(0,113,227,0.1); color: var(--accent); }
+  .tag.green { background: rgba(52,199,89,0.1); color: var(--green); }
+  .tag.orange { background: rgba(255,149,0,0.1); color: var(--orange); }
+  .tag.purple { background: rgba(175,82,222,0.1); color: var(--purple); }
+
+  /* ===== Comparison Bars ===== */
+  .bar-item { margin-bottom: 10px; }
+  .bar-label {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 3px;
+  }
+  .bar-label span:first-child { font-size: 13px; font-weight: 500; }
+  .bar-label span:last-child { font-size: 12px; color: var(--text-secondary); }
+  .bar-track {
+    height: 6px;
+    background: var(--bg-secondary);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    border-radius: 3px;
+  }
+  .bar-fill.blue { background: var(--accent); }
+  .bar-fill.green { background: var(--green); }
+  .bar-fill.orange { background: var(--orange); }
+  .bar-fill.purple { background: var(--purple); }
+  .bar-fill.teal { background: var(--teal); }
+
+  /* ===== Timeline ===== */
+  .timeline { position: relative; padding-left: 24px; }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 6px; top: 6px; bottom: 6px;
+    width: 2px;
+    background: var(--border);
+  }
+  .timeline-item { margin-bottom: 16px; position: relative; }
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -21px; top: 5px;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    border: 2px solid var(--accent);
+    background: var(--bg);
+  }
+  .timeline-year {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 2px;
+  }
+  .timeline-text {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.45;
+  }
+
+  /* ===== Alert Box ===== */
+  .alert {
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    font-size: 13px;
+    line-height: 1.45;
+    margin-bottom: 12px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .alert.info { background: rgba(0,113,227,0.06); border: 1px solid rgba(0,113,227,0.15); }
+  .alert.warning { background: rgba(255,149,0,0.06); border: 1px solid rgba(255,149,0,0.15); }
+  .alert.danger { background: rgba(255,59,48,0.06); border: 1px solid rgba(255,59,48,0.15); }
+  .alert-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+  /* ===== Single column override ===== */
+  .two-col { display: grid; grid-template-columns: 1fr; gap: 12px; }
+
+  /* ===== Pill group ===== */
+  .pill-group { display: flex; flex-wrap: wrap; gap: 6px; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 7px 12px;
+    background: var(--bg);
+    border: 1px solid var(--border-light);
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+  .pill .dot { width: 7px; height: 7px; border-radius: 50%; }
+  .pill .dot.blue { background: var(--accent); }
+  .pill .dot.green { background: var(--green); }
+  .pill .dot.orange { background: var(--orange); }
+  .pill .dot.red { background: var(--red); }
+
+  /* ===== Footer ===== */
+  .footer {
+    text-align: center;
+    padding: 32px 16px;
+    color: var(--text-tertiary);
+    font-size: 11px;
+    border-top: 1px solid var(--border-light);
+  }
+
+  /* ===== Divider ===== */
+  .divider {
+    height: 1px;
+    background: var(--border-light);
+    margin: 32px 0;
+  }
+
+  /* ===== Formula block ===== */
+  .formula-block {
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    font-family: 'SF Mono', 'Menlo', 'Monaco', monospace;
+    font-size: 12px;
+    color: var(--text-primary);
+    margin: 10px 0;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* ===== Mini card ===== */
+  .mini-cards { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .mini-card {
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-xs);
+    padding: 8px 10px;
+    font-size: 12px;
+    flex: 1;
+    min-width: 100px;
+  }
+  .mini-card strong { display: block; font-weight: 600; margin-bottom: 1px; font-size: 12px; }
+  .mini-card span { color: var(--text-secondary); font-size: 11px; }
+
+  /* ===== Sub headings ===== */
+  .sub-heading {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+
+  /* ===== Scroll hint for flow ===== */
+  .scroll-hint {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    text-align: center;
+    margin-top: 8px;
+  }
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-content">
+    <div class="hero-badge">Natural Gas Processing Plant</div>
+    <h1>天然气处理厂<br>综合研究报告</h1>
+    <p>从工艺原理到行业全景，涵盖净化技术、核心设备、质量管控与未来趋势</p>
+  </div>
+</div>
+
+<!-- TOC Nav -->
+<nav class="toc-nav">
+  <div class="toc-inner">
+    <a href="#overview" class="toc-link active">概述</a>
+    <a href="#process" class="toc-link">工艺流程</a>
+    <a href="#equipment" class="toc-link">核心设备</a>
+    <a href="#quality" class="toc-link">质量管理</a>
+    <a href="#standards" class="toc-link">标准规范</a>
+    <a href="#industry" class="toc-link">行业现状</a>
+    <a href="#trends" class="toc-link">未来趋势</a>
+  </div>
+</nav>
+
+<div class="main">
+
+<!-- Section 1: Overview -->
+<div class="section" id="overview">
+  <div class="section-label">01 / 概述与定义</div>
+  <h2 class="section-title">什么是天然气处理厂</h2>
+  <p class="section-desc">
+    天然气处理厂是将气井产出的原料天然气经一系列物理和化学处理，使其达到管输标准或LNG原料标准的工业设施。它是连接上游气田开发与下游市场供应的核心枢纽。
+  </p>
+
+  <div class="card-grid card-grid-4" style="margin-bottom: 14px;">
+    <div class="stat-card">
+      <div class="stat-value blue">4万亿</div>
+      <div class="stat-label">全球年产量(m³)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value green">300+</div>
+      <div class="stat-label">中国处理厂数量</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value orange">250亿</div>
+      <div class="stat-label">全球市场(美元/年)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value purple">4~5%</div>
+      <div class="stat-label">市场年复合增长</div>
+    </div>
+  </div>
+
+  <div class="card-grid card-grid-2">
+    <div class="card">
+      <div class="card-icon blue">🎯</div>
+      <h3>净化脱酸</h3>
+      <p>脱除H₂S、CO₂等酸性气体，防止管道腐蚀和环境污染，是处理厂的首要任务</p>
+    </div>
+    <div class="card">
+      <div class="card-icon green">💧</div>
+      <h3>脱水干燥</h3>
+      <p>脱除水蒸气，防止水合物生成堵塞管道，确保管输安全稳定</p>
+    </div>
+    <div class="card">
+      <div class="card-icon orange">🛢️</div>
+      <h3>凝液回收</h3>
+      <p>提取乙烷、丙烷、丁烷等高附加值NGL产品，提升资源综合利用率</p>
+    </div>
+    <div class="card">
+      <div class="card-icon purple">⚖️</div>
+      <h3>调质合规</h3>
+      <p>调整热值和华白指数，确保产品气符合国家标准和管输要求</p>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- Section 2: Process Flow -->
+<div class="section" id="process">
+  <div class="section-label">02 / 工艺流程</div>
+  <h2 class="section-title">典型全流程解析</h2>
+  <p class="section-desc">从原料气进站到产品外输的完整链路。</p>
+
+  <div class="flow-container">
+    <div class="flow">
+      <div class="flow-step dark"><div class="step-num">STEP 0</div><div class="step-text">原料气进站</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step primary"><div class="step-num">STEP 1</div><div class="step-text">入口分离</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step primary"><div class="step-num">STEP 2</div><div class="step-text">脱硫脱碳</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step primary"><div class="step-num">STEP 3</div><div class="step-text">脱水</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step primary"><div class="step-num">STEP 4</div><div class="step-text">凝液回收</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step primary"><div class="step-num">STEP 5</div><div class="step-text">硫磺回收</div></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step dark"><div class="step-num">STEP 6</div><div class="step-text">增压外输</div></div>
+    </div>
+    <div class="scroll-hint">← 左右滑动查看完整流程 →</div>
+  </div>
+
+  <div class="process-block" style="margin-top: 16px;">
+    <h3><span class="num">1</span>入口分离</h3>
+    <p>将原料气中的游离水、凝析油、固体杂质与气相分离。操作压力3.0~12.0 MPa，温度10~60℃。</p>
+    <div class="mini-cards">
+      <div class="mini-card"><strong>段塞流捕集器</strong><span>处理气液两相段塞流</span></div>
+      <div class="mini-card"><strong>三相分离器</strong><span>同时分离气、油、水</span></div>
+      <div class="mini-card"><strong>过滤分离器</strong><span>精细过滤颗粒和液滴</span></div>
+    </div>
+  </div>
+
+  <div class="process-block">
+    <h3><span class="num">2</span>脱硫脱碳（AGR）</h3>
+    <p>移除剧毒且有腐蚀性的H₂S和降低热值并引起腐蚀的CO₂，是处理厂的核心净化工序。</p>
+    <div class="two-col" style="margin-top: 10px;">
+      <div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>吸收剂</th><th>特点</th></tr></thead>
+            <tbody>
+              <tr><td><strong>MDEA</strong></td><td>选择性脱硫，能耗低</td></tr>
+              <tr><td><strong>MEA</strong></td><td>活性高，腐蚀性强</td></tr>
+              <tr><td><strong>DEA</strong></td><td>中等活性，降解少</td></tr>
+              <tr><td><strong>配方胺</strong></td><td>针对特定工况优化</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div>
+        <div style="margin-bottom: 10px;">
+          <div style="font-size: 13px; font-weight: 600; margin-bottom: 6px;">其他脱酸工艺</div>
+          <div class="tag-list">
+            <span class="tag blue">Selexol物理溶剂</span>
+            <span class="tag green">膜分离法</span>
+            <span class="tag orange">变压吸附PSA</span>
+            <span class="tag purple">Sulfinol混合工艺</span>
+          </div>
+        </div>
+        <div class="alert info">
+          <span class="alert-icon">💡</span>
+          <div>膜+醇胺组合工艺先用膜粗脱CO₂、再用醇胺精脱，可有效降低整体能耗30%以上。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="process-block">
+    <h3><span class="num">3</span>脱水</h3>
+    <p>将水露点降至管输要求以下，防止水合物生成、腐蚀和深冷段结冰。水露点降可达40~70℃。</p>
+    <div class="card-grid card-grid-2">
+      <div class="card" style="background: var(--bg-tertiary);">
+        <h3 style="color: var(--accent);">TEG甘醇脱水</h3>
+        <p>三甘醇强吸湿性，气液接触吸收水分。常压~200℃再生，水露点降40~70℃</p>
+      </div>
+      <div class="card" style="background: var(--bg-tertiary);">
+        <h3 style="color: var(--green);">分子筛脱水</h3>
+        <p>3A/4A/5A型微孔结构高压常温吸附、高温低压再生。水露点可降至-100℃以下</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="process-block">
+    <h3><span class="num">4</span>凝液回收（NGL Recovery）</h3>
+    <p>从天然气中回收C₂~C₅⁺高附加值产品，提升资源综合利用率。</p>
+    <div class="two-col">
+      <div>
+        <div style="font-size: 14px; font-weight: 600; margin-bottom: 10px;">🌡️ 浅冷分离</div>
+        <div class="bar-item">
+          <div class="bar-label"><span>制冷温度</span><span>-25 ~ -35℃</span></div>
+          <div class="bar-track"><div class="bar-fill blue" style="width: 30%;"></div></div>
+        </div>
+        <div class="bar-item">
+          <div class="bar-label"><span>丙烷回收率</span><span>70 ~ 85%</span></div>
+          <div class="bar-track"><div class="bar-fill orange" style="width: 78%;"></div></div>
+        </div>
+        <div class="bar-item">
+          <div class="bar-label"><span>乙烷回收率</span><span>几乎不回收</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width: 5%; background: var(--text-tertiary);"></div></div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size: 14px; font-weight: 600; margin-bottom: 10px;">❄️ 深冷分离</div>
+        <div class="bar-item">
+          <div class="bar-label"><span>制冷温度</span><span>-70 ~ -100℃</span></div>
+          <div class="bar-track"><div class="bar-fill purple" style="width: 80%;"></div></div>
+        </div>
+        <div class="bar-item">
+          <div class="bar-label"><span>丙烷回收率</span><span>99%+</span></div>
+          <div class="bar-track"><div class="bar-fill green" style="width: 99%;"></div></div>
+        </div>
+        <div class="bar-item">
+          <div class="bar-label"><span>乙烷回收率</span><span>85 ~ 95%+</span></div>
+          <div class="bar-track"><div class="bar-fill teal" style="width: 90%;"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="process-block">
+    <h3><span class="num">5</span>硫磺回收与尾气处理</h3>
+    <p>脱硫产生的酸气H₂S需转化为元素硫。Claus工艺二级硫回收率94~97%，搭配尾气处理可达99.8%+。</p>
+    <div class="formula-block">H₂S + 3/2 O₂ → SO₂ + H₂O (热反应段)<br>2H₂S + SO₂ → 3S + 2H₂O (催化反应段)</div>
+    <div class="table-wrap" style="margin-top: 10px;">
+      <table>
+        <thead><tr><th>尾气处理工艺</th><th>技术路线</th><th>总硫回收率</th></tr></thead>
+        <tbody>
+          <tr><td><strong>SCOT</strong></td><td>还原吸收</td><td>>99.8%</td></tr>
+          <tr><td><strong>SuperClaus</strong></td><td>选择氧化</td><td>>99.0%</td></tr>
+          <tr><td><strong>S-Zorb</strong></td><td>低温加氢</td><td>>99.5%</td></tr>
+          <tr><td><strong>LO-CAT</strong></td><td>液相氧化还原</td><td>>99.9%</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- Section 3: Equipment -->
+<div class="section" id="equipment">
+  <div class="section-label">03 / 核心设备</div>
+  <h2 class="section-title">关键设备总览</h2>
+  <p class="section-desc">涵盖分离、吸收、换热、转动与安全控制五大类别。</p>
+
+  <div class="card-grid card-grid-3">
+    <div class="card">
+      <div class="card-icon blue">🔄</div>
+      <h3>膨胀机</h3>
+      <p>深冷NGL回收核心制冷设备，等熵膨胀降温降压输出轴功，转速10,000~50,000 RPM</p>
+    </div>
+    <div class="card">
+      <div class="card-icon green">🏗️</div>
+      <h3>胺液吸收塔</h3>
+      <p>醇胺与原料气逆流接触化学吸收，填料塔或浮阀塔盘，塔径1~6m</p>
+    </div>
+    <div class="card">
+      <div class="card-icon orange">❄️</div>
+      <h3>冷箱（BAHE）</h3>
+      <p>铝制钎焊板翅式多股流高效换热器，单台5~10股流换热</p>
+    </div>
+    <div class="card">
+      <div class="card-icon purple">💨</div>
+      <h3>离心压缩机</h3>
+      <p>燃气轮机/电机/蒸汽轮机驱动，大流量多级压缩带中间冷却</p>
+    </div>
+    <div class="card">
+      <div class="card-icon teal">🧪</div>
+      <h3>脱甲烷塔</h3>
+      <p>深冷分离核心塔，塔顶-85~-95℃，需低温钢（3.5Ni钢）</p>
+    </div>
+    <div class="card">
+      <div class="card-icon red">🔥</div>
+      <h3>Claus反应炉</h3>
+      <p>H₂S部分燃烧生成SO₂，操作温度1000~1400℃，搭配废热锅炉产蒸汽</p>
+    </div>
+  </div>
+
+  <div class="table-wrap" style="margin-top: 14px;">
+    <table>
+      <thead><tr><th>设备类别</th><th>关键设备</th><th>管理重点</th></tr></thead>
+      <tbody>
+        <tr><td><strong>动设备</strong></td><td>压缩机、泵、膨胀机</td><td>振动监测、润滑管理</td></tr>
+        <tr><td><strong>静设备</strong></td><td>塔器、容器、换热器</td><td>腐蚀监测、壁厚检测</td></tr>
+        <tr><td><strong>管道</strong></td><td>工艺管道、高压管道</td><td>腐蚀速率监测</td></tr>
+        <tr><td><strong>安全附件</strong></td><td>安全阀、爆破片</td><td>定期校验、功能测试</td></tr>
+        <tr><td><strong>自控系统</strong></td><td>DCS、SIS、ESD</td><td>系统冗余、联锁测试</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- Section 4: Quality -->
+<div class="section" id="quality">
+  <div class="section-label">04 / 质量管理</div>
+  <h2 class="section-title">全过程质量控制</h2>
+  <p class="section-desc">以"产品达标、过程受控、持续改进"为方针，覆盖从原料入厂到产品外输的全链路质量体系。</p>
+
+  <div class="card-grid card-grid-2" style="margin-bottom: 14px;">
+    <div class="card">
+      <div class="card-icon green">✅</div>
+      <h3>年度质量目标</h3>
+      <div class="bar-item">
+        <div class="bar-label"><span>产品气合格率</span><span>≥99.5%</span></div>
+        <div class="bar-track"><div class="bar-fill green" style="width: 99.5%;"></div></div>
+      </div>
+      <div class="bar-item">
+        <div class="bar-label"><span>H₂S达标率</span><span>100%</span></div>
+        <div class="bar-track"><div class="bar-fill blue" style="width: 100%;"></div></div>
+      </div>
+      <div class="bar-item">
+        <div class="bar-label"><span>水露点合格率</span><span>≥99.8%</span></div>
+        <div class="bar-track"><div class="bar-fill teal" style="width: 99.8%;"></div></div>
+      </div>
+      <div class="bar-item">
+        <div class="bar-label"><span>质量事故</span><span>0次</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width: 0%; background: var(--green);"></div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-icon purple">📊</div>
+      <h3>在线监测体系</h3>
+      <div class="table-wrap" style="margin-top: 6px;">
+        <table>
+          <thead><tr><th>监测点</th><th>分析项目</th></tr></thead>
+          <tbody>
+            <tr><td>原料气进站</td><td>全组分（GC）</td></tr>
+            <tr><td>脱硫后</td><td>H₂S、CO₂</td></tr>
+            <tr><td>脱水后</td><td>水露点</td></tr>
+            <tr><td>产品气外输</td><td>组分+热值</td></tr>
+            <tr><td>硫磺回收</td><td>尾气H₂S/SO₂</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="alert warning">
+    <span class="alert-icon">⚠️</span>
+    <div><strong>关键报警设定：</strong>H₂S ≥20 mg/m³ 联锁切断外输；水露点高于管输要求加强脱水；热值 &lt;31.4 MJ/m³ 调质/停输；CO₂ &gt;3% 调整脱碳。</div>
+  </div>
+
+  <div style="margin-top: 16px;">
+    <h3 class="sub-heading">GB 17820-2018 管输天然气标准</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>指标</th><th>一类气</th><th>二类气</th></tr></thead>
+        <tbody>
+          <tr><td>高位发热量(MJ/m³)</td><td>≥36.0</td><td>≥31.4</td></tr>
+          <tr><td>总硫(mg/m³)</td><td>≤20</td><td>≤100</td></tr>
+          <tr><td>H₂S含量(mg/m³)</td><td>≤6</td><td>≤20</td></tr>
+          <tr><td>CO₂含量(mol%)</td><td>≤2.0</td><td>≤3.0</td></tr>
+          <tr><td>水露点</td><td colspan="2">低于管线最低操作温度</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- Section 5: Standards -->
+<div class="section" id="standards">
+  <div class="section-label">05 / 标准规范</div>
+  <h2 class="section-title">标准与安全体系</h2>
+  <p class="section-desc">天然气处理厂涉及高压、易燃、易爆、有毒介质，属于重大危险源。</p>
+
+  <div class="card-grid card-grid-3">
+    <div class="card">
+      <div class="card-icon blue">🇨🇳</div>
+      <h3>中国国家标准（GB）</h3>
+      <div class="tag-list">
+        <span class="tag blue">GB 17820 天然气</span>
+        <span class="tag blue">GB 50183 防火规范</span>
+        <span class="tag blue">GB 50251 输气管道</span>
+        <span class="tag blue">GB 50349 气田集输</span>
+        <span class="tag blue">GB/T 150 压力容器</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-icon green">📐</div>
+      <h3>行业标准（SY）</h3>
+      <div class="tag-list">
+        <span class="tag green">SY/T 0011 净化厂设计</span>
+        <span class="tag green">SY/T 0076 脱水设计</span>
+        <span class="tag green">SY/T 0077 凝液回收</span>
+        <span class="tag green">SY/T 0599 抗硫材料</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-icon purple">🌍</div>
+      <h3>国际标准</h3>
+      <div class="tag-list">
+        <span class="tag purple">ISO 13686 质量指标</span>
+        <span class="tag purple">ISO 15156 抗H₂S材料</span>
+        <span class="tag purple">ASME B31.3/8</span>
+        <span class="tag purple">API 521/617/618</span>
+        <span class="tag purple">NACE MR0175</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="alert danger" style="margin-top: 14px;">
+    <span class="alert-icon">☢️</span>
+    <div>
+      <strong>H₂S安全阈值：</strong>10ppm允许8小时暴露 → 20ppm中国最高允许 → 100ppm嗅觉丧失 → 300ppm立即危及生命（IDLH） → 1000ppm+立即死亡。处理厂必须配备固定式/便携式H₂S检测仪、SCBA正压空气呼吸器。
+    </div>
+  </div>
+
+  <div class="table-wrap" style="margin-top: 12px;">
+    <table>
+      <thead><tr><th>排放项目</th><th>限值</th><th>来源</th></tr></thead>
+      <tbody>
+        <tr><td>SO₂</td><td>≤100~400 mg/Nm³</td><td>GB 31571</td></tr>
+        <tr><td>NOx</td><td>≤150~200 mg/Nm³</td><td>GB 31571</td></tr>
+        <tr><td>颗粒物</td><td>≤20~30 mg/Nm³</td><td>GB 31571</td></tr>
+        <tr><td>VOC</td><td>≤120 mg/Nm³</td><td>GB 31571</td></tr>
+        <tr><td>废水COD</td><td>≤60 mg/L</td><td>GB 8978</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- Section 6: Industry -->
+<div class="section" id="industry">
+  <div class="section-label">06 / 行业现状</div>
+  <h2 class="section-title">全球与中国产业格局</h2>
+  <p class="section-desc">中国天然气产量约2300亿m³/年，处理总能力超3000亿m³/年，300+座处理厂遍布主要气区。</p>
+
+  <h3 class="sub-heading">中国主要气区与处理基地</h3>
+  <div class="table-wrap" style="margin-bottom: 18px;">
+    <table>
+      <thead><tr><th>盆地区域</th><th>代表气田</th><th>处理厂</th><th>特点</th></tr></thead>
+      <tbody>
+        <tr><td><strong>四川盆地</strong></td><td>普光、元坝</td><td>普光净化厂120亿m³/年</td><td>高含硫集中处理</td></tr>
+        <tr><td><strong>塔里木</strong></td><td>克拉2、迪那2</td><td>克拉2处理厂</td><td>高压高产气田</td></tr>
+        <tr><td><strong>鄂尔多斯</strong></td><td>苏里格、靖边</td><td>苏里格处理群</td><td>致密砂岩气</td></tr>
+        <tr><td><strong>南海</strong></td><td>荔湾3-1</td><td>荔湾深水终端</td><td>深水天然气</td></tr>
+        <tr><td><strong>松辽</strong></td><td>徐深、长深</td><td>大庆处理厂</td><td>火山岩含CO₂</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="sub-heading">中国主要企业</h3>
+  <div class="card-grid card-grid-3">
+    <div class="card">
+      <div class="card-icon red">🏔️</div>
+      <h3>中国石油</h3>
+      <p>最大天然气生产商。普光净化厂120亿m³/年、克拉2处理厂107亿m³/年</p>
+    </div>
+    <div class="card">
+      <div class="card-icon blue">⚡</div>
+      <h3>中国石化</h3>
+      <p>元坝净化厂40亿m³/年（国产化率>90%）、涪陵页岩气100亿m³/年</p>
+    </div>
+    <div class="card">
+      <div class="card-icon teal">🌊</div>
+      <h3>中国海油</h3>
+      <p>荔湾3-1终端80亿m³/年深水气田陆上处理、陵水17-2半潜平台30亿m³/年</p>
+    </div>
+  </div>
+
+  <h3 class="sub-heading" style="margin-top: 18px;">全球标志性项目</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>项目</th><th>国家</th><th>规模</th><th>亮点</th></tr></thead>
+      <tbody>
+        <tr><td>Ras Laffan</td><td>卡塔尔</td><td>1400亿m³/年+</td><td>世界最大处理集群</td></tr>
+        <tr><td>Gorgon LNG</td><td>澳大利亚</td><td>1560万吨/年</td><td>含CCS（400万吨CO₂/年）</td></tr>
+        <tr><td>Amur GPP</td><td>俄罗斯</td><td>420亿m³/年</td><td>世界最大处理厂之一</td></tr>
+        <tr><td>Prelude FLNG</td><td>澳大利亚</td><td>360万吨/年</td><td>世界最大浮式LNG</td></tr>
+        <tr><td><strong>普光净化厂</strong></td><td>中国</td><td>120亿m³/年</td><td>亚洲最大高含硫</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- Section 7: Trends -->
+<div class="section" id="trends">
+  <div class="section-label">07 / 未来趋势</div>
+  <h2 class="section-title">技术演进与行业展望</h2>
+  <p class="section-desc">在能源转型与碳中和驱动下，天然气处理厂正加速向智能化、低碳化、模块化方向演进。</p>
+
+  <div class="card-grid card-grid-2" style="margin-bottom: 18px;">
+    <div class="card">
+      <div class="card-icon blue">🤖</div>
+      <h3>数字化智能化</h3>
+      <p>APC先进过程控制、数字孪生虚拟仿真、AI预测性维护、智能巡检机器人/无人机</p>
+      <div class="tag-list" style="margin-top: 8px;">
+        <span class="tag blue">APC</span>
+        <span class="tag blue">RTO实时优化</span>
+        <span class="tag blue">数字孪生</span>
+        <span class="tag blue">AI诊断</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-icon green">🌱</div>
+      <h3>CCUS碳管理</h3>
+      <p>处理厂碳捕集与驱油/封存耦合，脱碳与提高采收率联动，全球已建约45个商业化CCUS项目</p>
+      <div class="tag-list" style="margin-top: 8px;">
+        <span class="tag green">CO₂-EOR</span>
+        <span class="tag green">碳捕集</span>
+        <span class="tag green">碳交易</span>
+        <span class="tag green">碳中和</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-icon orange">📦</div>
+      <h3>模块化橇装化</h3>
+      <p>缩短建设周期50%以上，适合页岩气分散开发。工厂预制、现场组装，灵活扩展产能</p>
+      <div class="tag-list" style="margin-top: 8px;">
+        <span class="tag orange">预制化</span>
+        <span class="tag orange">快速部署</span>
+        <span class="tag orange">FLNG</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-icon purple">💎</div>
+      <h3>稀有资源联产</h3>
+      <p>氦气联合回收（如四川威远气田）、稀有气体提取，提升高附加值资源战略价值</p>
+      <div class="tag-list" style="margin-top: 8px;">
+        <span class="tag purple">氦气回收</span>
+        <span class="tag purple">NGL增值</span>
+        <span class="tag purple">绿氢掺混</span>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="sub-heading">关键挑战</h3>
+  <div class="pill-group" style="margin-bottom: 18px;">
+    <div class="pill"><span class="dot red"></span>高含硫气田安全风险</div>
+    <div class="pill"><span class="dot orange"></span>CO₂排放约束</div>
+    <div class="pill"><span class="dot orange"></span>老气田气质劣化</div>
+    <div class="pill"><span class="dot blue"></span>设备腐蚀与完整性</div>
+    <div class="pill"><span class="dot blue"></span>偏远气田经济性</div>
+  </div>
+
+  <h3 class="sub-heading">中国天然气处理里程碑</h3>
+  <div class="timeline">
+    <div class="timeline-item">
+      <div class="timeline-year">2004</div>
+      <div class="timeline-text">克拉2处理厂投产，西气东输主力气源，107亿m³/年</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-year">2009</div>
+      <div class="timeline-text">普光净化厂投产，亚洲最大高含硫天然气净化厂，120亿m³/年</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-year">2013</div>
+      <div class="timeline-text">涪陵页岩气脱水站群启动，中国页岩气商业化开发里程碑</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-year">2014</div>
+      <div class="timeline-text">元坝净化厂投产，全流程国产化率>90%，40亿m³/年</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-year">2021</div>
+      <div class="timeline-text">塔里木乙烷回收工程投产，深冷NGL回收100亿m³/年</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-year">2025+</div>
+      <div class="timeline-text">CCUS集成、数字化运维、模块化建设成为行业发展主轴</div>
+    </div>
+  </div>
+</div>
+
+</div><!-- end main -->
+
+<!-- Footer -->
+<div class="footer">
+  <p>天然气处理厂综合研究报告 · 基于LLM Wiki知识库与网络公开资料整理 · 2026年5月</p>
+</div>
+
+<script>
+// TOC active state
+const sections = document.querySelectorAll('.section');
+const navLinks = document.querySelectorAll('.toc-link');
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(link => link.classList.remove('active'));
+      const id = entry.target.id;
+      const activeLink = document.querySelector(`.toc-link[href="#${id}"]`);
+      if (activeLink) {
+        activeLink.classList.add('active');
+        // Auto scroll nav to show active link
+        activeLink.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      }
+    }
+  });
+}, { rootMargin: '-60px 0px -60% 0px' });
+
+sections.forEach(section => observer.observe(section));
+
+// Smooth scroll
+navLinks.forEach(link => {
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    const target = document.querySelector(link.getAttribute('href'));
+    if (target) target.scrollIntoView({ behavior: 'smooth' });
+  });
+});
+</script>
+
+</body>
+</html>
