@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>AI Prompt 架构全景报告 2026</title>
+<style>
+  :root {
+    --bg: #F5F5F7; --card: #FFFFFF; --text: #1D1D1F;
+    --text2: #86868B; --text3: #AEAEB2; --accent: #007AFF;
+    --border: #E5E5EA; --green: #34C759; --orange: #FF9500;
+    --red: #FF3B30; --purple: #5856D6; --teal: #5AC8FA;
+    --pink: #FF2D55; --radius: 16px; --radius-sm: 10px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.04);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.6;
+    -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent;
+  }
+
+  .phone {
+    max-width: 430px; margin: 0 auto; padding: 0 0 120px;
+    background: var(--bg); min-height: 100vh;
+  }
+
+  /* Nav Bar */
+  .nav { 
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(245,245,247,0.85); backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 12px 20px; border-bottom: 0.5px solid var(--border);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .nav-title { font-size: 1rem; font-weight: 600; flex: 1; text-align: center; }
+  .nav-back { font-size: 1.2rem; color: var(--accent); text-decoration: none; }
+
+  /* Hero */
+  .hero { padding: 28px 20px 20px; text-align: center; }
+  .hero h1 { font-size: 1.7rem; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; margin-bottom: 6px; }
+  .hero .sub { font-size: 0.85rem; color: var(--text2); }
+  .hero .date { font-size: 0.75rem; color: var(--text3); margin-top: 4px; }
+
+  /* Tags Bar */
+  .tags { padding: 0 20px 20px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .tag { 
+    padding: 4px 12px; border-radius: 20px; font-size: 0.72rem;
+    font-weight: 500; white-space: nowrap;
+  }
+  .t-blue { background: #E8F0FE; color: #1967D2; }
+  .t-green { background: #E6F4EA; color: #137333; }
+  .t-purple { background: #F3E8FD; color: #7B1FA2; }
+  .t-orange { background: #FEF7E0; color: #B06000; }
+  .t-pink { background: #FCE8E6; color: #C5221F; }
+  .t-teal { background: #E0F7FA; color: #00695C; }
+
+  /* Section */
+  .sec { padding: 0 20px 8px; }
+  .sec-title { 
+    font-size: 1.1rem; font-weight: 700; margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .sec-title .emoji { font-size: 1.3rem; }
+
+  /* Card */
+  .card { 
+    background: var(--card); border-radius: var(--radius); 
+    padding: 16px; margin-bottom: 12px;
+    box-shadow: var(--shadow);
+  }
+  .card h3 { font-size: 0.9rem; font-weight: 600; margin-bottom: 6px; }
+  .card p { font-size: 0.8rem; color: var(--text2); line-height: 1.5; }
+
+  /* Model Row */
+  .model-row {
+    display: flex; align-items: center; gap: 12px; padding: 12px 0;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .model-row:last-child { border-bottom: none; }
+  .model-icon {
+    width: 40px; height: 40px; border-radius: 12px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem; font-weight: 700; color: #fff;
+  }
+  .mi-gpt { background: #10A37F; }
+  .mi-claude { background: #D97757; }
+  .mi-gemini { background: #4285F4; }
+  .mi-ds { background: #4D6BFE; }
+  .mi-qwen { background: #615CED; }
+  .mi-llama { background: #FF6F00; }
+  .mi-mistral { background: #F90; }
+
+  .model-info { flex: 1; min-width: 0; }
+  .model-info .name { font-size: 0.85rem; font-weight: 600; }
+  .model-info .desc { font-size: 0.72rem; color: var(--text2); margin-top: 2px; }
+
+  .model-tags { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px; }
+  .mtag {
+    font-size: 0.65rem; padding: 2px 8px; border-radius: 10px;
+    font-weight: 500;
+  }
+  .mtag-ok { background: #E8F5E9; color: #2E7D32; }
+  .mtag-warn { background: #FFF3E0; color: #E65100; }
+  .mtag-info { background: #E3F2FD; color: #1565C0; }
+
+  /* Agent Card */
+  .agent-card {
+    background: var(--card); border-radius: var(--radius); 
+    padding: 14px 16px; margin-bottom: 10px;
+    box-shadow: var(--shadow); border-left: 3px solid transparent;
+  }
+  .agent-card.ac-blue { border-left-color: var(--accent); }
+  .agent-card.ac-purple { border-left-color: var(--purple); }
+  .agent-card.ac-green { border-left-color: var(--green); }
+  .agent-card.ac-orange { border-left-color: var(--orange); }
+  .agent-card.ac-teal { border-left-color: var(--teal); }
+  .agent-card.ac-pink { border-left-color: var(--pink); }
+  .agent-card.ac-red { border-left-color: var(--red); }
+
+  .agent-card .ac-header { 
+    display: flex; align-items: center; gap: 10px; margin-bottom: 8px;
+  }
+  .agent-card .ac-name { font-size: 0.85rem; font-weight: 600; }
+  .agent-card .ac-org { font-size: 0.68rem; color: var(--text3); }
+  .agent-card .ac-pattern { 
+    font-size: 0.72rem; color: var(--text2); line-height: 1.4;
+    margin-bottom: 6px;
+  }
+  .agent-card .ac-detail {
+    font-size: 0.7rem; color: var(--text3); line-height: 1.5;
+    background: #FAFAFA; border-radius: 8px; padding: 10px;
+  }
+
+  /* Comparison Table */
+  .tbl-wrap { 
+    overflow-x: auto; -webkit-overflow-scrolling: touch;
+    border-radius: var(--radius); border: 1px solid var(--border);
+    margin-bottom: 12px;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 0.7rem; }
+  th { 
+    background: #FAFAFA; padding: 10px 8px; text-align: left;
+    font-weight: 600; color: var(--text2); font-size: 0.65rem;
+    text-transform: uppercase; letter-spacing: 0.03em; white-space: nowrap;
+  }
+  td { padding: 8px; border-bottom: 0.5px solid #F0F0F5; line-height: 1.4; }
+  tr:last-child td { border-bottom: none; }
+  .cell-yes { color: var(--green); font-weight: 600; }
+  .cell-no { color: var(--text3); }
+  .cell-partial { color: var(--orange); }
+
+  /* Trend Card */
+  .trend { 
+    display: flex; gap: 8px; align-items: flex-start;
+    padding: 10px 0; border-bottom: 0.5px solid var(--border);
+  }
+  .trend:last-child { border-bottom: none; }
+  .trend-num {
+    width: 24px; height: 24px; border-radius: 12px;
+    background: var(--accent); color: #fff; font-size: 0.7rem;
+    font-weight: 700; display: flex; align-items: center;
+    justify-content: center; flex-shrink: 0; margin-top: 1px;
+  }
+  .trend-info h4 { font-size: 0.82rem; font-weight: 600; }
+  .trend-info p { font-size: 0.7rem; color: var(--text2); margin-top: 2px; }
+
+  /* Code Block */
+  code {
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 0.68rem; background: #F4F4F5; padding: 1px 5px;
+    border-radius: 4px; color: var(--pink);
+    word-break: break-all;
+  }
+
+  pre { 
+    background: #1D1D1F; color: #F5F5F7; border-radius: 10px;
+    padding: 12px; overflow-x: auto; -webkit-overflow-scrolling: touch;
+    font-size: 0.65rem; line-height: 1.5; margin: 8px 0;
+  }
+  pre code { background: none; color: inherit; padding: 0; }
+
+  /* Bottom Drawer */
+  .overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.3); z-index: 200;
+    opacity: 0; pointer-events: none; transition: opacity 0.3s;
+  }
+  .overlay.show { opacity: 1; pointer-events: auto; }
+
+  .drawer {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 210;
+    background: var(--card); border-radius: 20px 20px 0 0;
+    max-height: 70vh; overflow-y: auto;
+    transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.32,0.72,0,1);
+    box-shadow: 0 -4px 24px rgba(0,0,0,0.1);
+    padding-bottom: env(safe-area-inset-bottom, 20px);
+  }
+  .drawer.show { transform: translateY(0); }
+  .drawer-handle {
+    width: 36px; height: 5px; background: #D1D1D6; border-radius: 3px;
+    margin: 10px auto 6px;
+  }
+  .drawer-content { padding: 8px 20px 24px; }
+  .drawer-content h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 8px; }
+  .drawer-content p { font-size: 0.78rem; color: var(--text2); line-height: 1.5; margin-bottom: 8px; }
+
+  /* FAB */
+  .fab {
+    position: fixed; bottom: 28px; right: 16px; z-index: 150;
+    width: 48px; height: 48px; border-radius: 24px;
+    background: var(--text); color: #fff; border: none;
+    font-size: 1.2rem; font-weight: 700; cursor: pointer;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    display: flex; align-items: center; justify-content: center;
+    transition: transform 0.2s;
+  }
+  .fab:active { transform: scale(0.95); }
+
+  @media (max-width: 430px) {
+    .phone { max-width: 100%; }
+    .hero h1 { font-size: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+<div class="phone">
+
+  <!-- Nav -->
+  <div class="nav">
+    <span class="nav-back">←</span>
+    <span class="nav-title">Prompt 架构全景</span>
+    <span style="width:20px"></span>
+  </div>
+
+  <!-- Hero -->
+  <div class="hero">
+    <h1>🧠 AI Prompt 架构全景报告</h1>
+    <p class="sub">主流 Agent 框架 × 大模型 Prompt 设计对比</p>
+    <p class="date">Hermes Research · 2026年5月</p>
+  </div>
+
+  <!-- Tags -->
+  <div class="tags">
+    <span class="tag t-blue">GPT-4.1</span>
+    <span class="tag t-blue">Claude 4</span>
+    <span class="tag t-green">Gemini 2.5</span>
+    <span class="tag t-purple">DeepSeek V3</span>
+    <span class="tag t-orange">CrewAI</span>
+    <span class="tag t-pink">LangGraph</span>
+    <span class="tag t-teal">AutoGen</span>
+  </div>
+
+  <!-- Section 1: Model System Prompts -->
+  <div class="sec">
+    <div class="sec-title"><span class="emoji">🤖</span> 主流模型 System Prompt</div>
+
+    <div class="card">
+      <div class="model-row">
+        <div class="model-icon mi-gpt">G</div>
+        <div class="model-info">
+          <div class="name">GPT-4o / GPT-4.1</div>
+          <div class="desc">独立 system 消息字段，支持结构化输出 (JSON Mode)、指令层级 (Instruction Hierarchy)</div>
+        </div>
+      </div>
+      <div class="model-tags">
+        <span class="mtag mtag-ok">System Message</span>
+        <span class="mtag mtag-ok">JSON Mode</span>
+        <span class="mtag mtag-info">Structured Output</span>
+      </div>
+      <div class="ac-detail" style="margin-top:8px">
+        <strong>特点：</strong>System prompt 作为对话的顶层指令，GPT-4.1 引入了指令层级机制——system > developer > user，防止用户注入覆盖系统指令。Function Calling 通过 <code>tools</code> 参数定义 JSON Schema。
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="model-row">
+        <div class="model-icon mi-claude">C</div>
+        <div class="model-info">
+          <div class="name">Claude 4 (Opus / Sonnet)</div>
+          <div class="desc">XML 结构化 prompt、Constitutional AI、CLAUDE.md 项目上下文</div>
+        </div>
+      </div>
+      <div class="model-tags">
+        <span class="mtag mtag-ok">XML Tags</span>
+        <span class="mtag mtag-ok">Extended Thinking</span>
+        <span class="mtag mtag-warn">CLAUDE.md</span>
+      </div>
+      <div class="ac-detail" style="margin-top:8px">
+        <strong>特点：</strong>推崇 XML 标签结构组织 System Prompt，如 <code>&lt;role&gt;</code>、<code>&lt;context&gt;</code>、<code>&lt;instructions&gt;</code>。Claude Code 自动读取项目 CLAUDE.md 注入上下文。支持 Extended Thinking（长思考链），在 prompt 中通过 thinking budget 控制。
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="model-row">
+        <div class="model-icon mi-gemini">G</div>
+        <div class="model-info">
+          <div class="name">Gemini 2.5 Pro</div>
+          <div class="desc">System Instruction 配置参数，独立 Safety Settings，原生多模态</div>
+        </div>
+      </div>
+      <div class="model-tags">
+        <span class="mtag mtag-ok">System Instruction</span>
+        <span class="mtag mtag-ok">Safety Config</span>
+        <span class="mtag mtag-info">Multimodal</span>
+      </div>
+      <div class="ac-detail" style="margin-top:8px">
+        <strong>特点：</strong>System Instruction 作为独立配置项传入（非 messages 数组），与 Safety Settings 解耦。原生支持图片/视频/音频注入 prompt。2.5 版本引入 thinking 模式，可配置思考深度。
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="model-row">
+        <div class="model-icon mi-ds">D</div>
+        <div class="model-info">
+          <div class="name">DeepSeek V3 / R1</div>
+          <div class="desc">标准 messages 格式，R1 独立 reasoning_content 字段，支持思维链模式</div>
+        </div>
+      </div>
+      <div class="model-tags">
+        <span class="mtag mtag-ok">Standard Messages</span>
+        <span class="mtag mtag-ok">reasoning_content</span>
+        <span class="mtag mtag-warn">Thinking Toggle</span>
+      </div>
+      <div class="ac-detail" style="margin-top:8px">
+        <strong>特点：</strong>Prompt 格式兼容 OpenAI，R1 模型返回 <code>reasoning_content</code> 字段（独立于 <code>content</code>），实现思维链与最终回答分离。通过 <code>thinking</code> 参数控制是否启用深度推理。
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="model-row">
+        <div class="model-icon mi-qwen">Q</div>
+        <div class="model-info">
+          <div class="name">Qwen (通义千问)</div>
+          <div class="desc">ChatML 格式，支持 Function Call via ReAct，Qwen-Agent 框架内置</div>
+        </div>
+      </div>
+      <div class="model-tags">
+        <span class="mtag mtag-ok">ChatML</span>
+        <span class="mtag mtag-ok">ReAct</span>
+        <span class="mtag mtag-info">Qwen-Agent</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="model-row">
+        <div class="model-icon mi-llama">L</div>
+        <div class="model-info">
+          <div class="name">Llama 4 (Meta)</div>
+          <div class="desc">Chat Template 系统，支持 Function Calling，开源可定制 system prompt</div>
+        </div>
+      </div>
+      <div class="model-tags">
+        <span class="mtag mtag-ok">Chat Template</span>
+        <span class="mtag mtag-ok">Tool Use</span>
+        <span class="mtag mtag-info">Open Source</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 2: Agent Framework Prompt Patterns -->
+  <div class="sec" style="padding-top:12px">
+    <div class="sec-title"><span class="emoji">🔧</span> Agent 框架 Prompt 设计模式</div>
+
+    <div class="agent-card ac-blue">
+      <div class="ac-header">
+        <span class="ac-name">OpenAI Agents SDK</span>
+        <span class="ac-org">OpenAI</span>
+      </div>
+      <div class="ac-pattern"><strong>模式：</strong>Instructions 字符串/函数 + Handoffs + Guardrails</div>
+      <div class="ac-detail">
+        核心设计：每个 Agent 配置 <code>instructions</code>（支持静态字符串或动态函数），通过 <code>handoffs</code> 实现 Agent 间任务移交。Guardrails 分为输入/输出检查，在执行前后拦截。Tracing 内建全链路追踪。<br><br>
+        <strong>Prompt 注入形式：</strong>instructions → 拼入 system prompt → 附带可用 handoff agent 描述 → 附带 guardrails 规则
+      </div>
+    </div>
+
+    <div class="agent-card ac-orange">
+      <div class="ac-header">
+        <span class="ac-name">CrewAI</span>
+        <span class="ac-org">CrewAI Inc.</span>
+      </div>
+      <div class="ac-pattern"><strong>模式：</strong>Role + Goal + Backstory 三段式角色定义</div>
+      <div class="ac-detail">
+        核心设计：每个 Agent 通过 <code>role</code>（角色名）、<code>goal</code>（目标）、<code>backstory</code>（背景故事）三段定义。Task 分配时附 <code>expected_output</code> 格式约束。支持 Sequential（顺序）和 Hierarchical（层级）两种流程。<br><br>
+        <strong>Prompt 结构：</strong>"You are {role}. {backstory}. Your goal is {goal}. Current task: {description}. Expected output format: {expected_output}."
+      </div>
+    </div>
+
+    <div class="agent-card ac-pink">
+      <div class="ac-header">
+        <span class="ac-name">LangGraph</span>
+        <span class="ac-org">LangChain</span>
+      </div>
+      <div class="ac-pattern"><strong>模式：</strong>State Graph + Node-level Prompt + 条件路由</div>
+      <div class="ac-detail">
+        核心设计：以有向图定义 Agent 工作流，每个 Node 独立注入 System Prompt。State 对象在节点间传递上下文。通过 Conditional Edges 实现动态路由。Checkpointing 支持状态持久化和人机交互。<br><br>
+        <strong>Prompt 注入形式：</strong>开发者在每个 Node 函数中自行构造 messages（system + user），灵活性最高但需要手动管理 prompt 上下文。
+      </div>
+    </div>
+
+    <div class="agent-card ac-teal">
+      <div class="ac-header">
+        <span class="ac-name">AutoGen</span>
+        <span class="ac-org">Microsoft</span>
+      </div>
+      <div class="ac-pattern"><strong>模式：</strong>ConversableAgent + system_message + 群聊管理</div>
+      <div class="ac-detail">
+        核心设计：每个 ConversableAgent 携带 <code>system_message</code>（角色定义+行为约束），通过 <code>GroupChat</code> + <code>GroupChatManager</code> 管理多 Agent 对话。支持 Code Executor Agent 隔离执行代码。<br><br>
+        <strong>Prompt 结构：</strong>"{system_message}\n\nContext: {chat_history}\n\nReply to: {speaker}: {message}" — 对话历史自动注入
+      </div>
+    </div>
+
+    <div class="agent-card ac-purple">
+      <div class="ac-header">
+        <span class="ac-name">Claude Code</span>
+        <span class="ac-org">Anthropic</span>
+      </div>
+      <div class="ac-pattern"><strong>模式：</strong>内建 System Prompt + CLAUDE.md 项目上下文注入</div>
+      <div class="ac-detail">
+        核心设计：Claude Code 自带复杂的 System Prompt（包含工具使用说明、规则、行为约束）。自动读取项目根目录的 <code>CLAUDE.md</code>（或 <code>AGENTS.md</code>）作为项目级 context 注入。支持 Memory 机制跨会话持久化。<br><br>
+        <strong>Prompt 层级：</strong>内建 System > CLAUDE.md > Memory > 用户输入 — 层层叠加
+      </div>
+    </div>
+
+    <div class="agent-card ac-green">
+      <div class="ac-header">
+        <span class="ac-name">MetaGPT</span>
+        <span class="ac-org">DeepWisdom</span>
+      </div>
+      <div class="ac-pattern"><strong>模式：</strong>SOP-based 角色模板、结构化输出（文档/图表/代码）</div>
+      <div class="ac-detail">
+        核心设计：模拟软件公司 SOP——PM、Architect、Engineer 等角色各有固定的 Prompt 模板。输出为结构化文档（PRD、设计文档、代码）。角色间通过消息总线传递结构化数据。<br><br>
+        <strong>Prompt 模板：</strong>每个角色有预定义的 System Prompt 模板 + 待填充的 context 变量（项目名、需求、上一步输出等）
+      </div>
+    </div>
+
+    <div class="agent-card ac-red">
+      <div class="ac-header">
+        <span class="ac-name">Qwen-Agent</span>
+        <span class="ac-org">Alibaba</span>
+      </div>
+      <div class="ac-pattern"><strong>模式：</strong>配置化 System Prompt + Function List + Agent Group</div>
+      <div class="ac-detail">
+        核心设计：Agent 配置中包含 <code>system_message</code> + <code>function_list</code>（工具定义）。支持 Agent Group 多 Agent 协作。内建 RAG 检索增强和 Code Interpreter。<br><br>
+        <strong>Prompt 结构：</strong>兼容 ChatML 格式，system message + 可用工具描述 + 用户消息 — 工具调用返回后自动拼接进对话历史
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 3: Prompt Engineering Evolution -->
+  <div class="sec" style="padding-top:12px">
+    <div class="sec-title"><span class="emoji">📈</span> Prompt Engineering 技术演进</div>
+    <div class="card">
+      <div style="overflow-x:auto;-webkit-overflow-scrolling:touch">
+      <table>
+        <thead>
+          <tr><th>技术</th><th>年代</th><th>核心思想</th><th>适用场景</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Zero-Shot</strong></td>
+            <td>2022</td>
+            <td>直接提问，不提供示例</td>
+            <td>简单分类、翻译、摘要</td>
+          </tr>
+          <tr>
+            <td><strong>Few-Shot</strong></td>
+            <td>2022</td>
+            <td>提供 2-5 个示例引导输出格式</td>
+            <td>格式化输出、风格模仿</td>
+          </tr>
+          <tr>
+            <td><strong>CoT</strong></td>
+            <td>2022</td>
+            <td>"Let's think step by step" 分步推理</td>
+            <td>数学推理、逻辑问题</td>
+          </tr>
+          <tr>
+            <td><strong>ReAct</strong></td>
+            <td>2023</td>
+            <td>Reasoning + Acting 交替循环</td>
+            <td>工具调用、知识检索</td>
+          </tr>
+          <tr>
+            <td><strong>ToT</strong></td>
+            <td>2023</td>
+            <td>树状探索多条推理路径</td>
+            <td>复杂规划、创意生成</td>
+          </tr>
+          <tr>
+            <td><strong>Reflexion</strong></td>
+            <td>2023</td>
+            <td>自我反思+重试，基于反馈优化</td>
+            <td>代码生成、Agent 循环</td>
+          </tr>
+          <tr>
+            <td><strong>DSPy</strong></td>
+            <td>2024</td>
+            <td>编程式优化 prompt，自动调参</td>
+            <td>生产级 Pipeline 优化</td>
+          </tr>
+          <tr>
+            <td><strong>Meta-Prompt</strong></td>
+            <td>2025</td>
+            <td>用 LLM 自动生成/优化 prompt</td>
+            <td>动态系统指令生成</td>
+          </tr>
+          <tr>
+            <td><strong>Context Eng.</strong></td>
+            <td>2025+</td>
+            <td>动态管理上下文窗口，RAG+记忆融合</td>
+            <td>长对话、企业知识库</td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 4: Function Calling Format Comparison -->
+  <div class="sec" style="padding-top:12px">
+    <div class="sec-title"><span class="emoji">🔌</span> Function Calling 格式对比</div>
+    <div class="card">
+      <div style="overflow-x:auto;-webkit-overflow-scrolling:touch">
+      <table>
+        <thead>
+          <tr><th>模型/框架</th><th>工具定义格式</th><th>调用返回</th><th>并行调用</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>GPT-4o/4.1</strong></td>
+            <td><code>tools</code> 参数 JSON Schema</td>
+            <td><code>tool_calls</code> 数组</td>
+            <td class="cell-yes">✅ 原生</td>
+          </tr>
+          <tr>
+            <td><strong>Claude 4</strong></td>
+            <td><code>tools</code> 参数 JSON Schema</td>
+            <td><code>tool_use</code> content block</td>
+            <td class="cell-yes">✅ 原生</td>
+          </tr>
+          <tr>
+            <td><strong>Gemini 2.5</strong></td>
+            <td><code>tools.function_declarations</code></td>
+            <td><code>function_call</code> part</td>
+            <td class="cell-partial">⚠ 有限</td>
+          </tr>
+          <tr>
+            <td><strong>DeepSeek</strong></td>
+            <td>兼容 OpenAI <code>tools</code> 格式</td>
+            <td>兼容 OpenAI <code>tool_calls</code></td>
+            <td class="cell-yes">✅</td>
+          </tr>
+          <tr>
+            <td><strong>Qwen</strong></td>
+            <td>兼容 OpenAI + ReAct 文本模式</td>
+            <td>兼容 OpenAI + 文本解析</td>
+            <td class="cell-partial">⚠ 部分模型</td>
+          </tr>
+          <tr>
+            <td><strong>Llama 4</strong></td>
+            <td>兼容 OpenAI <code>tools</code> 格式</td>
+            <td>专用 tool token</td>
+            <td class="cell-yes">✅</td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 5: Multi-Agent Collaboration -->
+  <div class="sec" style="padding-top:12px">
+    <div class="sec-title"><span class="emoji">🤝</span> 多 Agent 协作模式</div>
+
+    <div class="card">
+      <h3>🎯 编排式 (Orchestration)</h3>
+      <p>一个主控 Agent 负责任务分解、分配、结果汇总。代表：OpenAI Agents SDK (Handoffs)、CrewAI (Hierarchical Process)</p>
+      <div class="ac-detail" style="margin-top:6px">
+        <strong>Prompt 特点：</strong>主控 Agent 的 system prompt 包含所有子 Agent 的能力描述和分配规则，类似项目经理的职责说明
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>🔄 对等式 (Peer-to-Peer)</h3>
+      <p>各 Agent 地位平等，通过消息传递自主协商。代表：AutoGen (GroupChat)、LangGraph (State Graph)</p>
+      <div class="ac-detail" style="margin-top:6px">
+        <strong>Prompt 特点：</strong>每个 Agent 携带自身角色+对话协议规则，无中央控制器，prompt 中包含 "何时发言/何时沉默" 的规则
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>🏭 流水线式 (Pipeline)</h3>
+      <p>固定流程的链式传递，输出→输入。代表：CrewAI (Sequential)、MetaGPT (SOP)</p>
+      <div class="ac-detail" style="margin-top:6px">
+        <strong>Prompt 特点：</strong>每个阶段 Agent 的 prompt 包含 "你的输入来自上一阶段，你的输出格式要求为..."，形成标准化交接规范
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 6: 2025-2026 Trends -->
+  <div class="sec" style="padding-top:12px">
+    <div class="sec-title"><span class="emoji">🚀</span> 2025-2026 趋势洞察</div>
+    <div class="card">
+      <div class="trend">
+        <div class="trend-num">1</div>
+        <div class="trend-info">
+          <h4>System Prompt 工程化</h4>
+          <p>从手写 prompt 到结构化配置，Claude Code 的 CLAUDE.md、OpenAI 的 Instruction Hierarchy 代表了 System Prompt 从「艺术」到「工程」的转变</p>
+        </div>
+      </div>
+      <div class="trend">
+        <div class="trend-num">2</div>
+        <div class="trend-info">
+          <h4>Context Window → Context Engineering</h4>
+          <p>100K+ token 上下文窗口普及后，焦点从 "prompt 怎么写" 转向 "哪些上下文该放入 prompt"——精选 > 堆量</p>
+        </div>
+      </div>
+      <div class="trend">
+        <div class="trend-num">3</div>
+        <div class="trend-info">
+          <h4>动态 Prompt 生成</h4>
+          <p>不再写死 prompt，而是根据任务动态组装——OpenAI Agents SDK 的 <code>instructions</code> 函数、LangGraph 的 node 级 prompt 注入</p>
+        </div>
+      </div>
+      <div class="trend">
+        <div class="trend-num">4</div>
+        <div class="trend-info">
+          <h4>思考链可控化</h4>
+          <p>Claude Extended Thinking、DeepSeek R1 reasoning_content、Gemini thinking mode——思维链从"提示词诱导"变为"API 参数控制"</p>
+        </div>
+      </div>
+      <div class="trend">
+        <div class="trend-num">5</div>
+        <div class="trend-info">
+          <h4>Multi-Agent 即 Service</h4>
+          <p>Agent 框架从实验走向生产，CrewAI Cloud、LangGraph Platform 将多 Agent 协作封装为可部署的服务</p>
+        </div>
+      </div>
+      <div class="trend">
+        <div class="trend-num">6</div>
+        <div class="trend-info">
+          <h4>Safety & Alignment 内建</h4>
+          <p>Guardrails (OpenAI)、Safety Settings (Gemini)、Constitutional AI (Claude)——安全不再是 prompt 里的一句话，而是架构级设计</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div style="text-align:center;padding:32px 20px 48px">
+    <p style="font-size:0.7rem;color:var(--text3)">
+      Hermes Research Report · 2026-05-15<br>
+      Powered by deepseek-v4-pro · Agent by Nous Research
+    </p>
+  </div>
+
+</div>
+
+<!-- FAB -->
+<button class="fab" onclick="toggleDrawer()" id="fab">i</button>
+
+<!-- Overlay -->
+<div class="overlay" id="overlay" onclick="toggleDrawer()"></div>
+
+<!-- Bottom Drawer -->
+<div class="drawer" id="drawer">
+  <div class="drawer-handle"></div>
+  <div class="drawer-content">
+    <h3><span style="background:var(--accent);color:#fff;border-radius:6px;padding:2px 8px;font-size:0.7rem;margin-right:6px;">功能说明</span> AI Prompt 架构全景报告</h3>
+    <p>本报告系统梳理了 2026 年主流 AI 模型与 Agent 框架的 Prompt 设计特点。</p>
+    <p><strong>内容包括：</strong></p>
+    <p>1. 7 款主流模型的 System Prompt 机制对比<br>
+    2. 7 大 Agent 框架的 Prompt 设计模式<br>
+    3. Prompt Engineering 技术演进路线<br>
+    4. Function Calling / Tool Use 格式对比<br>
+    5. 多 Agent 协作的三种模式<br>
+    6. 2025-2026 六大趋势洞察</p>
+    <p style="color:var(--text3);font-size:0.7rem;margin-top:12px;">
+      数据来源：官方文档、GitHub README、API 参考 · 截止 2026.05
+    </p>
+  </div>
+</div>
+
+<script>
+function toggleDrawer() {
+  document.getElementById('drawer').classList.toggle('show');
+  document.getElementById('overlay').classList.toggle('show');
+}
+</script>
+
+</body>
+</html>
