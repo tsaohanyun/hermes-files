@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>星球大战全系列终极指南</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap');
+
+  :root {
+    --star-blue: #1a1a2e;
+    --star-dark: #0f0f1a;
+    --star-gold: #ffd700;
+    --star-red: #e74c3c;
+    --star-green: #2ecc71;
+    --star-blue-light: #3498db;
+    --star-purple: #9b59b6;
+    --star-orange: #e67e22;
+    --star-cyan: #00d4ff;
+    --text-primary: #e8e8e8;
+    --text-secondary: #a0a0b0;
+    --card-bg: rgba(20, 20, 40, 0.85);
+    --border-glow: rgba(255, 215, 0, 0.3);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Noto Sans SC', sans-serif;
+    background: var(--star-dark);
+    color: var(--text-primary);
+    overflow-x: hidden;
+    line-height: 1.7;
+  }
+
+  /* 星空背景 */
+  .stars, .twinkling, .clouds {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+  }
+  .stars { background: #000 url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22300%22%3E%3Ccircle cx=%2220%22 cy=%2230%22 r=%221%22 fill=%22white%22 opacity=%220.5%22/%3E%3Ccircle cx=%22120%22 cy=%2280%22 r=%221.5%22 fill=%22white%22 opacity=%220.8%22/%3E%3Ccircle cx=%22250%22 cy=%22150%22 r=%221%22 fill=%22white%22 opacity=%220.3%22/%3E%3Ccircle cx=%2250%22 cy=%22200%22 r=%222%22 fill=%22white%22 opacity=%220.6%22/%3E%3Ccircle cx=%22280%22 cy=%2250%22 r=%221.5%22 fill=%22%23ffd700%22 opacity=%220.7%22/%3E%3Ccircle cx=%22160%22 cy=%22240%22 r=%221%22 fill=%22white%22 opacity=%220.4%22/%3E%3Ccircle cx=%2290%22 cy=%22110%22 r=%222%22 fill=%22%2349b%22 opacity=%220.5%22/%3E%3Ccircle cx=%22220%22 cy=%22280%22 r=%221%22 fill=%22white%22 opacity=%220.3%22/%3E%3Ccircle cx=%2230%22 cy=%22260%22 r=%221.5%22 fill=%22%23e74c3c%22 opacity=%220.4%22/%3E%3Ccircle cx=%22100%22 cy=%2230%22 r=%221%22 fill=%22white%22 opacity=%220.7%22/%3E%3C/svg%3E') repeat;
+    animation: starMove 120s linear infinite;
+  }
+  .twinkling {
+    background: transparent url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22300%22%3E%3Ccircle cx=%2245%22 cy=%2255%22 r=%223%22 fill=%22white%22 opacity=%220.03%22/%3E%3Ccircle cx=%22175%22 cy=%22120%22 r=%224%22 fill=%22white%22 opacity=%220.02%22/%3E%3Ccircle cx=%2285%22 cy=%22190%22 r=%223%22 fill=%22white%22 opacity=%220.04%22/%3E%3Ccircle cx=%22260%22 cy=%2240%22 r=%223%22 fill=%22white%22 opacity=%220.02%22/%3E%3C/svg%3E') repeat;
+    animation: twinkle 4s ease-in-out infinite alternate;
+  }
+  @keyframes starMove {
+    from { background-position: 0 0; }
+    to { background-position: 300px 300px; }
+  }
+  @keyframes twinkle {
+    0% { opacity: 0.2; }
+    100% { opacity: 0.8; }
+  }
+
+  /* 英雄区 */
+  .hero {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 2rem;
+    background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(15,15,26,1) 100%);
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.7) 100%);
+    z-index: -1;
+  }
+  .hero-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(2.5rem, 8vw, 6rem);
+    font-weight: 900;
+    background: linear-gradient(135deg, #ffd700, #ff6b35, #ff4757);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: none;
+    letter-spacing: 4px;
+    margin-bottom: 0.5rem;
+    animation: titleGlow 3s ease-in-out infinite alternate;
+  }
+  @keyframes titleGlow {
+    0% { filter: drop-shadow(0 0 20px rgba(255,215,0,0.3)); }
+    100% { filter: drop-shadow(0 0 40px rgba(255,215,0,0.6)); }
+  }
+  .hero-subtitle {
+    font-size: clamp(1rem, 2.5vw, 2rem);
+    color: var(--text-secondary);
+    letter-spacing: 8px;
+    margin-bottom: 2rem;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 400;
+  }
+  .hero-intro {
+    max-width: 700px;
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    line-height: 1.8;
+    margin-bottom: 2rem;
+  }
+  .hero-scroll {
+    color: var(--star-gold);
+    font-size: 2rem;
+    animation: bounce 2s infinite;
+    cursor: pointer;
+  }
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(10px); }
+  }
+
+  /* 内容容器 */
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  /* 章节标题 */
+  .section-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 700;
+    color: var(--star-gold);
+    text-align: center;
+    margin: 4rem 0 3rem;
+    position: relative;
+    letter-spacing: 3px;
+  }
+  .section-title::after {
+    content: '';
+    display: block;
+    width: 100px;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--star-gold), transparent);
+    margin: 1rem auto 0;
+  }
+
+  /* 时间轴主体 */
+  .timeline {
+    position: relative;
+    padding: 0;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(180deg, var(--star-gold), var(--star-red), var(--star-blue-light), var(--star-purple));
+    border-radius: 2px;
+  }
+
+  .timeline-item {
+    position: relative;
+    margin-bottom: 3rem;
+    width: 50%;
+    padding: 0 3rem;
+    box-sizing: border-box;
+  }
+  .timeline-item:nth-child(odd) {
+    left: 0;
+    text-align: right;
+  }
+  .timeline-item:nth-child(even) {
+    left: 50%;
+    text-align: left;
+  }
+
+  .timeline-item:nth-child(odd) .era-icon {
+    left: auto;
+    right: -65px;
+  }
+  .timeline-item:nth-child(even) .era-icon {
+    left: -65px;
+  }
+
+  .era-icon {
+    position: absolute;
+    top: 0;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    z-index: 2;
+    border: 3px solid;
+    box-shadow: 0 0 20px rgba(255,215,0,0.3);
+  }
+
+  /* 时代颜色 */
+  .era-high-republic { border-color: var(--star-green); background: rgba(46,204,113,0.2); }
+  .era-prequel { border-color: var(--star-red); background: rgba(231,76,60,0.2); }
+  .era-empire { border-color: var(--star-gold); background: rgba(255,215,0,0.15); }
+  .era-rebellion { border-color: var(--star-blue-light); background: rgba(52,152,219,0.2); }
+  .era-new-republic { border-color: var(--star-orange); background: rgba(230,126,34,0.2); }
+  .era-first-order { border-color: var(--star-purple); background: rgba(155,89,182,0.2); }
+
+  .timeline-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-glow);
+    border-radius: 16px;
+    padding: 1.8rem;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .timeline-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 48px rgba(255,215,0,0.15);
+    border-color: var(--star-gold);
+  }
+  .timeline-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    border-radius: 16px 16px 0 0;
+  }
+  .era-high-republic-card::before { background: linear-gradient(90deg, var(--star-green), #27ae60); }
+  .era-prequel-card::before { background: linear-gradient(90deg, var(--star-red), #c0392b); }
+  .era-empire-card::before { background: linear-gradient(90deg, var(--star-gold), #f39c12); }
+  .era-rebellion-card::before { background: linear-gradient(90deg, var(--star-blue-light), #2980b9); }
+  .era-new-republic-card::before { background: linear-gradient(90deg, var(--star-orange), #d35400); }
+  .era-first-order-card::before { background: linear-gradient(90deg, var(--star-purple), #8e44ad); }
+
+  .era-name {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 3px;
+    margin-bottom: 0.8rem;
+    opacity: 0.8;
+  }
+  .era-high-republic .era-name { color: var(--star-green); }
+  .era-prequel .era-name { color: var(--star-red); }
+  .era-empire .era-name { color: var(--star-gold); }
+  .era-rebellion .era-name { color: var(--star-blue-light); }
+  .era-new-republic .era-name { color: var(--star-orange); }
+  .era-first-order .era-name { color: var(--star-purple); }
+
+  .timeline-date {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+  }
+  .timeline-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #fff;
+  }
+  .timeline-meta {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+  }
+  .type-badge {
+    display: inline-block;
+    padding: 0.15rem 0.7rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+  .type-badge.movie { background: rgba(255,215,0,0.2); color: var(--star-gold); border: 1px solid rgba(255,215,0,0.3); }
+  .type-badge.series { background: rgba(52,152,219,0.2); color: var(--star-blue-light); border: 1px solid rgba(52,152,219,0.3); }
+  .type-badge.animated { background: rgba(46,204,113,0.2); color: var(--star-green); border: 1px solid rgba(46,204,113,0.3); }
+  .type-badge.special { background: rgba(155,89,182,0.2); color: var(--star-purple); border: 1px solid rgba(155,89,182,0.3); }
+
+  .timeline-desc {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.8;
+  }
+  .char-list {
+    margin-top: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .char-tag {
+    display: inline-block;
+    padding: 0.15rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.78rem;
+    background: rgba(255,255,255,0.06);
+    color: var(--text-secondary);
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .char-tag.main { background: rgba(255,215,0,0.12); color: var(--star-gold); border-color: rgba(255,215,0,0.2); }
+  .char-tag.cameo { background: rgba(231,76,60,0.12); color: var(--star-red); border-color: rgba(231,76,60,0.2); }
+
+  /* 角色卡片网格 */
+  .character-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .character-card {
+    background: var(--card-bg);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 16px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+  }
+  .character-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--star-gold);
+    box-shadow: 0 8px 32px rgba(255,215,0,0.1);
+  }
+  .character-card .char-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.8rem;
+  }
+  .character-card h3 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+    color: #fff;
+  }
+  .character-card .char-alt {
+    font-size: 0.85rem;
+    color: var(--star-gold);
+    opacity: 0.8;
+    margin-bottom: 0.5rem;
+    font-family: 'Orbitron', sans-serif;
+    letter-spacing: 1px;
+  }
+  .character-card .char-bio {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+  .character-card .appears-in {
+    margin-top: 0.8rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+  }
+  .character-card .appears-in span {
+    font-size: 0.72rem;
+    padding: 0.1rem 0.5rem;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.05);
+    color: var(--text-secondary);
+  }
+
+  /* 客串交叉表 */
+  .cameo-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 2rem 0;
+    background: var(--card-bg);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .cameo-table th {
+    background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,107,53,0.1));
+    padding: 1rem;
+    text-align: left;
+    font-weight: 700;
+    color: var(--star-gold);
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+  }
+  .cameo-table td {
+    padding: 0.9rem 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+  }
+  .cameo-table tr:hover td {
+    background: rgba(255,215,0,0.03);
+  }
+  .cameo-table .cameo-char {
+    color: #fff;
+    font-weight: 500;
+  }
+  .cameo-table .cameo-star {
+    color: var(--star-gold);
+  }
+
+  /* 时间线总览表格 */
+  .overview-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 2rem 0;
+    background: var(--card-bg);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .overview-table th {
+    background: linear-gradient(135deg, rgba(255,215,0,0.12), rgba(255,107,53,0.08));
+    padding: 0.9rem 1rem;
+    text-align: left;
+    font-weight: 700;
+    color: var(--star-gold);
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+  }
+  .overview-table td {
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+  }
+  .overview-table tr:hover td {
+    background: rgba(255,215,0,0.03);
+  }
+  .overview-table .era-tag {
+    display: inline-block;
+    padding: 0.1rem 0.5rem;
+    border-radius: 8px;
+    font-size: 0.75rem;
+  }
+  .era-tag.era-hr { background: rgba(46,204,113,0.15); color: var(--star-green); }
+  .era-tag.era-pt { background: rgba(231,76,60,0.15); color: var(--star-red); }
+  .era-tag.era-im { background: rgba(255,215,0,0.15); color: var(--star-gold); }
+  .era-tag.era-ot { background: rgba(52,152,219,0.15); color: var(--star-blue-light); }
+  .era-tag.era-nr { background: rgba(230,126,34,0.15); color: var(--star-orange); }
+  .era-tag.era-st { background: rgba(155,89,182,0.15); color: var(--star-purple); }
+
+  /* 响应式 */
+  @media (max-width: 768px) {
+    .timeline::before { left: 20px; }
+    .timeline-item {
+      width: 100%;
+      padding: 0 0 0 3.5rem;
+      left: 0 !important;
+      text-align: left !important;
+    }
+    .timeline-item:nth-child(odd) .era-icon,
+    .timeline-item:nth-child(even) .era-icon {
+      left: -5px;
+      right: auto;
+      width: 40px;
+      height: 40px;
+      font-size: 1.2rem;
+    }
+    .timeline-card { padding: 1.2rem; }
+    .character-grid { grid-template-columns: 1fr; }
+    .hero-title { letter-spacing: 2px; }
+    .hero-subtitle { letter-spacing: 4px; }
+    .cameo-table, .overview-table { font-size: 0.8rem; }
+    .cameo-table th, .cameo-table td,
+    .overview-table th, .overview-table td { padding: 0.6rem; }
+  }
+
+  /* 页脚 */
+  .footer {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+  }
+  .footer .force-quote {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.2rem;
+    color: var(--star-gold);
+    margin-bottom: 1rem;
+    letter-spacing: 2px;
+  }
+
+  /* 星战滚动字幕 */
+  .crawl-container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    overflow: hidden;
+    height: 300px;
+    background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.5) 30%, rgba(0,0,0,0.5) 70%, transparent 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 2rem 0;
+  }
+  .crawl-text {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.5rem;
+    color: var(--star-gold);
+    text-align: center;
+    letter-spacing: 4px;
+    opacity: 0.8;
+    animation: crawlPulse 3s ease-in-out infinite;
+  }
+  @keyframes crawlPulse {
+    0%, 100% { opacity: 0.4; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.02); }
+  }
+
+  /* 年代分隔 */
+  .era-divider {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 2rem 0;
+    margin: 3rem 0;
+  }
+  .era-divider-content {
+    display: inline-block;
+    padding: 0.5rem 2rem;
+    border-radius: 30px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 4px;
+  }
+  .era-divider-content.div-hr { color: var(--star-green); border: 1px solid rgba(46,204,113,0.3); }
+  .era-divider-content.div-pt { color: var(--star-red); border: 1px solid rgba(231,76,60,0.3); }
+  .era-divider-content.div-im { color: var(--star-gold); border: 1px solid rgba(255,215,0,0.3); }
+  .era-divider-content.div-ot { color: var(--star-blue-light); border: 1px solid rgba(52,152,219,0.3); }
+  .era-divider-content.div-nr { color: var(--star-orange); border: 1px solid rgba(230,126,34,0.3); }
+  .era-divider-content.div-st { color: var(--star-purple); border: 1px solid rgba(155,89,182,0.3); }
+</style>
+</head>
+<body>
+
+<div class="stars"></div>
+<div class="twinkling"></div>
+
+<!-- 英雄区 -->
+<section class="hero">
+  <div class="hero-title">星球大战</div>
+  <div class="hero-subtitle">✦ STAR WARS ✦</div>
+  <div class="hero-intro">
+    一个遥远的银河系……从高共和国时代到天行者崛起，跨越数百年的史诗传奇。<br>
+    前传、正传、续集、衍生电影、真人剧集、动画系列——全宇宙终极指南。
+  </div>
+  <div class="hero-scroll">▼</div>
+</section>
+
+<div class="container">
+
+  <!-- 开篇 -->
+  <div class="crawl-container">
+    <div class="crawl-text">▶ 愿原力与你同在 ◀</div>
+  </div>
+
+  <!-- ==================== 时间轴 ==================== -->
+  <h2 class="section-title">✦ 完整时间线 ✦</h2>
+  <p style="text-align:center;color:var(--text-secondary);margin-bottom:3rem;">
+    以 BBY（雅文战役前）/ ABY（雅文战役后）纪年，从远古到续集三部曲
+  </p>
+
+  <div class="timeline">
+
+    <!-- 高共和国 -->
+    <div class="timeline-item">
+      <div class="era-icon era-high-republic">🏛</div>
+      <div class="timeline-card era-high-republic-card">
+        <div class="era-name era-high-republic">✦ 高共和国 · THE HIGH REPUBLIC ✦</div>
+        <div class="timeline-date">~500 - 50 BBY</div>
+        <div class="timeline-title">绝地黄金时代</div>
+        <div class="timeline-meta">
+          <span class="type-badge series">小说/漫画</span>
+          <span class="type-badge animated">动画</span>
+        </div>
+        <div class="timeline-desc">
+          绝地武士团达到鼎盛时期，银河系和平繁荣。尤达、杜库正值壮年。
+        </div>
+        <div class="timeline-desc" style="margin-top:0.5rem;">
+          <strong>关键媒体：</strong>《高共和国》系列小说 · 《少年绝地大冒险》 · 《侍僧》
+        </div>
+        <div class="char-list">
+          <span class="char-tag main">尤达</span>
+          <span class="char-tag main">杜库伯爵</span>
+          <span class="char-tag cameo">大裁判官（前绝地）</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 前传 -->
+    <div class="timeline-item">
+      <div class="era-icon era-prequel">⚔</div>
+      <div class="timeline-card era-prequel-card">
+        <div class="era-name era-prequel">✦ 前传时代 · FALL OF THE JEDI ✦</div>
+        <div class="timeline-date">32 - 19 BBY</div>
+        <div class="timeline-title">绝地的陨落</div>
+        <div class="timeline-meta">
+          <span class="type-badge movie">电影</span>
+          <span class="type-badge animated">动画</span>
+        </div>
+        <div class="timeline-desc">
+          阿纳金·天行者从塔图因奴隶到绝地武士，最终堕入黑暗面成为达斯·维达的悲剧史诗。克隆人战争爆发，绝地大清洗，银河帝国崛起。
+        </div>
+        <div class="char-list">
+          <span class="char-tag main">阿纳金·天行者</span>
+          <span class="char-tag main">欧比旺·克诺比</span>
+          <span class="char-tag main">帕德梅·阿米达拉</span>
+          <span class="char-tag main">帕尔帕廷/达斯·西迪厄斯</span>
+          <span class="char-tag main">阿索卡·塔诺</span>
+          <span class="char-tag main">尤达</span>
+          <span class="char-tag cameo">达斯·摩尔</span>
+          <span class="char-tag cameo">波巴·费特</span>
+        </div>
+        <div class="timeline-desc" style="margin-top:0.8rem;">
+          <strong>媒体：</strong>Ep.I 幽灵的威胁(32BBY) → Ep.II 克隆人的进攻(22BBY) → 《克隆人战争2003》(22-19BBY) → 《克隆人战争2008》1-7季(22-19BBY) → 《绝地传说》(50-32BBY) → Ep.III 西斯的复仇(19BBY)
+        </div>
+      </div>
+    </div>
+
+    <!-- 帝国时代 -->
+    <div class="timeline-item">
+      <div class="era-icon era-empire">👑</div>
+      <div class="timeline-card era-empire-card">
+        <div class="era-name era-empire">✦ 帝国时代 · REIGN OF THE EMPIRE ✦</div>
+        <div class="timeline-date">19 - 0 BBY</div>
+        <div class="timeline-title">黑暗时期</div>
+        <div class="timeline-meta">
+          <span class="type-badge movie">电影</span>
+          <span class="type-badge series">真人剧集</span>
+          <span class="type-badge animated">动画</span>
+        </div>
+        <div class="timeline-desc">
+          银河帝国铁腕统治，绝地遭清洗隐藏。反抗的火种在各处酝酿——从克隆人小队到早期的反抗军组织。
+        </div>
+        <div class="char-list">
+          <span class="char-tag main">达斯·维达</span>
+          <span class="char-tag main">欧比旺·克诺比（隐居）</span>
+          <span class="char-tag main">卡西安·安多</span>
+          <span class="char-tag main">埃兹拉·布里杰</span>
+          <span class="char-tag main">索龙元帅</span>
+          <span class="char-tag cameo">达斯·摩尔（索罗客串）</span>
+          <span class="char-tag cameo">赫拉·辛杜拉</span>
+          <span class="char-tag cameo">阿索卡·塔诺</span>
+        </div>
+        <div class="timeline-desc" style="margin-top:0.8rem;">
+          <strong>媒体：</strong>《异等小队》(19-14BBY) → 《游侠索罗》(~13-10BBY) → 《欧比旺·克诺比》(9BBY) → 《义军崛起》(5-0BBY) → 《安多》(5-0BBY) → 《侠盗一号》(0BBY) → 《帝国传说/地下世界传说》
+        </div>
+      </div>
+    </div>
+
+    <!-- 起义时代 -->
+    <div class="timeline-item">
+      <div class="era-icon era-rebellion">⭐</div>
+      <div class="timeline-card era-rebellion-card">
+        <div class="era-name era-rebellion">✦ 起义时代 · AGE OF REBELLION ✦</div>
+        <div class="timeline-date">0 BBY - 4 ABY</div>
+        <div class="timeline-title">原始三部曲</div>
+        <div class="timeline-meta">
+          <span class="type-badge movie">电影</span>
+        </div>
+        <div class="timeline-desc">
+          卢克·天行者从塔图因农场少年成长为绝地武士，与反抗军同盟一起击败银河帝国。最终阿纳金回归光明，消灭皇帝，终结了西斯的统治。
+        </div>
+        <div class="char-list">
+          <span class="char-tag main">卢克·天行者</span>
+          <span class="char-tag main">莱娅·奥加纳</span>
+          <span class="char-tag main">汉·索罗</span>
+          <span class="char-tag main">达斯·维达</span>
+          <span class="char-tag main">帕尔帕廷皇帝</span>
+          <span class="char-tag main">尤达</span>
+          <span class="char-tag cameo">欧比旺（原力幽灵）</span>
+          <span class="char-tag cameo">波巴·费特</span>
+        </div>
+        <div class="timeline-desc" style="margin-top:0.8rem;">
+          <strong>媒体：</strong>Ep.IV 新希望(0BBY/ABY) → Ep.V 帝国反击战(3ABY) → Ep.VI 绝地归来(4ABY)
+        </div>
+      </div>
+    </div>
+
+    <!-- 新共和国 -->
+    <div class="timeline-item">
+      <div class="era-icon era-new-republic">🛸</div>
+      <div class="timeline-card era-new-republic-card">
+        <div class="era-name era-new-republic">✦ 新共和国时代 · THE NEW REPUBLIC ✦</div>
+        <div class="timeline-date">4 - 28 ABY</div>
+        <div class="timeline-title">曼达洛时代</div>
+        <div class="timeline-meta">
+          <span class="type-badge series">真人剧集</span>
+          <span class="type-badge animated">动画</span>
+        </div>
+        <div class="timeline-desc">
+          帝国覆灭后的银河系。曼达洛人丁·贾伦与格罗古的冒险、阿索卡寻找索龙、波巴·费特的新生。旧帝国残余与新威胁的酝酿。
+        </div>
+        <div class="char-list">
+          <span class="char-tag main">丁·贾伦/曼达洛人</span>
+          <span class="char-tag main">格罗古（尤达宝宝）</span>
+          <span class="char-tag main">阿索卡·塔诺</span>
+          <span class="char-tag main">波巴·费特</span>
+          <span class="char-tag cameo">卢克·天行者（CGI客串）</span>
+          <span class="char-tag cameo">阿纳金·天行者（原力幽灵）</span>
+          <span class="char-tag cameo">赫拉·辛杜拉（真人首秀）</span>
+          <span class="char-tag cameo">索龙（真人首秀）</span>
+        </div>
+        <div class="timeline-desc" style="margin-top:0.8rem;">
+          <strong>媒体：</strong>《波巴·费特之书》(5-6ABY) → 《曼达洛人》S1-3(9-11ABY) → 《骷髅船员》(~9ABY) → 《阿索卡》(~11ABY) → 《抵抗组织》(28-34ABY)
+        </div>
+      </div>
+    </div>
+
+    <!-- 续集 -->
+    <div class="timeline-item">
+      <div class="era-icon era-first-order">🌑</div>
+      <div class="timeline-card era-first-order-card">
+        <div class="era-name era-first-order">✦ 续集三部曲 · RISE OF THE FIRST ORDER ✦</div>
+        <div class="timeline-date">34 - 35 ABY</div>
+        <div class="timeline-title">天行者传奇终结</div>
+        <div class="timeline-meta">
+          <span class="type-badge movie">电影</span>
+        </div>
+        <div class="timeline-desc">
+          第一秩序崛起，新英雄蕾伊、芬恩、波·达默龙对抗凯洛·伦。帕尔帕廷回归，天行者血脉终结，蕾伊继承天行者之名。
+        </div>
+        <div class="char-list">
+          <span class="char-tag main">蕾伊</span>
+          <span class="char-tag main">凯洛·伦/本·索洛</span>
+          <span class="char-tag main">芬恩</span>
+          <span class="char-tag main">波·达默龙</span>
+          <span class="char-tag main">卢克·天行者（原力幽灵）</span>
+          <span class="char-tag cameo">尤达（原力幽灵）</span>
+          <span class="char-tag cameo">历代绝地声音</span>
+        </div>
+        <div class="timeline-desc" style="margin-top:0.8rem;">
+          <strong>媒体：</strong>Ep.VII 原力觉醒(34ABY) → Ep.VIII 最后的绝地(34ABY) → Ep.IX 天行者崛起(35ABY)
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ==================== 关键角色 ==================== -->
+  <h2 class="section-title">✦ 关键角色 ✦</h2>
+
+  <div class="character-grid">
+
+    <div class="character-card">
+      <div class="char-icon">🔴</div>
+      <h3>阿纳金·天行者</h3>
+      <div class="char-alt">ANAKIN SKYWALKER / DARTH VADER</div>
+      <div class="char-bio">天选之子，从绝地英雄堕入黑暗面成为达斯·维达，最终在绝地归来中救赎。跨越多部作品的灵魂人物。</div>
+      <div class="appears-in">
+        <span>Ep.I-III</span><span>克隆人战争</span><span>欧比旺</span>
+        <span>义军崛起</span><span>侠盗一号</span><span>Ep.IV-VI</span>
+        <span>阿索卡(原力幽灵)</span><span>绝地传说</span>
+      </div>
+    </div>
+
+    <div class="character-card">
+      <div class="char-icon">🗡</div>
+      <h3>欧比旺·克诺比</h3>
+      <div class="char-alt">OBI-WAN KENOBI</div>
+      <div class="char-bio">绝地大师，阿纳金的师父。在塔图因隐居守护卢克，最终在死星上牺牲成为原力幽灵。</div>
+      <div class="appears-in">
+        <span>Ep.I-III</span><span>克隆人战争</span><span>欧比旺</span>
+        <span>Ep.IV-VI(原力幽灵)</span><span>绝地传说</span>
+      </div>
+    </div>
+
+    <div class="character-card">
+      <div class="char-icon">💫</div>
+      <h3>卢克·天行者</h3>
+      <div class="char-alt">LUKE SKYWALKER</div>
+      <div class="char-bio">塔图因农场少年成长为绝地武士，击败帝国。后又以智慧长者形象训练新一代绝地。</div>
+      <div class="appears-in">
+        <span>Ep.IV-VI</span><span>Ep.VII-IX</span>
+        <span>曼达洛人S2(CGI)</span><span>波巴·费特之书(CGI)</span>
+        <span>欧比旺(幼年)</span>
+      </div>
+    </div>
+
+    <div class="character-card">
+      <div class="char-icon">👸</div>
+      <h3>莱娅·奥加纳</h3>
+      <div class="char-alt">LEIA ORGANA</div>
+      <div class="char-bio">奥尔德兰公主、反抗军领袖、卢克的姐姐。坚韧不拔的领导者，原力敏感者。</div>
+      <div class="appears-in">
+        <span>Ep.IV-IX</span><span>侠盗一号(结尾)</span>
+        <span>欧比旺(少女)</span>
+      </div>
+    </div>
+
+    <div class="character-card">
+      <div class="char-icon">🚀</div>
+      <h3>汉·索罗</h3>
+      <div class="char-alt">HAN SOLO</div>
+      <div class="char-bio">千年隼号船长、走私者、反抗军英雄。从利己主义者成长为银河系最可靠的盟友。</div>
+      <div class="appears-in">
+        <span>Ep.IV-VII</span><span>游侠索罗(青年)</span>
+      </div>
+    </div>
+
+    <div class="character-card">
+      <div class="char-icon">🗿</div>
+      <h3>帕尔帕廷皇帝</h3>
+      <div class="char-alt">SHEEV PALPATINE / DARTH SIDIOUS</div>
+      <div class="char-bio">银河系最危险的西斯尊主，操纵克隆人战争和绝地大清洗，死后通过克隆体回归。</div>
+      <div class="appears-in">
+        <span>Ep.I-III</span><span>克隆人战争</span><span>异等小队</span>
+        <span>Ep.V-IX</span><span>绝地传说</span>
+      </div>
+    </div>
+
+    <div class="character-card">
+      <div class="char-icon">🧘</div>
+      <h3>尤达</h3>
+      <div class="char-alt">YODA</div>
+      <div class="char-bio">800岁的绝地大师，跨越高共和国到原始三部曲的古老智者。死后成为原力幽灵。</div>
+      <div class="appears-in">
+        <span>Ep.I-III</span><span>克隆人战争</span><span>Ep.V-VI</span>
+        <span>最后的绝地(原力幽灵)</span><span>绝地传说</span>
+        <span>曼达洛人(格罗古同族)</span>
+      </div>
+    </div>
+
+    <div class="character-card">
+      <div class="char-icon">🦅</div>
+      <h3>阿索卡·塔诺</h3>
+      <div class="char-alt">AHSOKA TANO</div>
+      <div class="char-bio">阿纳金的绝地学徒，离开武士团后成为义军情报网"Fulcrum"。跨媒体最成功的角色——从动画到真人剧集的核心人物。</div>
+      <div class="appears-in">
+        <span>克隆人战争</span><span>义军崛起</span><span>绝地传说</span>
+        <span>曼达洛人S2(真人首秀)</span><span>波巴·费特之书</span>
+        <span>阿索卡(个人剧集)</span><span>天行者崛起(声音)</span>
+      </div>
+    </div>
+
+    <div class="character-card">
+      <div class="char-icon">🤖</div>
+      <h3>格罗古</h3>
+      <div class="char-alt">GROGU / THE CHILD</div>
+      <div class="char-bio">尤达种族的原力敏感幼童，与曼达洛人丁·贾伦建立了深厚的父子情。绰号"尤达宝宝"风靡全球。</div>
+      <div class="appears-in">
+        <span>曼达洛人S1-3</span><span>波巴·费特之书</span>
+      </div>
+    </div>
+
+    <div class="character-card">
+      <div class="char-icon">🌙</div>
+      <h3>蕾伊</h3>
+      <div class="char-alt">REY SKYWALKER</div>
+      <div class="char-bio">贾库的拾荒者，实为帕尔帕廷的孙女。战胜血统宿命，继承天行者之名。</div>
+      <div class="appears-in">
+        <span>Ep.VII-IX</span>
+      </div>
+    </div>
+
+    <div class="character-card">
+      <div class="char-icon">🌑</div>
+      <h3>凯洛·伦 / 本·索洛</h3>
+      <div class="char-alt">KYLO REN / BEN SOLO</div>
+      <div class="char-bio">汉·索罗与莱娅之子，被斯诺克引入黑暗面。最终回归光明，牺牲自己救了蕾伊。</div>
+      <div class="appears-in">
+        <span>Ep.VII-IX</span>
+      </div>
+    </div>
+
+    <div class="character-card">
+      <div class="char-icon">🪖</div>
+      <h3>丁·贾伦 / 曼达洛人</h3>
+      <div class="char-alt">DIN DJARIN</div>
+      <div class="char-bio">孤独的曼达洛赏金猎人，因为护送格罗古而踏上了改变银河系的旅程。</div>
+      <div class="appears-in">
+        <span>曼达洛人S1-3</span><span>波巴·费特之书</span>
+      </div>
+    </div>
+
+    <div class="character-card">
+      <div class="char-icon">⚡</div>
+      <h3>达斯·摩尔</h3>
+      <div class="char-alt">DARTH MAUL</div>
+      <div class="char-bio">被腰斩却奇迹生还的西斯学徒，后成为犯罪组织赤色黎明领袖。在动画中获深度塑造，多次客串不同作品。</div>
+      <div class="appears-in">
+        <span>Ep.I</span><span>克隆人战争</span><span>义军崛起(客串)</span>
+        <span>游侠索罗(客串)</span>
+      </div>
+    </div>
+
+    <div class="character-card">
+      <div class="char-icon">🔱</div>
+      <h3>索龙元帅</h3>
+      <div class="char-alt">GRAND ADMIRAL THRAWN</div>
+      <div class="char-bio">帝国天才战略家，来自未知星域的奇斯人。从动画反派的巅峰形象首次走入真人版。</div>
+      <div class="appears-in">
+        <span>义军崛起</span><span>阿索卡(真人首秀)</span>
+      </div>
+    </div>
+
+    <div class="character-card">
+      <div class="char-icon">👤</div>
+      <h3>波巴·费特</h3>
+      <div class="char-alt">BOBA FETT</div>
+      <div class="char-bio">传奇赏金猎人，詹戈·费特的克隆体。从沙拉克腹中逃出后成为塔图因犯罪领主。</div>
+      <div class="appears-in">
+        <span>Ep.II</span><span>克隆人战争</span><span>Ep.V-VI</span>
+        <span>曼达洛人S2</span><span>波巴·费特之书</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ==================== 重大客串 ==================== -->
+  <h2 class="section-title">✦ 重大客串与交叉事件 ✦</h2>
+  <p style="text-align:center;color:var(--text-secondary);margin-bottom:2rem;">
+    星战宇宙最令人惊喜的角色跨界登场
+  </p>
+
+  <div style="overflow-x:auto;">
+  <table class="cameo-table">
+    <thead>
+      <tr>
+        <th>客串角色</th>
+        <th>登场作品</th>
+        <th>原始出处</th>
+        <th>意义</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="cameo-char">⭐ 卢克·天行者</td>
+        <td>《曼达洛人》S2 终集</td>
+        <td>原始三部曲</td>
+        <td class="cameo-star">最大惊喜客串！年轻CGI卢克救出格罗古</td>
+      </tr>
+      <tr>
+        <td class="cameo-char">⭐ 阿纳金（原力幽灵）</td>
+        <td>《阿索卡》剧集</td>
+        <td>前传三部曲</td>
+        <td class="cameo-star">海登·克里斯滕森回归！"世界之间的世界"名场面</td>
+      </tr>
+      <tr>
+        <td class="cameo-char">⚡ 达斯·摩尔</td>
+        <td>《游侠索罗》</td>
+        <td>幽灵的威胁</td>
+        <td>赤色黎明幕后领袖身份揭晓</td>
+      </tr>
+      <tr>
+        <td class="cameo-char">💫 阿索卡·塔诺</td>
+        <td>《曼达洛人》S2</td>
+        <td>克隆人战争</td>
+        <td class="cameo-star">动画角色真人首秀！里程碑式跨媒体</td>
+      </tr>
+      <tr>
+        <td class="cameo-char">🧘 尤达（原力幽灵）</td>
+        <td>《最后的绝地》</td>
+        <td>原始三部曲</td>
+        <td>以木偶+CGI结合方式回归，烧毁绝地圣树</td>
+      </tr>
+      <tr>
+        <td class="cameo-char">🗣 历代绝地之声</td>
+        <td>《天行者崛起》</td>
+        <td>全系列</td>
+        <td>阿索卡、凯南、欧比旺等全部绝地声音客串</td>
+      </tr>
+      <tr>
+        <td class="cameo-char">🛩 卢克（CGI）</td>
+        <td>《波巴·费特之书》</td>
+        <td>原始三部曲</td>
+        <td>训练格罗古，展示绿色光剑</td>
+      </tr>
+      <tr>
+        <td class="cameo-char">🚁 赫拉·辛杜拉（真人）</td>
+        <td>《阿索卡》剧集</td>
+        <td>义军崛起</td>
+        <td>动画角色真人化，新共和国将军</td>
+      </tr>
+      <tr>
+        <td class="cameo-char">🌀 埃兹拉·布里杰（真人）</td>
+        <td>《阿索卡》剧集</td>
+        <td>义军崛起</td>
+        <td>首次真人版登场</td>
+      </tr>
+      <tr>
+        <td class="cameo-char">🌌 索龙元帅（真人）</td>
+        <td>《阿索卡》剧集</td>
+        <td>义军崛起</td>
+        <td class="cameo-star">动画最经典反派真人首秀</td>
+      </tr>
+      <tr>
+        <td class="cameo-char">🤖 C-3PO</td>
+        <td>《阿索卡》剧集</td>
+        <td>原始三部曲</td>
+        <td>为赫拉做翻译</td>
+      </tr>
+      <tr>
+        <td class="cameo-char">🔱 达斯·维达</td>
+        <td>《侠盗一号》</td>
+        <td>原始三部曲</td>
+        <td>屠杀走廊——影史最经典的维达登场</td>
+      </tr>
+      <tr>
+        <td class="cameo-char">👸 莱娅公主</td>
+        <td>《侠盗一号》结尾</td>
+        <td>原始三部曲</td>
+        <td>接收死星蓝图，精确对接新希望开场</td>
+      </tr>
+      <tr>
+        <td class="cameo-char">🛡 博-卡坦·克里兹（真人）</td>
+        <td>《曼达洛人》</td>
+        <td>克隆人战争</td>
+        <td>动画角色真人首秀</td>
+      </tr>
+      <tr>
+        <td class="cameo-char">🤠 兰多·卡瑞辛</td>
+        <td>《天行者崛起》</td>
+        <td>原始三部曲</td>
+        <td>比利·迪·威廉姆斯以高龄回归</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <!-- ==================== 完整时间线总览 ==================== -->
+  <h2 class="section-title">✦ 完整作品年表 ✦</h2>
+  <p style="text-align:center;color:var(--text-secondary);margin-bottom:2rem;">
+    所有正史影视及动画作品按时间线排序
+  </p>
+
+  <div style="overflow-x:auto;">
+  <table class="overview-table">
+    <thead>
+      <tr>
+        <th>年代</th>
+        <th>作品</th>
+        <th>类型</th>
+        <th>时代</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>~500-200 BBY</td><td>高共和国系列（小说/漫画）</td><td>文学</td><td><span class="era-tag era-hr">高共和国</span></td></tr>
+      <tr><td>~100 BBY</td><td>《侍僧》(The Acolyte)</td><td>真人剧集</td><td><span class="era-tag era-hr">高共和国</span></td></tr>
+      <tr><td>~50-32 BBY</td><td>《绝地传说》(Tales of the Jedi)</td><td>动画</td><td><span class="era-tag era-pt">前传</span></td></tr>
+      <tr><td>32 BBY</td><td>《星球大战I：幽灵的威胁》</td><td>🎬 电影</td><td><span class="era-tag era-pt">前传</span></td></tr>
+      <tr><td>22 BBY</td><td>《星球大战II：克隆人的进攻》</td><td>🎬 电影</td><td><span class="era-tag era-pt">前传</span></td></tr>
+      <tr><td>22-19 BBY</td><td>《克隆人战争2003》微系列</td><td>📺 动画</td><td><span class="era-tag era-pt">前传</span></td></tr>
+      <tr><td>22-19 BBY</td><td>《克隆人战争2008》1-7季</td><td>📺 动画</td><td><span class="era-tag era-pt">前传</span></td></tr>
+      <tr><td>19 BBY</td><td>《星球大战III：西斯的复仇》</td><td>🎬 电影</td><td><span class="era-tag era-pt">前传</span></td></tr>
+      <tr><td>19-14 BBY</td><td>《异等小队》(The Bad Batch) 1-3季</td><td>📺 动画</td><td><span class="era-tag era-im">帝国时代</span></td></tr>
+      <tr><td>~19-0 BBY</td><td>《帝国传说》/《地下世界传说》</td><td>📺 动画</td><td><span class="era-tag era-im">帝国时代</span></td></tr>
+      <tr><td>~13-10 BBY</td><td>《游侠索罗》(Solo)</td><td>🎬 电影</td><td><span class="era-tag era-im">帝国时代</span></td></tr>
+      <tr><td>9 BBY</td><td>《欧比旺·克诺比》(Obi-Wan Kenobi)</td><td>📺 真人剧集</td><td><span class="era-tag era-im">帝国时代</span></td></tr>
+      <tr><td>5-0 BBY</td><td>《义军崛起》(Rebels) 1-4季</td><td>📺 动画</td><td><span class="era-tag era-im">帝国时代</span></td></tr>
+      <tr><td>5-0 BBY</td><td>《安多》(Andor) 1-2季</td><td>📺 真人剧集</td><td><span class="era-tag era-im">帝国时代</span></td></tr>
+      <tr><td>0 BBY</td><td>《侠盗一号》(Rogue One)</td><td>🎬 电影</td><td><span class="era-tag era-im">帝国时代</span></td></tr>
+      <tr><td>0 BBY</td><td>《星球大战IV：新希望》</td><td>🎬 电影</td><td><span class="era-tag era-ot">起义时代</span></td></tr>
+      <tr><td>3 ABY</td><td>《星球大战V：帝国反击战》</td><td>🎬 电影</td><td><span class="era-tag era-ot">起义时代</span></td></tr>
+      <tr><td>4 ABY</td><td>《星球大战VI：绝地归来》</td><td>🎬 电影</td><td><span class="era-tag era-ot">起义时代</span></td></tr>
+      <tr><td>5-6 ABY</td><td>《波巴·费特之书》</td><td>📺 真人剧集</td><td><span class="era-tag era-nr">新共和国</span></td></tr>
+      <tr><td>9 ABY</td><td>《曼达洛人》S1</td><td>📺 真人剧集</td><td><span class="era-tag era-nr">新共和国</span></td></tr>
+      <tr><td>9 ABY</td><td>《曼达洛人》S2</td><td>📺 真人剧集</td><td><span class="era-tag era-nr">新共和国</span></td></tr>
+      <tr><td>~9 ABY</td><td>《骷髅船员》(Skeleton Crew)</td><td>📺 真人剧集</td><td><span class="era-tag era-nr">新共和国</span></td></tr>
+      <tr><td>~11 ABY</td><td>《曼达洛人》S3</td><td>📺 真人剧集</td><td><span class="era-tag era-nr">新共和国</span></td></tr>
+      <tr><td>~11 ABY</td><td>《阿索卡》(Ahsoka)</td><td>📺 真人剧集</td><td><span class="era-tag era-nr">新共和国</span></td></tr>
+      <tr><td>28-34 ABY</td><td>《抵抗组织》(Resistance)</td><td>📺 动画</td><td><span class="era-tag era-nr">新共和国</span></td></tr>
+      <tr><td>34 ABY</td><td>《星球大战VII：原力觉醒》</td><td>🎬 电影</td><td><span class="era-tag era-st">续集</span></td></tr>
+      <tr><td>34 ABY</td><td>《星球大战VIII：最后的绝地》</td><td>🎬 电影</td><td><span class="era-tag era-st">续集</span></td></tr>
+      <tr><td>35 ABY</td><td>《星球大战IX：天行者崛起》</td><td>🎬 电影</td><td><span class="era-tag era-st">续集</span></td></tr>
+      <tr><td>各种时间线</td><td>《幻境》(Visions) 1-2季</td><td>📺 动画选集</td><td><span class="era-tag era-hr">选集</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <!-- ==================== 核心角色跨媒体时间线 ==================== -->
+  <h2 class="section-title">✦ 核心角色跨媒体旅程 ✦</h2>
+
+  <div style="margin:2rem 0;">
+
+    <div class="timeline-card" style="margin-bottom:1.5rem;">
+      <h3 style="color:var(--star-red);margin-bottom:0.5rem;">🔴 阿纳金·天行者 → 达斯·维达</h3>
+      <div style="font-size:0.85rem;color:var(--text-secondary);line-height:2.2;">
+        Ep.I 幽灵的威胁(32BBY) → Ep.II 克隆人进攻(22BBY) → 克隆人战争(22-19BBY) → Ep.III 西斯的复仇(19BBY)<br>
+        → 欧比旺(9BBY) → 义军崛起(间接) → 侠盗一号(0BBY) → Ep.IV-VI(0BBY-4ABY)<br>
+        → <strong style="color:var(--star-gold);">阿索卡(11ABY,原力幽灵)</strong> → 天行者崛起(声音客串)
+      </div>
+    </div>
+
+    <div class="timeline-card" style="margin-bottom:1.5rem;">
+      <h3 style="color:var(--star-blue-light);margin-bottom:0.5rem;">💫 阿索卡·塔诺</h3>
+      <div style="font-size:0.85rem;color:var(--text-secondary);line-height:2.2;">
+        克隆人战争(22-19BBY) → 绝地传说 → 义军崛起(5-0BBY)<br>
+        → <strong style="color:var(--star-gold);">曼达洛人S2(9ABY,真人首秀)</strong> → 波巴·费特之书(5-6ABY) → 阿索卡个人剧集(~11ABY)<br>
+        → 天行者崛起(35ABY,声音客串)
+      </div>
+    </div>
+
+    <div class="timeline-card" style="margin-bottom:1.5rem;">
+      <h3 style="color:var(--star-green);margin-bottom:0.5rem;">💫 卢克·天行者</h3>
+      <div style="font-size:0.85rem;color:var(--text-secondary);line-height:2.2;">
+        欧比旺(9BBY,幼年) → Ep.IV 新希望(0BBY) → Ep.V 帝国反击战(3ABY) → Ep.VI 绝地归来(4ABY)<br>
+        → <strong style="color:var(--star-gold);">曼达洛人S2(9ABY,CGI)</strong> → 波巴·费特之书(5-6ABY,CGI) → 曼达洛人S3(提及)<br>
+        → Ep.VII 原力觉醒(34ABY) → Ep.VIII 最后的绝地(34ABY,死亡) → Ep.IX 天行者崛起(原力幽灵)
+      </div>
+    </div>
+
+    <div class="timeline-card" style="margin-bottom:1.5rem;">
+      <h3 style="color:var(--star-gold);margin-bottom:0.5rem;">🗡 欧比旺·克诺比</h3>
+      <div style="font-size:0.85rem;color:var(--text-secondary);line-height:2.2;">
+        Ep.I(32BBY) → Ep.II(22BBY) → 克隆人战争(22-19BBY) → Ep.III(19BBY)<br>
+        → 欧比旺个人剧集(9BBY) → Ep.IV(0BBY,死亡) → Ep.V-VI(原力幽灵)
+      </div>
+    </div>
+
+    <div class="timeline-card" style="margin-bottom:1.5rem;">
+      <h3 style="color:var(--star-orange);margin-bottom:0.5rem;">🛸 博-卡坦·克里兹</h3>
+      <div style="font-size:0.85rem;color:var(--text-secondary);line-height:2.2;">
+        克隆人战争(22-19BBY) → 义军崛起(2BBY) → <strong style="color:var(--star-gold);">曼达洛人S2-3(9-11ABY,真人首秀)</strong>
+      </div>
+    </div>
+
+    <div class="timeline-card" style="margin-bottom:1.5rem;">
+      <h3 style="color:var(--star-purple);margin-bottom:0.5rem;">🌌 索龙元帅</h3>
+      <div style="font-size:0.85rem;color:var(--text-secondary);line-height:2.2;">
+        义军崛起(2-0BBY,动画) → <strong style="color:var(--star-gold);">阿索卡(~11ABY,真人首秀)</strong>
+      </div>
+    </div>
+
+    <div class="timeline-card">
+      <h3 style="color:var(--star-green);margin-bottom:0.5rem;">⚡ 赫拉·辛杜拉</h3>
+      <div style="font-size:0.85rem;color:var(--text-secondary);line-height:2.2;">
+        克隆人战争(22BBY,客串) → 异等小队(19BBY,幼年客串) → 义军崛起(5-0BBY,主角)<br>
+        → <strong style="color:var(--star-gold);">阿索卡(~11ABY,真人首秀)</strong>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- 页脚 -->
+<div class="footer">
+  <div class="force-quote">✦ MAY THE FORCE BE WITH YOU ✦</div>
+  <p>星球大战全系列终极指南 · 内容覆盖截至2026年5月已发布的正史作品</p>
+  <p style="margin-top:0.5rem;opacity:0.5;font-size:0.8rem;">
+    前传 · 正传 · 续集 · 衍生电影 · 真人剧集 · 动画系列 · 客串交叉 · 完整时间线
+  </p>
+</div>
+
+</body>
+</html>
