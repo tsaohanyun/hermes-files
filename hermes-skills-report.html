@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hermes Agent 技能库全景报告</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', -apple-system, sans-serif; background: #f5f5f7; color: #1d1d1f; line-height: 1.6; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 40px 24px; }
+  h1 { font-size: 2.2rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 8px; }
+  .subtitle { color: #86868b; font-size: 1.05rem; margin-bottom: 32px; }
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 48px; }
+  .stat { background: #fff; border-radius: 16px; padding: 24px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+  .stat .num { font-size: 2.4rem; font-weight: 700; color: #0071e3; }
+  .stat .label { font-size: 0.85rem; color: #86868b; margin-top: 4px; }
+  h2 { font-size: 1.5rem; font-weight: 600; letter-spacing: -0.01em; margin: 48px 0 20px; padding-top: 16px; border-top: 1px solid #e5e5e7; }
+  h2 .emoji { margin-right: 8px; }
+  table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.06); margin-bottom: 32px; }
+  th { background: #fbfbfd; font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: #86868b; padding: 14px 16px; text-align: left; border-bottom: 1px solid #e5e5e7; }
+  td { padding: 12px 16px; border-bottom: 1px solid #f0f0f2; font-size: 0.9rem; }
+  tr:hover { background: #fafafa; }
+  .cat-header td { background: #f5f5f7; font-weight: 600; font-size: 0.85rem; color: #1d1d1f; padding: 10px 16px; }
+  .name { font-weight: 500; white-space: nowrap; }
+  .ver { color: #86868b; font-size: 0.82rem; white-space: nowrap; }
+  .cat { color: #86868b; font-size: 0.82rem; white-space: nowrap; }
+  .desc { color: #424245; line-height: 1.5; }
+  .cat-name { font-weight: 500; }
+  .cat-count { text-align: center; font-weight: 600; color: #0071e3; }
+  .cat-desc { color: #424245; }
+  .prism-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; margin: 20px 0 32px; }
+  .prism-card { background: #fff; border-radius: 14px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+  .prism-card .cmd { font-family: 'SF Mono', monospace; font-size: 0.85rem; color: #0071e3; font-weight: 600; margin-bottom: 6px; }
+  .prism-card .title { font-weight: 600; font-size: 0.95rem; margin-bottom: 6px; }
+  .prism-card .detail { font-size: 0.82rem; color: #86868b; line-height: 1.5; }
+  .lens-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; margin: 20px 0 32px; }
+  .lens-card { background: #fff; border-radius: 12px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+  .lens-card .lname { font-weight: 600; font-size: 0.9rem; }
+  .lens-card .lscore { display: inline-block; background: #0071e3; color: #fff; border-radius: 6px; padding: 2px 8px; font-size: 0.75rem; font-weight: 600; margin-left: 8px; }
+  .lens-card .ldesc { font-size: 0.82rem; color: #86868b; margin-top: 6px; line-height: 1.5; }
+  .security { background: #fff; border-radius: 14px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); margin: 20px 0; }
+  .sec-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f0f0f2; font-size: 0.9rem; }
+  .sec-item:last-child { border-bottom: none; }
+  .sec-label { color: #424245; }
+  .sec-value { font-weight: 500; }
+  .sec-value.green { color: #34c759; }
+  .sec-value.red { color: #ff3b30; }
+  .sec-value.orange { color: #ff9500; }
+  .highlight { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; border-radius: 20px; padding: 32px; margin: 32px 0; }
+  .highlight h3 { font-size: 1.3rem; font-weight: 600; margin-bottom: 12px; }
+  .highlight p { font-size: 0.95rem; opacity: 0.9; line-height: 1.7; }
+  .growth-steps { display: flex; gap: 16px; margin: 20px 0 32px; }
+  .step { flex: 1; background: #fff; border-radius: 14px; padding: 20px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+  .step .snum { font-size: 1.8rem; font-weight: 700; color: #0071e3; }
+  .step .stitle { font-weight: 600; font-size: 0.9rem; margin: 8px 0 6px; }
+  .step .sdetail { font-size: 0.8rem; color: #86868b; line-height: 1.5; }
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0 32px; }
+  .compare-card { background: #fff; border-radius: 14px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+  .compare-card.vanilla { border-left: 4px solid #86868b; }
+  .compare-card.prism { border-left: 4px solid #0071e3; }
+  .compare-card .ctag { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; margin-bottom: 8px; }
+  .compare-card.vanilla .ctag { color: #86868b; }
+  .compare-card.prism .ctag { color: #0071e3; }
+  .compare-card .cexample { font-size: 0.88rem; color: #424245; line-height: 1.6; font-style: italic; }
+  footer { text-align: center; color: #86868b; font-size: 0.8rem; margin-top: 60px; padding: 20px 0; border-top: 1px solid #e5e5e7; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>Hermes Agent 技能库全景报告</h1>
+<p class="subtitle">生成日期: 2026-05-29 &nbsp;|&nbsp; 安装路径: ~/.hermes/skills/ &nbsp;|&nbsp; 安全审计: 已完成</p>
+
+<div class="stats">
+  <div class="stat"><div class="num">193</div><div class="label">技能总数</div></div>
+  <div class="stat"><div class="num">50</div><div class="label">分类数量</div></div>
+  <div class="stat"><div class="num">120+</div><div class="label">可执行脚本</div></div>
+  <div class="stat"><div class="num" style="color:#34c759">通过</div><div class="label">安全审计</div></div>
+</div>
+
+<h2><span class="emoji">📊</span>分类概览</h2>
+<table>
+<tr><th>分类</th><th style="width:60px">数量</th><th>领域说明</th></tr>
+<tr><td class="cat-name">creative</td><td class="cat-count">24</td><td class="cat-desc">创意工具集(24个子技能)</td></tr>
+<tr><td class="cat-name">mlops</td><td class="cat-count">22</td><td class="cat-desc">ML全栈工具(22个子技能)</td></tr>
+<tr><td class="cat-name">productivity</td><td class="cat-count">18</td><td class="cat-desc">生产力工具(18个子技能)</td></tr>
+<tr><td class="cat-name">research</td><td class="cat-count">17</td><td class="cat-desc">学术研究(17个子技能)</td></tr>
+<tr><td class="cat-name">software-development</td><td class="cat-count">16</td><td class="cat-desc">开发方法论(16子技能)</td></tr>
+<tr><td class="cat-name">devops</td><td class="cat-count">10</td><td class="cat-desc">运维工具集(10个子技能)</td></tr>
+<tr><td class="cat-name">github</td><td class="cat-count">7</td><td class="cat-desc">GitHub全流程管理</td></tr>
+<tr><td class="cat-name">data-science</td><td class="cat-count">6</td><td class="cat-desc">数据科学工作流</td></tr>
+<tr><td class="cat-name">apple</td><td class="cat-count">5</td><td class="cat-desc">Apple设计语言产品原型</td></tr>
+<tr><td class="cat-name">autonomous-ai-agents</td><td class="cat-count">5</td><td class="cat-desc">AI编码代理与看板编排</td></tr>
+<tr><td class="cat-name">frontend-design</td><td class="cat-count">5</td><td class="cat-desc">前端设计工具</td></tr>
+<tr><td class="cat-name">media</td><td class="cat-count">5</td><td class="cat-desc">媒体工具集</td></tr>
+<tr><td class="cat-name">note-taking</td><td class="cat-count">5</td><td class="cat-desc">笔记管理工具</td></tr>
+<tr><td class="cat-name">super-hermes</td><td class="cat-count">5</td><td class="cat-desc">Prism深度分析框架</td></tr>
+<tr><td class="cat-name">consulting</td><td class="cat-count">3</td><td class="cat-desc">企业咨询方法论</td></tr>
+<tr><td class="cat-name">meta</td><td class="cat-count">3</td><td class="cat-desc">Skill Factory技能工厂</td></tr>
+<tr><td class="cat-name">mcp</td><td class="cat-count">2</td><td class="cat-desc">MCP客户端连接</td></tr>
+<tr><td class="cat-name">openclaw-imports</td><td class="cat-count">2</td><td class="cat-desc">技能发现安装</td></tr>
+<tr><td class="cat-name">social-media</td><td class="cat-count">2</td><td class="cat-desc">X/Twitter交互</td></tr>
+<tr><td class="cat-name">Agentic-MCP</td><td class="cat-count">1</td><td class="cat-desc">MCP协议三层渐进式上下文检索</td></tr>
+<tr><td class="cat-name">algorithmic-art</td><td class="cat-count">1</td><td class="cat-desc">算法艺术生成(p5.js)</td></tr>
+<tr><td class="cat-name">brainstorming</td><td class="cat-count">1</td><td class="cat-desc">结构化头脑风暴</td></tr>
+<tr><td class="cat-name">brand-guidelines</td><td class="cat-count">1</td><td class="cat-desc">Anthropic品牌规范</td></tr>
+<tr><td class="cat-name">canvas-design</td><td class="cat-count">1</td><td class="cat-desc">Canvas可视艺术</td></tr>
+<tr><td class="cat-name">claude-api</td><td class="cat-count">1</td><td class="cat-desc">Claude API开发调试</td></tr>
+<tr><td class="cat-name">doc-coauthoring</td><td class="cat-count">1</td><td class="cat-desc">文档协作写作</td></tr>
+<tr><td class="cat-name">dogfood</td><td class="cat-count">1</td><td class="cat-desc">Web应用QA测试</td></tr>
+<tr><td class="cat-name">email</td><td class="cat-count">1</td><td class="cat-desc">终端邮件管理</td></tr>
+<tr><td class="cat-name">executing-plans</td><td class="cat-count">1</td><td class="cat-desc">执行实施计划</td></tr>
+<tr><td class="cat-name">finishing-a-development-branch</td><td class="cat-count">1</td><td class="cat-desc">分支完成流程</td></tr>
+<tr><td class="cat-name">hermes-dojo</td><td class="cat-count">1</td><td class="cat-desc">Agent自我改进系统</td></tr>
+<tr><td class="cat-name">internal-comms</td><td class="cat-count">1</td><td class="cat-desc">内部沟通写作</td></tr>
+<tr><td class="cat-name">leisure</td><td class="cat-count">1</td><td class="cat-desc">周边地点搜索</td></tr>
+<tr><td class="cat-name">literate-programming</td><td class="cat-count">1</td><td class="cat-desc">文学编程文档</td></tr>
+<tr><td class="cat-name">mcp-builder</td><td class="cat-count">1</td><td class="cat-desc">MCP Server开发</td></tr>
+<tr><td class="cat-name">pdf</td><td class="cat-count">1</td><td class="cat-desc">PDF文档处理</td></tr>
+<tr><td class="cat-name">receiving-code-review</td><td class="cat-count">1</td><td class="cat-desc">代码审查反馈处理</td></tr>
+<tr><td class="cat-name">red-teaming</td><td class="cat-count">1</td><td class="cat-desc">LLM红队测试</td></tr>
+<tr><td class="cat-name">skill-creator</td><td class="cat-count">1</td><td class="cat-desc">技能创建修改</td></tr>
+<tr><td class="cat-name">slack-gif-creator</td><td class="cat-count">1</td><td class="cat-desc">Slack GIF创建</td></tr>
+<tr><td class="cat-name">system</td><td class="cat-count">1</td><td class="cat-desc">技能库管理</td></tr>
+<tr><td class="cat-name">theme-factory</td><td class="cat-count">1</td><td class="cat-desc">主题风格工具</td></tr>
+<tr><td class="cat-name">travel-guide</td><td class="cat-count">1</td><td class="cat-desc">旅行指南生成</td></tr>
+<tr><td class="cat-name">using-git-worktrees</td><td class="cat-count">1</td><td class="cat-desc">Git worktree开发</td></tr>
+<tr><td class="cat-name">using-superpowers</td><td class="cat-count">1</td><td class="cat-desc">超级能力建立</td></tr>
+<tr><td class="cat-name">verification-before-completion</td><td class="cat-count">1</td><td class="cat-desc">完成前验证</td></tr>
+<tr><td class="cat-name">web-artifacts-builder</td><td class="cat-count">1</td><td class="cat-desc">Web制品构建</td></tr>
+<tr><td class="cat-name">webapp-testing</td><td class="cat-count">1</td><td class="cat-desc">Web应用测试</td></tr>
+<tr><td class="cat-name">writing-skills</td><td class="cat-count">1</td><td class="cat-desc">技能写作规范</td></tr>
+<tr><td class="cat-name">yuanbao</td><td class="cat-count">1</td><td class="cat-desc">元宝群聊交互</td></tr>
+
+</table>
+
+<h2><span class="emoji">📋</span>技能详细清单</h2>
+<table>
+<tr><th>技能名称</th><th style="width:70px">版本</th><th style="width:120px">分类</th><th>简介</th></tr>
+<tr class="cat-header"><td colspan="4">Agentic-MCP (1个)</td></tr>
+<tr><td class="name">agentic-mcp</td><td class="ver">-</td><td class="cat">Agentic-MCP</td><td class="desc">Agentic MCP - Three-layer progressive disclosure for MCP servers with Socket daemon. Use when the user needs to interact with MCP servers, query available to...</td></tr>
+<tr class="cat-header"><td colspan="4">algorithmic-art (1个)</td></tr>
+<tr><td class="name">algorithmic-art</td><td class="ver">-</td><td class="cat">algorithmic-art</td><td class="desc">Creating algorithmic art using p5.js with seeded randomness and interactive parameter exploration. Use this when users request creating art using code, gener...</td></tr>
+<tr class="cat-header"><td colspan="4">apple (5个)</td></tr>
+<tr><td class="name">apple-notes</td><td class="ver">1.0.0</td><td class="cat">apple</td><td class="desc">Manage Apple Notes via memo CLI: create, search, edit.</td></tr>
+<tr><td class="name">apple-reminders</td><td class="ver">1.0.0</td><td class="cat">apple</td><td class="desc">Apple Reminders via remindctl: add, list, complete.</td></tr>
+<tr><td class="name">findmy</td><td class="ver">1.0.0</td><td class="cat">apple</td><td class="desc">Track Apple devices/AirTags via FindMy.app on macOS.</td></tr>
+<tr><td class="name">imessage</td><td class="ver">1.0.0</td><td class="cat">apple</td><td class="desc">Send and receive iMessages/SMS via the imsg CLI on macOS.</td></tr>
+<tr><td class="name">macos-computer-use</td><td class="ver">1.0.0</td><td class="cat">apple</td><td class="desc">|</td></tr>
+<tr class="cat-header"><td colspan="4">autonomous-ai-agents (5个)</td></tr>
+<tr><td class="name">claude-code</td><td class="ver">2.2.0</td><td class="cat">autonomous-ai-agents</td><td class="desc">Delegate coding to Claude Code CLI (features, PRs).</td></tr>
+<tr><td class="name">codex</td><td class="ver">1.0.0</td><td class="cat">autonomous-ai-agents</td><td class="desc">Delegate coding to OpenAI Codex CLI (features, PRs).</td></tr>
+<tr><td class="name">hermes-agent</td><td class="ver">2.0.0</td><td class="cat">autonomous-ai-agents</td><td class="desc">Configure, extend, or contribute to Hermes Agent.</td></tr>
+<tr><td class="name">kanban-codex-lane</td><td class="ver">1.0.0</td><td class="cat">autonomous-ai-agents</td><td class="desc">Use when a Hermes Kanban worker wants to run Codex CLI as an isolated implementation lane while Hermes keeps ownership of task lifecycle, reconciliation, tes...</td></tr>
+<tr><td class="name">opencode</td><td class="ver">1.2.0</td><td class="cat">autonomous-ai-agents</td><td class="desc">Delegate coding to OpenCode CLI (features, PR review).</td></tr>
+<tr class="cat-header"><td colspan="4">brainstorming (1个)</td></tr>
+<tr><td class="name">brainstorming</td><td class="ver">-</td><td class="cat">brainstorming</td><td class="desc">You MUST use this before any creative work - creating features, building components, adding functionality, or modifying behavior. Explores user intent, requi...</td></tr>
+<tr class="cat-header"><td colspan="4">brand-guidelines (1个)</td></tr>
+<tr><td class="name">brand-guidelines</td><td class="ver">-</td><td class="cat">brand-guidelines</td><td class="desc">Applies Anthropic's official brand colors and typography to any sort of artifact that may benefit from having Anthropic's look-and-feel. Use it when brand co...</td></tr>
+<tr class="cat-header"><td colspan="4">canvas-design (1个)</td></tr>
+<tr><td class="name">canvas-design</td><td class="ver">-</td><td class="cat">canvas-design</td><td class="desc">Create beautiful visual art in .png and .pdf documents using design philosophy. You should use this skill when the user asks to create a poster, piece of art...</td></tr>
+<tr class="cat-header"><td colspan="4">claude-api (1个)</td></tr>
+<tr><td class="name">claude-api</td><td class="ver">-</td><td class="cat">claude-api</td><td class="desc">Build, debug, and optimize Claude API / Anthropic SDK apps. Apps built with this skill should include prompt caching. Also handles migrating existing Claude ...</td></tr>
+<tr class="cat-header"><td colspan="4">consulting (3个)</td></tr>
+<tr><td class="name">blueprint-writing</td><td class="ver">-</td><td class="cat">consulting</td><td class="desc">企业智能制造蓝图解决方案编写方法论，基于通威农发智能工厂蓝图方案的最佳实践</td></tr>
+<tr><td class="name">detail-design-specification</td><td class="ver">1.0.0</td><td class="cat">consulting</td><td class="desc">详细设计文档编写规范：企业信息系统详细设计文档的标准结构、功能描述模板、字段定义规范、页面原型说明模式。基于智能工厂生产业务平台详细设计实践提炼，适用于MES/ERP/WMS等企业级系统的详细设计阶段。</td></tr>
+<tr><td class="name">functional-design</td><td class="ver">-</td><td class="cat">consulting</td><td class="desc">功能设计快速上手方法论：从业务需求到数据表+页面布局的5步流程。适用于信息系统功能设计工作，包括检查/审批/任务管理等场景。</td></tr>
+<tr class="cat-header"><td colspan="4">creative (24个)</td></tr>
+<tr><td class="name">architecture-diagram</td><td class="ver">1.0.0</td><td class="cat">creative</td><td class="desc">Dark-themed SVG architecture/cloud/infra diagrams as HTML.</td></tr>
+<tr><td class="name">ascii-art</td><td class="ver">4.0.0</td><td class="cat">creative</td><td class="desc">ASCII art: pyfiglet, cowsay, boxes, image-to-ascii.</td></tr>
+<tr><td class="name">ascii-video</td><td class="ver">-</td><td class="cat">creative</td><td class="desc">ASCII video: convert video/audio to colored ASCII MP4/GIF.</td></tr>
+<tr><td class="name">baoyu-article-illustrator</td><td class="ver">1.57.0</td><td class="cat">creative</td><td class="desc">Article illustrations: type × style × palette consistency.</td></tr>
+<tr><td class="name">baoyu-comic</td><td class="ver">1.56.1</td><td class="cat">creative</td><td class="desc">Knowledge comics (知识漫画): educational, biography, tutorial.</td></tr>
+<tr><td class="name">baoyu-infographic</td><td class="ver">1.56.1</td><td class="cat">creative</td><td class="desc">Infographics: 21 layouts x 21 styles (信息图, 可视化).</td></tr>
+<tr><td class="name">claude-design</td><td class="ver">1.0.0</td><td class="cat">creative</td><td class="desc">Design one-off HTML artifacts (landing, deck, prototype).</td></tr>
+<tr><td class="name">comfyui</td><td class="ver">5.1.0</td><td class="cat">creative</td><td class="desc">Generate images, video, and audio with ComfyUI — install, launch, manage nodes/models, run workflows with parameter injection. Uses the official comfy-cli fo...</td></tr>
+<tr><td class="name">design-md</td><td class="ver">1.0.0</td><td class="cat">creative</td><td class="desc">Author/validate/export Google's DESIGN.md token spec files.</td></tr>
+<tr><td class="name">drawio-skill</td><td class="ver">1.5.2</td><td class="cat">creative</td><td class="desc">Use when the user requests diagrams, flowcharts, architecture diagrams, ER diagrams, UML / sequence / class diagrams, network topology, ML/DL model figures (...</td></tr>
+<tr><td class="name">excalidraw</td><td class="ver">1.0.0</td><td class="cat">creative</td><td class="desc">Hand-drawn Excalidraw JSON diagrams (arch, flow, seq).</td></tr>
+<tr><td class="name">frontend-slides</td><td class="ver">-</td><td class="cat">creative</td><td class="desc">Create stunning, animation-rich HTML presentations from scratch or by converting PowerPoint files. Use when the user wants to build a presentation, convert a...</td></tr>
+<tr><td class="name">ideation</td><td class="ver">1.0.0</td><td class="cat">creative</td><td class="desc">Generate project ideas via creative constraints.</td></tr>
+<tr><td class="name">image-editing</td><td class="ver">-</td><td class="cat">creative</td><td class="desc">Edit images using PIL/Pillow — add effects, overlays, modify specific regions. Covers precise feature location via grid overlay + candidate markers, multi-la...</td></tr>
+<tr><td class="name">manim-video</td><td class="ver">1.0.0</td><td class="cat">creative</td><td class="desc">Manim CE animations: 3Blue1Brown math/algo videos.</td></tr>
+<tr><td class="name">p5js</td><td class="ver">1.0.0</td><td class="cat">creative</td><td class="desc">p5.js sketches: gen art, shaders, interactive, 3D.</td></tr>
+<tr><td class="name">pixel-art</td><td class="ver">2.0.0</td><td class="cat">creative</td><td class="desc">Pixel art w/ era palettes (NES, Game Boy, PICO-8).</td></tr>
+<tr><td class="name">popular-web-designs</td><td class="ver">1.0.0</td><td class="cat">creative</td><td class="desc">54 real design systems (Stripe, Linear, Vercel) as HTML/CSS.</td></tr>
+<tr><td class="name">pretext</td><td class="ver">1.0.0</td><td class="cat">creative</td><td class="desc">Use when building creative browser demos with @chenglou/pretext — DOM-free text layout for ASCII art, typographic flow around obstacles, text-as-geometry gam...</td></tr>
+<tr><td class="name">retro-futuristic-html</td><td class="ver">1.0.0</td><td class="cat">creative</td><td class="desc">&gt;</td></tr>
+<tr><td class="name">sillytavern-character-editor</td><td class="ver">-</td><td class="cat">creative</td><td class="desc">Translate and modify SillyTavern character cards. Read character card data from SillyTavern PNG files (tEXt/ccv3 chunks, base64 encoded, or direct 'chara' ch...</td></tr>
+<tr><td class="name">sketch</td><td class="ver">1.0.0</td><td class="cat">creative</td><td class="desc">Throwaway HTML mockups: 2-3 design variants to compare.</td></tr>
+<tr><td class="name">songwriting-and-ai-music</td><td class="ver">-</td><td class="cat">creative</td><td class="desc">Songwriting craft and Suno AI music prompts.</td></tr>
+<tr><td class="name">touchdesigner-mcp</td><td class="ver">1.1.0</td><td class="cat">creative</td><td class="desc">Control a running TouchDesigner instance via twozero MCP — create operators, set parameters, wire connections, execute Python, build real-time visuals. 36 na...</td></tr>
+<tr class="cat-header"><td colspan="4">data-science (6个)</td></tr>
+<tr><td class="name">jupyter-live-kernel</td><td class="ver">1.0.0</td><td class="cat">data-science</td><td class="desc">Iterative Python via live Jupyter kernel (hamelnb).</td></tr>
+<tr><td class="name">mysql-left-join-refactor</td><td class="ver">-</td><td class="cat">data-science</td><td class="desc">Refactoring SQL queries where an aggregation subquery must be the driving table, with LEFT JOINed tables and proper NULL handling for missing data.</td></tr>
+<tr><td class="name">snest-table-columns</td><td class="ver">1.0.0</td><td class="cat">data-science</td><td class="desc">从通威农发数据库结构SQL文件(snest.sql, 路径database-schemas/通威农发/)中查找表的字段定义、类型、注释和索引</td></tr>
+<tr><td class="name">sql-multi-table-update</td><td class="ver">1.0.0</td><td class="cat">data-science</td><td class="desc">编写涉及多表关联的UPDATE语句的方法论，基于通威农发lm_st_product_inbound_cost费用回写的实战教训</td></tr>
+<tr><td class="name">sql-query-optimization</td><td class="ver">-</td><td class="cat">data-science</td><td class="desc">Systematic methodology for optimizing SQL query performance — analyzing table structures and indexes, identifying anti-patterns, applying transformations, an...</td></tr>
+<tr><td class="name">sql-table-structure-analysis</td><td class="ver">1.0.0</td><td class="cat">data-science</td><td class="desc">从大型SQL数据库结构导出文件中分析表结构，按模块分组、创建Wiki文档、提取字段信息</td></tr>
+<tr class="cat-header"><td colspan="4">devops (10个)</td></tr>
+<tr><td class="name">git-auto-push</td><td class="ver">-</td><td class="cat">devops</td><td class="desc">Auto-sync files to GitHub repo hermes-files ONLY when user explicitly requests file generation or modification. Does not auto-trigger for internal operations.</td></tr>
+<tr><td class="name">hermes-update</td><td class="ver">1.0</td><td class="cat">devops</td><td class="desc">Update Hermes Agent to the latest version from GitHub. Handles divergent branches, missing pip in venv, and backup.</td></tr>
+<tr><td class="name">llm-frontend-setup</td><td class="ver">1.0</td><td class="cat">devops</td><td class="desc">Deploy and configure third-party LLM chat frontends (SillyTavern, Open WebUI, etc.) on Linux servers. Covers download, auth config, API credential injection ...</td></tr>
+<tr><td class="name">pinggy-tunnel</td><td class="ver">0.1.0</td><td class="cat">devops</td><td class="desc">Zero-install localhost tunnels over SSH via Pinggy.</td></tr>
+<tr><td class="name">remote-file-access</td><td class="ver">2.0</td><td class="cat">devops</td><td class="desc">Read files from a remote Windows machine on-demand via reverse SSH tunnel. SFTP is the recommended approach; SMB is a fallback. No sync, no storage pressure ...</td></tr>
+<tr><td class="name">self-hosted-services</td><td class="ver">1.0</td><td class="cat">devops</td><td class="desc">Deploy and manage lightweight self-hosted web services (FileBrowser, Miniserve, etc.) on the Tencent Cloud LightHouse server. Covers single-binary downloads,...</td></tr>
+<tr><td class="name">server-optimization</td><td class="ver">1.0</td><td class="cat">devops</td><td class="desc">Optimize memory, disk, and services on Ubuntu Linux servers (especially small instances like Tencent Cloud LightHouse with 3.6GB RAM). Covers snapd removal, ...</td></tr>
+<tr><td class="name">watchers</td><td class="ver">1.0.0</td><td class="cat">devops</td><td class="desc">Poll RSS, JSON APIs, and GitHub with watermark dedup.</td></tr>
+<tr><td class="name">webhook-subscriptions</td><td class="ver">1.1.0</td><td class="cat">devops</td><td class="desc">Webhook subscriptions: event-driven agent runs.</td></tr>
+<tr><td class="name">windows-remote-file-access</td><td class="ver">1.0.0</td><td class="cat">devops</td><td class="desc">Remotely read files from a Windows machine via SSH reverse tunnel from a Linux server</td></tr>
+<tr class="cat-header"><td colspan="4">doc-coauthoring (1个)</td></tr>
+<tr><td class="name">doc-coauthoring</td><td class="ver">-</td><td class="cat">doc-coauthoring</td><td class="desc">Guide users through a structured workflow for co-authoring documentation and content. Includes hook optimization, writing workflow presets (blog/newsletter/t...</td></tr>
+<tr class="cat-header"><td colspan="4">dogfood (1个)</td></tr>
+<tr><td class="name">dogfood</td><td class="ver">1.0.0</td><td class="cat">dogfood</td><td class="desc">Exploratory QA of web apps: find bugs, evidence, reports.</td></tr>
+<tr class="cat-header"><td colspan="4">email (1个)</td></tr>
+<tr><td class="name">himalaya</td><td class="ver">1.1.0</td><td class="cat">email</td><td class="desc">Himalaya CLI: IMAP/SMTP email from terminal.</td></tr>
+<tr class="cat-header"><td colspan="4">executing-plans (1个)</td></tr>
+<tr><td class="name">executing-plans</td><td class="ver">-</td><td class="cat">executing-plans</td><td class="desc">Use when you have a written implementation plan to execute in a separate session with review checkpoints</td></tr>
+<tr class="cat-header"><td colspan="4">finishing-a-development-branch (1个)</td></tr>
+<tr><td class="name">finishing-a-development-branch</td><td class="ver">-</td><td class="cat">finishing-a-development-branch</td><td class="desc">Use when implementation is complete, all tests pass, and you need to decide how to integrate the work - guides completion of development work by presenting s...</td></tr>
+<tr class="cat-header"><td colspan="4">frontend-design (5个)</td></tr>
+<tr><td class="name">apple-prototype-html</td><td class="ver">-</td><td class="cat">frontend-design</td><td class="desc">Generate product prototype HTML pages using Apple Design Language. Use when creating UI prototypes, wireframes-as-code, or business application mockups that ...</td></tr>
+<tr><td class="name">frontend-design</td><td class="ver">-</td><td class="cat">frontend-design</td><td class="desc">Create distinctive, production-grade frontend interfaces with high design quality. Use this skill when the user asks to build web components, pages, artifact...</td></tr>
+<tr><td class="name">product-prototype-html</td><td class="ver">1.0</td><td class="cat">frontend-design</td><td class="desc">Generate product prototype UI pages in HTML format with Apple Design style, covering both Web and Mobile terminals. Each page includes a built-in function de...</td></tr>
+<tr><td class="name">sie-iidp-html</td><td class="ver">1.1.0</td><td class="cat">frontend-design</td><td class="desc">Generate enterprise industrial HTML pages using SIE-IIDP design style (#AC2A48, 2px minimal radius, 100px root font-size, red sidebar with white SVG icons). ...</td></tr>
+<tr><td class="name">web-design-guidelines</td><td class="ver">-</td><td class="cat">frontend-design</td><td class="desc">Review UI code for Vercel Web Interface Guidelines compliance. Use when: checking code for accessibility, visual/interaction, performance, forms, or typograp...</td></tr>
+<tr class="cat-header"><td colspan="4">github (7个)</td></tr>
+<tr><td class="name">changelog-generator</td><td class="ver">-</td><td class="cat">github</td><td class="desc">Automatically creates user-facing changelogs from git commits by analyzing commit history, categorizing changes, and transforming technical commits into clea...</td></tr>
+<tr><td class="name">codebase-inspection</td><td class="ver">1.0.0</td><td class="cat">github</td><td class="desc">Inspect codebases w/ pygount: LOC, languages, ratios.</td></tr>
+<tr><td class="name">github-auth</td><td class="ver">1.1.0</td><td class="cat">github</td><td class="desc">Set up GitHub authentication for the agent using git (universally available) or the gh CLI. Covers HTTPS tokens, SSH keys, credential helpers, and gh auth — ...</td></tr>
+<tr><td class="name">github-code-review</td><td class="ver">1.1.0</td><td class="cat">github</td><td class="desc">Review PRs: diffs, inline comments via gh or REST.</td></tr>
+<tr><td class="name">github-issues</td><td class="ver">1.1.0</td><td class="cat">github</td><td class="desc">Create, triage, label, assign GitHub issues via gh or REST.</td></tr>
+<tr><td class="name">github-pr-workflow</td><td class="ver">1.1.0</td><td class="cat">github</td><td class="desc">GitHub PR lifecycle: branch, commit, open, CI, merge.</td></tr>
+<tr><td class="name">github-repo-management</td><td class="ver">1.1.0</td><td class="cat">github</td><td class="desc">Clone, create, fork, configure, and manage GitHub repositories. Manage remotes, secrets, releases, and workflows. Works with gh CLI or falls back to git + Gi...</td></tr>
+<tr class="cat-header"><td colspan="4">hermes-dojo (1个)</td></tr>
+<tr><td class="name">hermes-dojo</td><td class="ver">1.0.0</td><td class="cat">hermes-dojo</td><td class="desc">&gt;</td></tr>
+<tr class="cat-header"><td colspan="4">internal-comms (1个)</td></tr>
+<tr><td class="name">internal-comms</td><td class="ver">-</td><td class="cat">internal-comms</td><td class="desc">A set of resources to help me write all kinds of internal communications, using the formats that my company likes to use. Claude should use this skill whenev...</td></tr>
+<tr class="cat-header"><td colspan="4">leisure (1个)</td></tr>
+<tr><td class="name">find-nearby</td><td class="ver">1.0.0</td><td class="cat">leisure</td><td class="desc">Find nearby places (restaurants, cafes, bars, pharmacies, etc.) using OpenStreetMap. Works with coordinates, addresses, cities, zip codes, or Telegram locati...</td></tr>
+<tr class="cat-header"><td colspan="4">literate-programming (1个)</td></tr>
+<tr><td class="name">literate-programming</td><td class="ver">-</td><td class="cat">literate-programming</td><td class="desc">Transform a codebase into a literate program — a .lit.md document written for human comprehension that weaves prose, diagrams, and code, and tangles back int...</td></tr>
+<tr class="cat-header"><td colspan="4">mcp (2个)</td></tr>
+<tr><td class="name">mcporter</td><td class="ver">1.0.0</td><td class="cat">mcp</td><td class="desc">Use the mcporter CLI to list, configure, auth, and call MCP servers/tools directly (HTTP or stdio), including ad-hoc servers, config edits, and CLI/type gene...</td></tr>
+<tr><td class="name">native-mcp</td><td class="ver">1.0.0</td><td class="cat">mcp</td><td class="desc">MCP client: connect servers, register tools (stdio/HTTP).</td></tr>
+<tr class="cat-header"><td colspan="4">mcp-builder (1个)</td></tr>
+<tr><td class="name">mcp-builder</td><td class="ver">-</td><td class="cat">mcp-builder</td><td class="desc">Guide for creating high-quality MCP (Model Context Protocol) servers that enable LLMs to interact with external services through well-designed tools. Use whe...</td></tr>
+<tr class="cat-header"><td colspan="4">media (5个)</td></tr>
+<tr><td class="name">gif-search</td><td class="ver">1.1.0</td><td class="cat">media</td><td class="desc">Search/download GIFs from Tenor via curl + jq.</td></tr>
+<tr><td class="name">heartmula</td><td class="ver">1.0.0</td><td class="cat">media</td><td class="desc">HeartMuLa: Suno-like song generation from lyrics + tags.</td></tr>
+<tr><td class="name">songsee</td><td class="ver">1.0.0</td><td class="cat">media</td><td class="desc">Audio spectrograms/features (mel, chroma, MFCC) via CLI.</td></tr>
+<tr><td class="name">spotify</td><td class="ver">1.0.0</td><td class="cat">media</td><td class="desc">Spotify: play, search, queue, manage playlists and devices.</td></tr>
+<tr><td class="name">youtube-content</td><td class="ver">-</td><td class="cat">media</td><td class="desc">YouTube transcripts to summaries, threads, blogs.</td></tr>
+<tr class="cat-header"><td colspan="4">meta (3个)</td></tr>
+<tr><td class="name">Git PR Workflow</td><td class="ver">1.0.0</td><td class="cat">meta</td><td class="desc">End-to-end workflow for creating a clean, reviewed pull request from a feature branch.</td></tr>
+<tr><td class="name">Skill Factory</td><td class="ver">2.0.0</td><td class="cat">meta</td><td class="desc">A meta-skill that silently watches your workflows and automatically generates reusable Hermes skills from them. Enhanced with Claudeception continuous learni...</td></tr>
+<tr><td class="name">Skill Factory</td><td class="ver">2.0.0</td><td class="cat">meta</td><td class="desc">A meta-skill that silently watches your workflows and automatically generates reusable Hermes skills from them. Enhanced with Claudeception continuous learni...</td></tr>
+<tr class="cat-header"><td colspan="4">mlops (22个)</td></tr>
+<tr><td class="name">audiocraft-audio-generation</td><td class="ver">1.0.0</td><td class="cat">mlops</td><td class="desc">AudioCraft: MusicGen text-to-music, AudioGen text-to-sound.</td></tr>
+<tr><td class="name">axolotl</td><td class="ver">1.0.0</td><td class="cat">mlops</td><td class="desc">Axolotl: YAML LLM fine-tuning (LoRA, DPO, GRPO).</td></tr>
+<tr><td class="name">clip</td><td class="ver">1.0.0</td><td class="cat">mlops</td><td class="desc">OpenAI's model connecting vision and language. Enables zero-shot image classification, image-text matching, and cross-modal retrieval. Trained on 400M image-...</td></tr>
+<tr><td class="name">dspy</td><td class="ver">1.0.0</td><td class="cat">mlops</td><td class="desc">DSPy: declarative LM programs, auto-optimize prompts, RAG.</td></tr>
+<tr><td class="name">evaluating-llms-harness</td><td class="ver">1.0.0</td><td class="cat">mlops</td><td class="desc">lm-eval-harness: benchmark LLMs (MMLU, GSM8K, etc.).</td></tr>
+<tr><td class="name">fine-tuning-with-trl</td><td class="ver">1.0.0</td><td class="cat">mlops</td><td class="desc">TRL: SFT, DPO, PPO, GRPO, reward modeling for LLM RLHF.</td></tr>
+<tr><td class="name">gguf-quantization</td><td class="ver">1.0.0</td><td class="cat">mlops</td><td class="desc">GGUF format and llama.cpp quantization for efficient CPU/GPU inference. Use when deploying models on consumer hardware, Apple Silicon, or when needing flexib...</td></tr>
+<tr><td class="name">grpo-rl-training</td><td class="ver">1.0.0</td><td class="cat">mlops</td><td class="desc">Expert guidance for GRPO/RL fine-tuning with TRL for reasoning and task-specific model training</td></tr>
+<tr><td class="name">guidance</td><td class="ver">1.0.0</td><td class="cat">mlops</td><td class="desc">Control LLM output with regex and grammars, guarantee valid JSON/XML/code generation, enforce structured formats, and build multi-step workflows with Guidanc...</td></tr>
+<tr><td class="name">huggingface-hub</td><td class="ver">1.0.0</td><td class="cat">mlops</td><td class="desc">HuggingFace hf CLI: search/download/upload models, datasets.</td></tr>
+<tr><td class="name">llama-cpp</td><td class="ver">2.1.2</td><td class="cat">mlops</td><td class="desc">llama.cpp local GGUF inference + HF Hub model discovery.</td></tr>
+<tr><td class="name">modal-serverless-gpu</td><td class="ver">1.0.0</td><td class="cat">mlops</td><td class="desc">Serverless GPU cloud platform for running ML workloads. Use when you need on-demand GPU access without infrastructure management, deploying ML models as APIs...</td></tr>
+<tr><td class="name">obliteratus</td><td class="ver">2.0.0</td><td class="cat">mlops</td><td class="desc">OBLITERATUS: abliterate LLM refusals (diff-in-means).</td></tr>
+<tr><td class="name">outlines</td><td class="ver">1.0.0</td><td class="cat">mlops</td><td class="desc">Outlines: structured JSON/regex/Pydantic LLM generation.</td></tr>
+<tr><td class="name">peft-fine-tuning</td><td class="ver">1.0.0</td><td class="cat">mlops</td><td class="desc">Parameter-efficient fine-tuning for LLMs using LoRA, QLoRA, and 25+ methods. Use when fine-tuning large models (7B-70B) with limited GPU memory, when you nee...</td></tr>
+<tr><td class="name">pytorch-fsdp</td><td class="ver">1.0.0</td><td class="cat">mlops</td><td class="desc">Expert guidance for Fully Sharded Data Parallel training with PyTorch FSDP - parameter sharding, mixed precision, CPU offloading, FSDP2</td></tr>
+<tr><td class="name">segment-anything-model</td><td class="ver">1.0.0</td><td class="cat">mlops</td><td class="desc">SAM: zero-shot image segmentation via points, boxes, masks.</td></tr>
+<tr><td class="name">serving-llms-vllm</td><td class="ver">1.0.0</td><td class="cat">mlops</td><td class="desc">vLLM: high-throughput LLM serving, OpenAI API, quantization.</td></tr>
+<tr><td class="name">stable-diffusion-image-generation</td><td class="ver">1.0.0</td><td class="cat">mlops</td><td class="desc">State-of-the-art text-to-image generation with Stable Diffusion models via HuggingFace Diffusers. Use when generating images from text prompts, performing im...</td></tr>
+<tr><td class="name">unsloth</td><td class="ver">1.0.0</td><td class="cat">mlops</td><td class="desc">Unsloth: 2-5x faster LoRA/QLoRA fine-tuning, less VRAM.</td></tr>
+<tr><td class="name">weights-and-biases</td><td class="ver">1.0.0</td><td class="cat">mlops</td><td class="desc">W&B: log ML experiments, sweeps, model registry, dashboards.</td></tr>
+<tr><td class="name">whisper</td><td class="ver">1.0.0</td><td class="cat">mlops</td><td class="desc">OpenAI's general-purpose speech recognition model. Supports 99 languages, transcription, translation to English, and language identification. Six model sizes...</td></tr>
+<tr class="cat-header"><td colspan="4">note-taking (5个)</td></tr>
+<tr><td class="name">json-canvas</td><td class="ver">-</td><td class="cat">note-taking</td><td class="desc">Create and edit JSON Canvas files (.canvas) with nodes, edges, groups, and connections. Use when working with .canvas files, creating visual canvases, mind m...</td></tr>
+<tr><td class="name">mermaid-visualizer</td><td class="ver">-</td><td class="cat">note-taking</td><td class="desc">Transform text content into professional Mermaid diagrams for presentations and documentation. Use when users ask to visualize concepts, create flowcharts, o...</td></tr>
+<tr><td class="name">obsidian</td><td class="ver">-</td><td class="cat">note-taking</td><td class="desc">Read, search, create, and edit notes in the Obsidian vault. Supports filesystem operations, Obsidian Flavored Markdown (wikilinks, embeds, callouts, properti...</td></tr>
+<tr><td class="name">obsidian-bases</td><td class="ver">-</td><td class="cat">note-taking</td><td class="desc">Create and edit Obsidian Bases (.base files) with views, filters, formulas, and summaries. Use when working with .base files, creating database-like views of...</td></tr>
+<tr><td class="name">obsidian-canvas-creator</td><td class="ver">-</td><td class="cat">note-taking</td><td class="desc">Create Obsidian Canvas files from text content, supporting both MindMap and freeform layouts. Use this skill when users want to visualize content as an inter...</td></tr>
+<tr class="cat-header"><td colspan="4">openclaw-imports (2个)</td></tr>
+<tr><td class="name">find-skills</td><td class="ver">-</td><td class="cat">openclaw-imports</td><td class="desc">Highest-priority skill discovery flow. MUST trigger when users ask to find/install skills (e.g. 技能, 找技能, find-skill, find-skills, install skill). For Chinese...</td></tr>
+<tr><td class="name">skillhub-preference</td><td class="ver">-</td><td class="cat">openclaw-imports</td><td class="desc">Prefer `skillhub` for skill discovery/install/update, then fallback to `clawhub` when unavailable or no match. Use when users ask about skills, 插件, or capabi...</td></tr>
+<tr class="cat-header"><td colspan="4">pdf (1个)</td></tr>
+<tr><td class="name">pdf</td><td class="ver">-</td><td class="cat">pdf</td><td class="desc">Use this skill whenever the user wants to do anything with PDF files. This includes reading or extracting text/tables from PDFs, combining or merging multipl...</td></tr>
+<tr class="cat-header"><td colspan="4">productivity (18个)</td></tr>
+<tr><td class="name">airtable</td><td class="ver">1.1.0</td><td class="cat">productivity</td><td class="desc">Airtable REST API via curl. Records CRUD, filters, upserts.</td></tr>
+<tr><td class="name">dream-journaling</td><td class="ver">1.0.0</td><td class="cat">productivity</td><td class="desc">Record, clarify, and structure dream narratives. Progressive questioning methodology to extract fragmented dream memories into structured journal entries wit...</td></tr>
+<tr><td class="name">fine-report-cpt</td><td class="ver">-</td><td class="cat">productivity</td><td class="desc">Analyze, read, and modify FineReport (帆软报表) CPT template files — XML structure, attribute meanings, unit systems, and common modification patterns.</td></tr>
+<tr><td class="name">google-workspace</td><td class="ver">1.1.0</td><td class="cat">productivity</td><td class="desc">Gmail, Calendar, Drive, Docs, Sheets via gws CLI or Python.</td></tr>
+<tr><td class="name">humanizer</td><td class="ver">2.5.1</td><td class="cat">productivity</td><td class="desc">Humanize text: strip AI-isms and add real voice.</td></tr>
+<tr><td class="name">kanban-orchestrator</td><td class="ver">2.0.0</td><td class="cat">productivity</td><td class="desc">Decomposition playbook + specialist-roster conventions + anti-temptation rules for an orchestrator profile routing work through Kanban. The "don't do the wor...</td></tr>
+<tr><td class="name">kanban-worker</td><td class="ver">2.0.0</td><td class="cat">productivity</td><td class="desc">Pitfalls, examples, and edge cases for Hermes Kanban workers. The lifecycle itself is auto-injected into every worker's system prompt as KANBAN_GUIDANCE (fro...</td></tr>
+<tr><td class="name">linear</td><td class="ver">1.0.0</td><td class="cat">productivity</td><td class="desc">Linear: manage issues, projects, teams via GraphQL + curl.</td></tr>
+<tr><td class="name">maps</td><td class="ver">1.2.0</td><td class="cat">productivity</td><td class="desc">Geocode, POIs, routes, timezones via OpenStreetMap/OSRM.</td></tr>
+<tr><td class="name">nano-pdf</td><td class="ver">1.0.0</td><td class="cat">productivity</td><td class="desc">Edit PDF text/typos/titles via nano-pdf CLI (NL prompts).</td></tr>
+<tr><td class="name">notion</td><td class="ver">2.0.0</td><td class="cat">productivity</td><td class="desc">Notion API + ntn CLI: pages, databases, markdown, Workers.</td></tr>
+<tr><td class="name">ocr-and-documents</td><td class="ver">2.3.0</td><td class="cat">productivity</td><td class="desc">Extract text from PDFs/scans (pymupdf, marker-pdf).</td></tr>
+<tr><td class="name">officecli</td><td class="ver">-</td><td class="cat">productivity</td><td class="desc">Use this skill as the PRIMARY and ONLY tool for Office documents (.docx, .xlsx, .pptx). OfficeCLI is a single-binary, zero-dependency CLI replacing python-do...</td></tr>
+<tr><td class="name">preplan-wiki-ingest</td><td class="ver">1.1</td><td class="cat">productivity</td><td class="desc">售前方案集→Wiki知识库的跨session整理项目。4000+文件分类去重、分批提取、进度管理。适用于任何大规模文件收集整理为Wiki知识库的场景。</td></tr>
+<tr><td class="name">teams-meeting-pipeline</td><td class="ver">1.1.0</td><td class="cat">productivity</td><td class="desc">Operate the Teams meeting summary pipeline via Hermes CLI — summarize meetings, inspect pipeline status, replay jobs, manage Microsoft Graph subscriptions.</td></tr>
+<tr><td class="name">todo-daily-push</td><td class="ver">2.0.0</td><td class="cat">productivity</td><td class="desc">管理个人工作待办列表（todo.md），按交期排序，通过微信每天8:30和17:00定时推送提醒。支持交期状态检测、重要程度颜色标识、可爱语气推送、微信交互管理。</td></tr>
+<tr><td class="name">wiki-content-quality</td><td class="ver">-</td><td class="cat">productivity</td><td class="desc">Wiki内容质量审计与优化：YAML合规、交叉引用、方法论重构、正文结构化、元数据清理。适用于LLM Wiki或其他Markdown知识库的批量质量提升。</td></tr>
+<tr><td class="name">xlsx-import-generation</td><td class="ver">-</td><td class="cat">productivity</td><td class="desc">从含有多sheet的源xlsx文件中，按照导入模板格式批量生成多个指标的导入文件。典型场景：源文件包含"导入模板"(格式定义)、"指标"(指标列表)、"公司名称"(公司列表)、"月份"(时间列表)四个sheet，需要为每个指标生成一个独立的导入xlsx。强制使用OfficeCLI+CSV中间文件方案，禁止手写op...</td></tr>
+<tr class="cat-header"><td colspan="4">receiving-code-review (1个)</td></tr>
+<tr><td class="name">receiving-code-review</td><td class="ver">-</td><td class="cat">receiving-code-review</td><td class="desc">Use when receiving code review feedback, before implementing suggestions, especially if feedback seems unclear or technically questionable - requires technic...</td></tr>
+<tr class="cat-header"><td colspan="4">red-teaming (1个)</td></tr>
+<tr><td class="name">godmode</td><td class="ver">1.0.0</td><td class="cat">red-teaming</td><td class="desc">Jailbreak LLMs: Parseltongue, GODMODE, ULTRAPLINIAN.</td></tr>
+<tr class="cat-header"><td colspan="4">research (17个)</td></tr>
+<tr><td class="name">academic-paper</td><td class="ver">-</td><td class="cat">research</td><td class="desc">12-agent academic paper writing pipeline. 10 modes (full/plan/outline/revision/revision-coach/abstract/lit-review/format-convert/citation-check/disclosure). ...</td></tr>
+<tr><td class="name">academic-paper-reviewer</td><td class="ver">-</td><td class="cat">research</td><td class="desc">Multi-perspective academic paper review with dynamic reviewer personas. Simulates 5 independent reviewers (EIC + 3 peer reviewers + Devil's Advocate) with fi...</td></tr>
+<tr><td class="name">academic-pipeline</td><td class="ver">-</td><td class="cat">research</td><td class="desc">Orchestrator for the full academic research pipeline: research -&gt; write -&gt; integrity check -&gt; review -&gt; revise -&gt; re-review -&gt; re-revise -&...</td></tr>
+<tr><td class="name">arxiv</td><td class="ver">1.0.0</td><td class="cat">research</td><td class="desc">Search arXiv papers by keyword, author, category, or ID.</td></tr>
+<tr><td class="name">baike-wiki-ingest</td><td class="ver">-</td><td class="cat">research</td><td class="desc">从百度百科词条抓取内容并整理为LLM Wiki页面的完整工作流。当用户要求"从百度百科整理XX内容"、"读取XX的百科页面"、"把百度百科的XX添加到wiki"等时激活。包含：curl抓取HTML→HTMLParser提取文本→清理百度百科特有噪音(导航/引用标记/页脚)→保存raw source→创建概念页面→...</td></tr>
+<tr><td class="name">blogwatcher</td><td class="ver">2.0.0</td><td class="cat">research</td><td class="desc">Monitor blogs and RSS/Atom feeds via blogwatcher-cli tool.</td></tr>
+<tr><td class="name">darwinian-evolver</td><td class="ver">0.1.0</td><td class="cat">research</td><td class="desc">Evolve prompts/regex/SQL/code with Imbue's evolution loop.</td></tr>
+<tr><td class="name">deep-research</td><td class="ver">-</td><td class="cat">research</td><td class="desc">Universal deep research agent team. 13-agent pipeline for rigorous academic research on any topic. 7 modes: full research, quick brief, paper review, lit-rev...</td></tr>
+<tr><td class="name">duckduckgo-search</td><td class="ver">1.3.0</td><td class="cat">research</td><td class="desc">Free web search via DuckDuckGo — text, news, images, videos. No API key needed. Prefer the `ddgs` CLI when installed; use the Python DDGS library only after ...</td></tr>
+<tr><td class="name">functional-spec-batch-ingestion</td><td class="ver">1.0.0</td><td class="cat">research</td><td class="desc">Use when processing batches of standardized Development Functional Spec documents (开发功能说明书) from project archives — extracting metadata, classifying by modul...</td></tr>
+<tr><td class="name">llm-wiki</td><td class="ver">2.5.0</td><td class="cat">research</td><td class="desc">Karpathy's LLM Wiki: build/query interlinked markdown KB.</td></tr>
+<tr><td class="name">osint-investigation</td><td class="ver">0.1.0</td><td class="cat">research</td><td class="desc">Public-records OSINT investigation framework — SEC EDGAR filings, USAspending contracts, Senate lobbying, OFAC sanctions, ICIJ offshore leaks, NYC property r...</td></tr>
+<tr><td class="name">polymarket</td><td class="ver">1.0.0</td><td class="cat">research</td><td class="desc">Query Polymarket: markets, prices, orderbooks, history.</td></tr>
+<tr><td class="name">research-paper-writing</td><td class="ver">1.1.0</td><td class="cat">research</td><td class="desc">Write ML papers for NeurIPS/ICML/ICLR: design→submit.</td></tr>
+<tr><td class="name">web-research</td><td class="ver">-</td><td class="cat">research</td><td class="desc">Class-level umbrella for web-based research — progressive content discovery, structured compilation from authoritative sources, and references management. Co...</td></tr>
+<tr><td class="name">wiki-document-ingest</td><td class="ver">1.3.0</td><td class="cat">research</td><td class="desc">Ingest external documents (HTML, text, PDF exports etc.) into the LLM Wiki. Handles content extraction, organization into wiki pages, and navigation updates....</td></tr>
+<tr><td class="name">wiki-skill-ingest</td><td class="ver">1.0.0</td><td class="cat">research</td><td class="desc">Batch ingest Hermes skills into the LLM Wiki. Reads skill content, saves raw sources, creates entity/concept/comparison pages with cross-references, and upda...</td></tr>
+<tr class="cat-header"><td colspan="4">skill-creator (1个)</td></tr>
+<tr><td class="name">skill-creator</td><td class="ver">-</td><td class="cat">skill-creator</td><td class="desc">Create new skills, modify and improve existing skills, and measure skill performance. Use when users want to create a skill from scratch, edit, or optimize a...</td></tr>
+<tr class="cat-header"><td colspan="4">slack-gif-creator (1个)</td></tr>
+<tr><td class="name">slack-gif-creator</td><td class="ver">-</td><td class="cat">slack-gif-creator</td><td class="desc">Knowledge and utilities for creating animated GIFs optimized for Slack. Provides constraints, validation tools, and animation concepts. Use when users reques...</td></tr>
+<tr class="cat-header"><td colspan="4">social-media (2个)</td></tr>
+<tr><td class="name">xitter</td><td class="ver">1.0.0</td><td class="cat">social-media</td><td class="desc">Interact with X/Twitter via the x-cli terminal client using official X API credentials. Use for posting, reading timelines, searching tweets, liking, retweet...</td></tr>
+<tr><td class="name">xurl</td><td class="ver">1.1.1</td><td class="cat">social-media</td><td class="desc">X/Twitter via xurl CLI: post, search, DM, media, v2 API.</td></tr>
+<tr class="cat-header"><td colspan="4">software-development (16个)</td></tr>
+<tr><td class="name">debugging-hermes-tui-commands</td><td class="ver">1.0.0</td><td class="cat">software-development</td><td class="desc">Debug Hermes TUI slash commands: Python, gateway, Ink UI.</td></tr>
+<tr><td class="name">harness-engineering</td><td class="ver">1.0</td><td class="cat">software-development</td><td class="desc">AI Agent Harness（驾驭层）工程方法论 — 如何设计 Tool-First、分层 Prompt、三层权限门控、Hooks 事件、多Agent 协作、持久化记忆的 AI Agent 系统框架。基于 Claude Code 架构逆向分析提炼。</td></tr>
+<tr><td class="name">hermes-agent-skill-authoring</td><td class="ver">1.0.0</td><td class="cat">software-development</td><td class="desc">Author in-repo SKILL.md: frontmatter, validator, structure.</td></tr>
+<tr><td class="name">hermes-s6-container-supervision</td><td class="ver">1.0.0</td><td class="cat">software-development</td><td class="desc">Modify, debug, or extend the s6-overlay supervision tree inside the Hermes Agent Docker image — adding new services, debugging profile gateways, understandin...</td></tr>
+<tr><td class="name">intent-convergence-framework</td><td class="ver">1.2.0</td><td class="cat">software-development</td><td class="desc">Universal intent detection + convergence signal framework extracted from Socratic guidance patterns. Detects exploratory vs goal-oriented intent, tracks 5 co...</td></tr>
+<tr><td class="name">node-inspect-debugger</td><td class="ver">1.0.0</td><td class="cat">software-development</td><td class="desc">Debug Node.js via --inspect + Chrome DevTools Protocol CLI.</td></tr>
+<tr><td class="name">plan</td><td class="ver">1.0.0</td><td class="cat">software-development</td><td class="desc">Plan mode: write markdown plan to .hermes/plans/, no exec.</td></tr>
+<tr><td class="name">progressive-disclosure</td><td class="ver">1.0</td><td class="cat">software-development</td><td class="desc">三层渐进式上下文检索方法论 — 用最少的token成本精准定位历史信息。适配Hermes的session_search/memory/skill_view工具链，覆盖会话历史检索、持久记忆读写、技能加载三种场景。</td></tr>
+<tr><td class="name">python-debugpy</td><td class="ver">1.0.0</td><td class="cat">software-development</td><td class="desc">Debug Python: pdb REPL + debugpy remote (DAP).</td></tr>
+<tr><td class="name">requesting-code-review</td><td class="ver">2.0.0</td><td class="cat">software-development</td><td class="desc">Pre-commit review: security scan, quality gates, auto-fix.</td></tr>
+<tr><td class="name">rest-graphql-debug</td><td class="ver">1.2.0</td><td class="cat">software-development</td><td class="desc">Debug REST/GraphQL APIs: status codes, auth, schemas, repro.</td></tr>
+<tr><td class="name">spike</td><td class="ver">1.0.0</td><td class="cat">software-development</td><td class="desc">Throwaway experiments to validate an idea before build.</td></tr>
+<tr><td class="name">subagent-driven-development</td><td class="ver">1.1.0</td><td class="cat">software-development</td><td class="desc">Execute plans via delegate_task subagents (2-stage review).</td></tr>
+<tr><td class="name">systematic-debugging</td><td class="ver">1.1.0</td><td class="cat">software-development</td><td class="desc">4-phase root cause debugging: understand bugs before fixing.</td></tr>
+<tr><td class="name">test-driven-development</td><td class="ver">1.1.0</td><td class="cat">software-development</td><td class="desc">TDD: enforce RED-GREEN-REFACTOR, tests before code.</td></tr>
+<tr><td class="name">writing-plans</td><td class="ver">1.1.0</td><td class="cat">software-development</td><td class="desc">Write implementation plans: bite-sized tasks, paths, code.</td></tr>
+<tr class="cat-header"><td colspan="4">super-hermes (5个)</td></tr>
+<tr><td class="name">prism-3way</td><td class="ver">-</td><td class="cat">super-hermes</td><td class="desc">Three orthogonal analytical operations (WHERE/WHEN/WHY) + cross-operation synthesis. Each operation attacks the problem from a fundamentally different angle....</td></tr>
+<tr><td class="name">prism-discover</td><td class="ver">-</td><td class="cat">super-hermes</td><td class="desc">Discover all possible analysis domains for an artifact. Finds obvious and non-obvious angles — architecture, security, but also marketing positioning, user p...</td></tr>
+<tr><td class="name">prism-full</td><td class="ver">-</td><td class="cat">super-hermes</td><td class="desc">Full Prism: multi-pass structural analysis with mandatory adversarial self-correction. Designs custom analytical passes, executes them with chaining, then at...</td></tr>
+<tr><td class="name">prism-reflect</td><td class="ver">-</td><td class="cat">super-hermes</td><td class="desc">Constraint transparency: analyzes an artifact structurally, then analyzes what its own analysis concealed. Produces a conservation law AND a constraint repor...</td></tr>
+<tr><td class="name">prism-scan</td><td class="ver">-</td><td class="cat">super-hermes</td><td class="desc">Structural analysis through dynamically generated cognitive lenses. Generates the optimal analytical lens for the specific code/artifact, then executes it. F...</td></tr>
+<tr class="cat-header"><td colspan="4">system (1个)</td></tr>
+<tr><td class="name">skills-sync</td><td class="ver">-</td><td class="cat">system</td><td class="desc">Audit, update, clean up, and back up the Hermes skill library. Covers checking all skill sources for updates (builtin, hub/official, local, GitHub-manual), r...</td></tr>
+<tr class="cat-header"><td colspan="4">theme-factory (1个)</td></tr>
+<tr><td class="name">theme-factory</td><td class="ver">-</td><td class="cat">theme-factory</td><td class="desc">Toolkit for styling artifacts with a theme. These artifacts can be slides, docs, reportings, HTML landing pages, etc. There are 10 pre-set themes with colors...</td></tr>
+<tr class="cat-header"><td colspan="4">travel-guide (1个)</td></tr>
+<tr><td class="name">travel-guide</td><td class="ver">-</td><td class="cat">travel-guide</td><td class="desc">Generate comprehensive travel guides for Chinese destinations, covering weather, transportation, routes, food, accommodation, budget, and safety. Optimized f...</td></tr>
+<tr class="cat-header"><td colspan="4">using-git-worktrees (1个)</td></tr>
+<tr><td class="name">using-git-worktrees</td><td class="ver">-</td><td class="cat">using-git-worktrees</td><td class="desc">Use when starting feature work that needs isolation from current workspace or before executing implementation plans - ensures an isolated workspace exists vi...</td></tr>
+<tr class="cat-header"><td colspan="4">using-superpowers (1个)</td></tr>
+<tr><td class="name">using-superpowers</td><td class="ver">-</td><td class="cat">using-superpowers</td><td class="desc">Use when starting any conversation - establishes how to find and use skills, requiring Skill tool invocation before ANY response including clarifying questions</td></tr>
+<tr class="cat-header"><td colspan="4">verification-before-completion (1个)</td></tr>
+<tr><td class="name">verification-before-completion</td><td class="ver">-</td><td class="cat">verification-before-completion</td><td class="desc">Use when about to claim work is complete, fixed, or passing, before committing or creating PRs - requires running verification commands and confirming output...</td></tr>
+<tr class="cat-header"><td colspan="4">web-artifacts-builder (1个)</td></tr>
+<tr><td class="name">web-artifacts-builder</td><td class="ver">-</td><td class="cat">web-artifacts-builder</td><td class="desc">Suite of tools for creating elaborate, multi-component claude.ai HTML artifacts using modern frontend web technologies (React, Tailwind CSS, shadcn/ui). Use ...</td></tr>
+<tr class="cat-header"><td colspan="4">webapp-testing (1个)</td></tr>
+<tr><td class="name">webapp-testing</td><td class="ver">-</td><td class="cat">webapp-testing</td><td class="desc">Toolkit for interacting with and testing local web applications using Playwright. Supports verifying frontend functionality, debugging UI behavior, capturing...</td></tr>
+<tr class="cat-header"><td colspan="4">writing-skills (1个)</td></tr>
+<tr><td class="name">writing-skills</td><td class="ver">-</td><td class="cat">writing-skills</td><td class="desc">Use when creating new skills, editing existing skills, or verifying skills work before deployment</td></tr>
+<tr class="cat-header"><td colspan="4">yuanbao (1个)</td></tr>
+<tr><td class="name">yuanbao</td><td class="ver">1.0.0</td><td class="cat">yuanbao</td><td class="desc">Yuanbao (元宝) groups: @mention users, query info/members.</td></tr>
+
+</table>
+
+<h2><span class="emoji">🔮</span>重点技能: Super Analyst (Super Hermes)</h2>
+
+<div class="highlight">
+  <h3>"知道自己在哪方面看不见的AI代理"</h3>
+  <p>基于认知棱镜(Prism)方法论的结构化分析框架。核心创新: AI自己编写分析指令(lens)，执行它，并报告看到了什么以及没看到什么。基于1000+实验、40轮研究、204+实证原则。</p>
+</div>
+
+<div class="compare">
+  <div class="compare-card vanilla">
+    <div class="ctag">普通分析 (Vanilla)</div>
+    <div class="cexample">"代码耦合度高，建议解耦"<br><br>命名问题，给建议<br>339词 / 7个表面发现</div>
+  </div>
+  <div class="compare-card prism">
+    <div class="ctag">Prism 分析</div>
+    <div class="cexample">"Session状态是非单调的，任何架构都无法在不牺牲一致性或隔离性的情况下管理它。这是结构不可能性，不是代码缺陷。"<br><br>推导守恒定律<br>1485词 / 11个发现 (含行号/严重性)</div>
+  </div>
+</div>
+
+<h3 style="margin:24px 0 16px;font-size:1.1rem;">五大 Prism 操作</h3>
+<div class="prism-grid">
+  <div class="prism-card">
+    <div class="cmd">/prism-scan</div>
+    <div class="title">单次深度结构分析</div>
+    <div class="detail">自动为制品生成最优分析透镜，执行后输出发现表+约束脚注</div>
+  </div>
+  <div class="prism-card">
+    <div class="cmd">/prism-full</div>
+    <div class="title">多轮对抗式分析</div>
+    <div class="detail">设计2-4轮分析流水线，强制对抗轮攻击自身发现，综合输出</div>
+  </div>
+  <div class="prism-card">
+    <div class="cmd">/prism-3way</div>
+    <div class="title">三维正交分析</div>
+    <div class="detail">WHERE(结构考古)/WHEN(时间模拟)/WHY(不可能性证明) + 交叉综合</div>
+  </div>
+  <div class="prism-card">
+    <div class="cmd">/prism-discover</div>
+    <div class="title">分析域发现</div>
+    <div class="detail">列出制品所有可分析维度(架构/安全/心理/监管/竞争等10-20个)</div>
+  </div>
+  <div class="prism-card">
+    <div class="cmd">/prism-reflect</div>
+    <div class="title">自省式分析</div>
+    <div class="detail">结构分析 + 分析自己的分析 + 约束透明报告 + 持久化历史</div>
+  </div>
+</div>
+
+<h3 style="margin:24px 0 16px;font-size:1.1rem;">七个预置 Prism 透镜</h3>
+<div class="lens-grid">
+  <div class="lens-card"><span class="lname">error_resilience</span><span class="lscore">10.0</span><div class="ldesc">错误传播链: 静默退出/延迟故障/状态腐败</div></div>
+  <div class="lens-card"><span class="lname">l12</span><span class="lscore">9.8</span><div class="ldesc">守恒定律 + 元定律 (不可消除的结构权衡)</div></div>
+  <div class="lens-card"><span class="lname">optimize</span><span class="lscore">9.5</span><div class="ldesc">关键路径: 安全修复vs不安全修复</div></div>
+  <div class="lens-card"><span class="lname">identity</span><span class="lscore">9.5</span><div class="ldesc">代码声称是什么 vs 实际做了什么</div></div>
+  <div class="lens-card"><span class="lname">deep_scan</span><span class="lscore">9.0</span><div class="ldesc">信息销毁/清洗/静默转换</div></div>
+  <div class="lens-card"><span class="lname">claim</span><span class="lscore">9.0</span><div class="ldesc">假设反转: 被接受的事实如果是错的?</div></div>
+  <div class="lens-card"><span class="lname">simulation</span><span class="lscore">9.0</span><div class="ldesc">时间预测: 什么会随时间崩溃</div></div>
+</div>
+
+<h3 style="margin:24px 0 16px;font-size:1.1rem;">成长机制</h3>
+<div class="growth-steps">
+  <div class="step"><div class="snum">1</div><div class="stitle">分析 + 记录</div><div class="sdetail">prism-reflect 每次分析后将约束报告追加到 .prism-history.md</div></div>
+  <div class="step"><div class="snum">2</div><div class="stitle">读取历史</div><div class="sdetail">下次 prism-scan 读取历史，自动调整透镜覆盖过去的盲点</div></div>
+  <div class="step"><div class="snum">3</div><div class="stitle">持续成长</div><div class="sdetail">通过不重复自己的盲点来成长，分析越来越全面</div></div>
+</div>
+
+<h2><span class="emoji">🔒</span>安全审计结果</h2>
+<div class="security">
+  <div class="sec-item"><span class="sec-label">扫描范围</span><span class="sec-value">193个SKILL.md + 120+脚本 + 50+配置</span></div>
+  <div class="sec-item"><span class="sec-label">CRITICAL</span><span class="sec-value red">1个 (godmode, 已标记)</span></div>
+  <div class="sec-item"><span class="sec-label">HIGH</span><span class="sec-value green">0</span></div>
+  <div class="sec-item"><span class="sec-label">MEDIUM</span><span class="sec-value orange">2个 (供应链风险/exec链)</span></div>
+  <div class="sec-item"><span class="sec-label">恶意注入</span><span class="sec-value green">未发现</span></div>
+  <div class="sec-item"><span class="sec-label">数据外泄</span><span class="sec-value green">未发现</span></div>
+  <div class="sec-item"><span class="sec-label">隐藏指令</span><span class="sec-value green">未发现</span></div>
+  <div class="sec-item"><span class="sec-label">YAML注入</span><span class="sec-value green">未发现</span></div>
+</div>
+
+<footer>Hermes Agent Skills Report &nbsp;|&nbsp; Generated 2026-05-29 &nbsp;|&nbsp; 193 skills across 50 categories</footer>
+
+</div>
+</body>
+</html>
